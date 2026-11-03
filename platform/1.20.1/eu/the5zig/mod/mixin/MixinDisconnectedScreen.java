@@ -20,7 +20,7 @@ package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.BytecodeHook;
 import eu.the5zig.mod.MinecraftFactory;
-import eu.the5zig.mod.fabric.FiveZigFabric;
+import eu.the5zig.mod.util.CoreState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.DisconnectedScreen;
@@ -44,7 +44,7 @@ public abstract class MixinDisconnectedScreen {
 
 	@Inject(method = "init()V", at = @At("HEAD"))
 	private void the5zig$init(CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
@@ -56,7 +56,7 @@ public abstract class MixinDisconnectedScreen {
 
 	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", at = @At("TAIL"))
 	private void the5zig$render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {

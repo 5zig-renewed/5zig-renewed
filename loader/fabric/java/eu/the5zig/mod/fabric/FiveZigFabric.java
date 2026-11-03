@@ -18,9 +18,13 @@
 
 package eu.the5zig.mod.fabric;
 
+import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
+import eu.the5zig.mod.util.CoreState;
+import eu.the5zig.mod.util.Keybinds;
 import eu.the5zig.mod.asm.Transformer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
@@ -60,7 +64,9 @@ public class FiveZigFabric implements ClientModInitializer {
 		Transformer.FORGE = false;
 
 		// Must run before Minecraft constructs its Options instance.
-		FiveZigKeybinds.bootstrap();
+		Keybinds.setRegistrar(KeyBindingHelper::registerKeyBinding);
+		Keybinds.bootstrap();
+		Keybinds.closeRegistrationWindow();
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(this::onClientStarted);
 		ClientLifecycleEvents.CLIENT_STOPPING.register(this::onClientStopping);
@@ -90,6 +96,7 @@ public class FiveZigFabric implements ClientModInitializer {
 			LOGGER.warn("[5zig Renewed] Could not shut the 5zig Mod down cleanly", throwable);
 		} finally {
 			coreReady = false;
+			CoreState.setReady(false);
 		}
 	}
 
@@ -115,6 +122,7 @@ public class FiveZigFabric implements ClientModInitializer {
 		if (coreReady) {
 			return;
 		}
+		MinecraftFactory.bootstrap(new eu.the5zig.mod.platform.Variables());
 		if (The5zigMod.hasBeenInitialized()) {
 			// Initialised by another path (e.g. the core's own lazy init); nothing to do.
 			coreReady = true;
@@ -128,6 +136,7 @@ public class FiveZigFabric implements ClientModInitializer {
 		try {
 			The5zigMod.init();
 			coreReady = true;
+			CoreState.setReady(true);
 			LOGGER.info("[5zig Renewed] Core initialised in {} ms", System.currentTimeMillis() - start);
 		} catch (Throwable throwable) {
 			if (!initFailureLogged) {

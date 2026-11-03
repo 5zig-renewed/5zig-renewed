@@ -19,7 +19,7 @@
 package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.fabric.FiveZigFabric;
+import eu.the5zig.mod.util.CoreState;
 import eu.the5zig.mod.util.CombatRangeUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -45,7 +45,7 @@ public abstract class MixinMinecraft {
 	 */
 	@Inject(method = "setScreen(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("HEAD"))
 	private void the5zig$setScreen(Screen screen, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
@@ -62,7 +62,7 @@ public abstract class MixinMinecraft {
 	 */
 	@Inject(method = "startAttack()Z", at = @At("HEAD"))
 	private void the5zig$startAttack(CallbackInfoReturnable<Boolean> callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
@@ -80,7 +80,7 @@ public abstract class MixinMinecraft {
 	 */
 	@Inject(method = "startUseItem()V", at = @At("HEAD"))
 	private void the5zig$startUseItem(CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {

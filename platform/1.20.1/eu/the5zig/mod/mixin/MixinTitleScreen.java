@@ -19,7 +19,7 @@
 package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.fabric.FiveZigFabric;
+import eu.the5zig.mod.util.CoreState;
 import eu.the5zig.mod.Version;
 import eu.the5zig.mod.util.RenderContext;
 import net.minecraft.client.gui.GuiGraphics;
@@ -42,7 +42,7 @@ public abstract class MixinTitleScreen {
 
 	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", at = @At("TAIL"))
 	private void the5zig$drawVersion(GuiGraphics graphics, int mouseX, int mouseY, float partialTick, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		boolean owned = !RenderContext.isAvailable();

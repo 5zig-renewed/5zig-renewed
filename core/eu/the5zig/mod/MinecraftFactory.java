@@ -22,21 +22,52 @@ package eu.the5zig.mod;
 import eu.the5zig.mod.util.ClassProxyCallback;
 import eu.the5zig.mod.util.IVariables;
 
+/**
+ * Service locator for the platform layer.
+ * <p>
+ * The 1.15 build discovered its platform with {@code Class.forName("Variables")}. That still works
+ * on a plain Fabric class loader, but Forge's transforming loader does not resolve classes from the
+ * <em>default package</em> by name, so the lookup is now a fallback: every loader injects its
+ * platform instance through {@link #bootstrap(IVariables)} before anything touches
+ * {@link The5zigMod} (whose static initialiser reads {@link #getVars()} immediately).
+ */
 public class MinecraftFactory {
 
-	private static final IVariables variables;
+	private static IVariables variables;
 	private static ClassProxyCallback classProxyCallback;
 
 	static {
 		try {
-			variables = (IVariables) Class.forName("Variables").newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+			variables = (IVariables) Class.forName("eu.the5zig.mod.platform.Variables").getDeclaredConstructor().newInstance();
+		} catch (Throwable ignored) {
+			// Expected on Forge/NeoForge: the loader injects the platform instead.
 		}
 	}
 
-	public static IVariables getVars() {
+	/**
+	 * Installs the platform implementation. Must be called before {@link The5zigMod} is touched;
+	 * later calls with a different instance are ignored.
+	 */
+	public static void bootstrap(IVariables implementation) {
+		if (variables == null) {
+			variables = implementation;
+		}
+	}
+
+	/**
+	 * @return the installed platform, or {@code null} if the loader has not injected one yet.
+	 */
+	public static IVariables getVarsOrNull() {
 		return variables;
+	}
+
+	public static IVariables getVars() {
+		IVariables instance = variables;
+		if (instance == null) {
+			throw new IllegalStateException("The 5zig Mod platform layer was not installed; "
+					+ "the loader must call MinecraftFactory.bootstrap(...) before the core initialises");
+		}
+		return instance;
 	}
 
 	public static void setClassProxyCallback(ClassProxyCallback classProxyCallback) {

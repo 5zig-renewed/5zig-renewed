@@ -19,7 +19,7 @@
 package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.BytecodeHook;
-import eu.the5zig.mod.fabric.FiveZigFabric;
+import eu.the5zig.mod.util.CoreState;
 import net.minecraft.client.gui.screens.DeathScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,7 +35,7 @@ public abstract class MixinDeathScreen {
 
 	@Inject(method = "init()V", at = @At("HEAD"))
 	private void the5zig$init(CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {

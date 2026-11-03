@@ -20,7 +20,7 @@ package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.BytecodeHook;
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.fabric.FiveZigFabric;
+import eu.the5zig.mod.util.CoreState;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,7 +38,7 @@ public abstract class MixinChatScreen {
 
 	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", at = @At("HEAD"))
 	private void the5zig$drawComponentHover(GuiGraphics graphics, int mouseX, int mouseY, float partialTick, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
@@ -50,7 +50,7 @@ public abstract class MixinChatScreen {
 
 	@Inject(method = "keyPressed(III)Z", at = @At("HEAD"))
 	private void the5zig$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
@@ -66,7 +66,7 @@ public abstract class MixinChatScreen {
 	 */
 	@Inject(method = "mouseClicked(DDI)Z", at = @At("HEAD"), cancellable = true)
 	private void the5zig$mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {

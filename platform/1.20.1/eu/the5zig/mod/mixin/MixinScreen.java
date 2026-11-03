@@ -20,7 +20,7 @@ package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.BytecodeHook;
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.fabric.FiveZigFabric;
+import eu.the5zig.mod.util.CoreState;
 import eu.the5zig.mod.util.RenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -70,7 +70,7 @@ public abstract class MixinScreen {
 	 */
 	@Inject(method = "renderBackground(Lnet/minecraft/client/gui/GuiGraphics;)V", at = @At("HEAD"), cancellable = true)
 	private void the5zig$renderBackground(GuiGraphics graphics, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
@@ -87,7 +87,7 @@ public abstract class MixinScreen {
 	 */
 	@Inject(method = "hasControlDown()Z", at = @At("HEAD"), cancellable = true)
 	private static void the5zig$hasControlDown(CallbackInfoReturnable<Boolean> callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {

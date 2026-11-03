@@ -19,7 +19,7 @@
 package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.fabric.FiveZigFabric;
+import eu.the5zig.mod.util.CoreState;
 import eu.the5zig.mod.util.LegacyText;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.gui.GuiGraphics;
@@ -50,7 +50,7 @@ public abstract class MixinChatComponent {
 
 	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;III)V", at = @At("HEAD"))
 	private void the5zig$drawSecondChat(GuiGraphics graphics, int ticks, int mouseX, int mouseY, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
@@ -63,7 +63,7 @@ public abstract class MixinChatComponent {
 	@Inject(method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V",
 			at = @At("HEAD"), cancellable = true)
 	private void the5zig$onChatMessage(Component component, MessageSignature signature, GuiMessageTag tag, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady() || component == null || the5zig$processingChat) {
+		if (!CoreState.isReady() || component == null || the5zig$processingChat) {
 			return;
 		}
 		the5zig$processingChat = true;
@@ -88,7 +88,7 @@ public abstract class MixinChatComponent {
 	@ModifyVariable(method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V",
 			at = @At("HEAD"), argsOnly = true, index = 1)
 	private Component the5zig$withTimePrefix(Component component) {
-		if (!FiveZigFabric.isCoreReady() || component == null) {
+		if (!CoreState.isReady() || component == null) {
 			return component;
 		}
 		try {
@@ -106,7 +106,7 @@ public abstract class MixinChatComponent {
 
 	@Inject(method = "clearMessages(Z)V", at = @At("HEAD"))
 	private void the5zig$clearMessages(boolean clearHistory, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
@@ -118,7 +118,7 @@ public abstract class MixinChatComponent {
 
 	@Inject(method = "scrollChat(I)V", at = @At("HEAD"))
 	private void the5zig$scrollChat(int amount, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {

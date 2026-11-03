@@ -20,7 +20,7 @@ package eu.the5zig.mod.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.fabric.FiveZigFabric;
+import eu.the5zig.mod.util.CoreState;
 import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -41,7 +41,7 @@ public abstract class MixinPlayerTabOverlay {
 	@Inject(method = "renderPingIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V",
 			at = @At("HEAD"), cancellable = true)
 	private void the5zig$renderPing(GuiGraphics graphics, int width, int x, int y, PlayerInfo playerInfo, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady() || playerInfo == null) {
+		if (!CoreState.isReady() || playerInfo == null) {
 			return;
 		}
 		try {

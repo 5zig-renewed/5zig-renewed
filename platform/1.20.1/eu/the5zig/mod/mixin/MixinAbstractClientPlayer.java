@@ -19,7 +19,7 @@
 package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.fabric.FiveZigFabric;
+import eu.the5zig.mod.util.CoreState;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Abilities;
@@ -41,7 +41,7 @@ public abstract class MixinAbstractClientPlayer {
 	 */
 	@Inject(method = "getFieldOfViewModifier()F", at = @At("HEAD"), cancellable = true)
 	private void the5zig$staticFov(CallbackInfoReturnable<Float> callbackInfo) {
-		if (!FiveZigFabric.isCoreReady()) {
+		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
@@ -61,7 +61,7 @@ public abstract class MixinAbstractClientPlayer {
 	 */
 	@Inject(method = "getCloakTextureLocation()Lnet/minecraft/resources/ResourceLocation;", at = @At("HEAD"), cancellable = true)
 	private void the5zig$cape(CallbackInfoReturnable<ResourceLocation> callbackInfo) {
-		if (!FiveZigFabric.isCoreReady() || The5zigMod.getVars().getResourceManager() == null) {
+		if (!CoreState.isReady() || The5zigMod.getVars().getResourceManager() == null) {
 			return;
 		}
 		try {

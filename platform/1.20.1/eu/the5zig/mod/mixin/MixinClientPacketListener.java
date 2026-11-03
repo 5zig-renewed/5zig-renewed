@@ -19,7 +19,7 @@
 package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.fabric.FiveZigFabric;
+import eu.the5zig.mod.util.CoreState;
 import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.util.LegacyText;
 import eu.the5zig.mod.util.TabList;
@@ -50,7 +50,7 @@ public abstract class MixinClientPacketListener {
 	 */
 	@Inject(method = "sendChat(Ljava/lang/String;)V", at = @At("HEAD"), cancellable = true)
 	private void the5zig$sendChat(String message, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady() || message == null) {
+		if (!CoreState.isReady() || message == null) {
 			return;
 		}
 		try {
@@ -67,7 +67,7 @@ public abstract class MixinClientPacketListener {
 	 */
 	@Inject(method = "handleCustomPayload(Lnet/minecraft/network/protocol/game/ClientboundCustomPayloadPacket;)V", at = @At("TAIL"))
 	private void the5zig$handleCustomPayload(ClientboundCustomPayloadPacket packet, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady() || packet == null) {
+		if (!CoreState.isReady() || packet == null) {
 			return;
 		}
 		try {
@@ -79,7 +79,7 @@ public abstract class MixinClientPacketListener {
 
 	@Inject(method = "handleTabListCustomisation(Lnet/minecraft/network/protocol/game/ClientboundTabListPacket;)V", at = @At("TAIL"))
 	private void the5zig$handleTabList(ClientboundTabListPacket packet, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady() || packet == null) {
+		if (!CoreState.isReady() || packet == null) {
 			return;
 		}
 		try {
@@ -94,7 +94,7 @@ public abstract class MixinClientPacketListener {
 
 	@Inject(method = "handleContainerSetSlot(Lnet/minecraft/network/protocol/game/ClientboundContainerSetSlotPacket;)V", at = @At("HEAD"))
 	private void the5zig$handleSetSlot(ClientboundContainerSetSlotPacket packet, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady() || packet == null) {
+		if (!CoreState.isReady() || packet == null) {
 			return;
 		}
 		try {
@@ -109,7 +109,7 @@ public abstract class MixinClientPacketListener {
 
 	@Inject(method = "handleMovePlayer(Lnet/minecraft/network/protocol/game/ClientboundPlayerPositionPacket;)V", at = @At("TAIL"))
 	private void the5zig$handleMovePlayer(ClientboundPlayerPositionPacket packet, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady() || packet == null) {
+		if (!CoreState.isReady() || packet == null) {
 			return;
 		}
 		try {
@@ -125,7 +125,7 @@ public abstract class MixinClientPacketListener {
 	 */
 	@Inject(method = "handleChangeDifficulty(Lnet/minecraft/network/protocol/game/ClientboundChangeDifficultyPacket;)V", at = @At("TAIL"))
 	private void the5zig$handleChangeDifficulty(net.minecraft.network.protocol.game.ClientboundChangeDifficultyPacket packet, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady() || packet == null) {
+		if (!CoreState.isReady() || packet == null) {
 			return;
 		}
 		try {

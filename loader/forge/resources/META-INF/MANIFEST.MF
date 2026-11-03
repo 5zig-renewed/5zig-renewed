@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+MixinConfigs: mixins.the5zigmod.json,mixins.the5zigmod.forge.json
+

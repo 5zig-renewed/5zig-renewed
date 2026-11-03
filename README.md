@@ -35,22 +35,31 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 
 | Target | State |
 |---|---|
-| **1.20.1 Fabric** | **build green + client-verified** — HUD renders in-world |
-| 1.20.1 NeoForge / Forge | next (same platform, loader glue only) |
+| **1.20.1 Fabric** | **build green + client-verified** — mod loads, HUD renders in-world |
+| **1.20.1 Forge** | **build green + client-verified core** — mod loads, core inits in ~250-540 ms, 12 keybinds register, both mixin configs apply; the overlay does not draw yet |
+| 1.20.1 NeoForge | build config in place; NeoGradle 7 hands out SRG-named 1.20.1 classes, so the platform needs the `official` mappings channel — queued |
 | 1.21.1, 1.21.x, 26.x | queued (eras E7–E10) |
 | 1.16 – 1.19 | queued (eras E1–E4), backfill |
 
 ![1.20.1 Fabric HUD](docs/1.20.1-fabric-hud.png)
 
-Verified in a real 1.20.1 client (Xvfb + llvmpipe, not a mock): the mod initialises in 586 ms and the
-HUD draws FPS, coordinates, facing and the AFK timer. 1001 source files compile for 1.20.1; 13 mixins
-apply cleanly.
+Verified in real clients (Xvfb + llvmpipe, headless): Fabric renders FPS, coordinates, facing and the
+AFK timer; Forge initialises the same core and registers the same bindings.
 
-Known gaps in this build:
+### What is left on Forge
 
-- the mod menu key (**M**) does not open the GUI yet — the binding registers but the toggle does not fire
-- capes, 2nd chat, server ping and the friends/chat backend are wired but not yet exercised against live servers
+`ForgeGui extends Gui` and overrides `Gui#render`, so the platform's `@Mixin(Gui)` hook never runs
+there. `loader/forge/.../MixinForgeGui` targets the override and applies (confirmed in the log), but
+the overlay still does not appear — the next step is to trace whether `HudFrame.begin` is reached and
+what the core's `GuiIngame` reports at that point.
+
+### Known gaps in this build
+
+- the mod menu key (**M**) does not open the GUI on either loader yet
+- capes, 2nd chat, server ping and the friends/chat backend are wired but not exercised against live servers
 - Discord Rich Presence, TeamSpeak and the iTunes/WMP bridges are inert on Linux
+- dependencies (DiscordIPC, sqlite, jacob, json, netty-http) are on the dev classpath but not yet
+  jar-in-jar'd, so the release jars are not yet self-contained
 
 ## Building 1.20.1 Fabric
 

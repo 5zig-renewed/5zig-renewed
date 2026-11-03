@@ -19,7 +19,7 @@
 package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.fabric.FiveZigFabric;
+import eu.the5zig.mod.util.CoreState;
 import eu.the5zig.mod.event.PacketEvent;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.Connection;
@@ -42,7 +42,7 @@ public abstract class MixinConnection {
 
 	@Inject(method = "send(Lnet/minecraft/network/protocol/Packet;)V", at = @At("HEAD"))
 	private void the5zig$sendPacket(Packet<?> packet, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady() || packet == null) {
+		if (!CoreState.isReady() || packet == null) {
 			return;
 		}
 		try {
@@ -54,7 +54,7 @@ public abstract class MixinConnection {
 
 	@Inject(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/protocol/Packet;)V", at = @At("HEAD"))
 	private void the5zig$receivePacket(ChannelHandlerContext context, Packet<?> packet, CallbackInfo callbackInfo) {
-		if (!FiveZigFabric.isCoreReady() || packet == null) {
+		if (!CoreState.isReady() || packet == null) {
 			return;
 		}
 		try {
