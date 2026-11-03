@@ -51,6 +51,8 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.21 Fabric** | green, self-contained (17.8 MB) | **HUD** |
 | **1.21.10 Fabric** | green, refmap, every colour call opaque-guarded | **HUD** |
 | **26.2 Fabric** | green; `Hud` split handled by its own mixin | **HUD** |
+| **1.20.4 Fabric** | green, self-contained | **HUD** |
+| **1.21.7 Fabric** | green, self-contained | **HUD** |
 
 Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation.
 
