@@ -19,8 +19,16 @@
 package eu.the5zig.mod.asm;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
 
+/**
+ * Legacy name table of the ASM transformer era.
+ * <p>
+ * On Fabric the hooks are applied by {@code eu.the5zig.mod.mixin} against Mojang mappings, so
+ * nothing resolves these entries at runtime; {@code Transformer} is kept only as a static holder.
+ * The 1.12 obfuscated names below are therefore dead data. The one thing that had to change for
+ * 1.20.1 is {@code PacketBuffer}: the class no longer exists (it is {@code FriendlyByteBuf} now)
+ * and it was the only reason this file failed to compile.
+ */
 public class Names {
 
 	public static Name _static = new Name("<clinit>", "()V");
@@ -45,7 +53,8 @@ public class Names {
 	public static Name width = new Name("l", "I");
 
 	public static Name chatComponent = new Name("eu");
-	public static Name packetBuffer = new Name(PacketBuffer.class.getName());
+	// PacketBuffer was removed in 1.20.1 (the class is net.minecraft.network.FriendlyByteBuf now);
+	// no hook resolves it any more, so the entry is gone instead of pointing at a missing class.
 
 	public static Name guiIngameForge = new Name("net.minecraftforge.client.GuiIngameForge");
 	public static Name renderGameOverlay = new Name("a", "(F)V");

@@ -16,7 +16,6 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import eu.the5zig.mod.util.RenderContext;
 import eu.the5zig.mod.util.SliderCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

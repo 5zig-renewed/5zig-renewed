@@ -50,7 +50,7 @@ public class SimpleTexture extends net.minecraft.client.renderer.texture.SimpleT
 	 * image has been set or when called off the render thread (the next bind on the render thread will
 	 * pick the image up).
 	 */
-	public void checkTextureUploaded() {
+	public synchronized void checkTextureUploaded() {
 		if (textureUploaded || bufferedImage == null) {
 			return;
 		}
@@ -70,7 +70,7 @@ public class SimpleTexture extends net.minecraft.client.renderer.texture.SimpleT
 		}
 	}
 
-	public void setBufferedImage(BufferedImage bufferedImage) {
+	public synchronized void setBufferedImage(BufferedImage bufferedImage) {
 		this.textureUploaded = false;
 		this.bufferedImage = bufferedImage;
 	}

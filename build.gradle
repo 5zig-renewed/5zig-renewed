@@ -22,6 +22,7 @@ dependencies {
     implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
     implementation 'net.sf.jacob-project:jacob:1.14.3'
     implementation 'org.json:json:20231013'
+    implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
     implementation 'io.netty:netty-codec-http:4.1.97.Final'
 }
 
@@ -45,6 +46,13 @@ tasks.withType(JavaCompile).configureEach {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
 }
 
 loom {

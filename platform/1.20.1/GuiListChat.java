@@ -75,7 +75,7 @@ public class GuiListChat<E extends Row> extends GuiList<E> {
 				int id = -1;
 				int minY = -1;
 				// Search for the right ChatLine-ID
-				for (int i1 = 0; i1 < heightMap.size(); i1++) {
+				for (int i1 = 0; i1 < heightMap.size() && i1 < rows.size(); i1++) {
 					Integer integer = heightMap.get(i1);
 					Row line = rows.get(i1);
 					if (y >= integer - 2 && y <= integer + line.getLineHeight() - 2) {

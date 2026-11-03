@@ -47,7 +47,7 @@ public class SimpleTickingTexture extends SimpleTexture implements Tickable {
 		this.resourceLocation = resourceLocation;
 	}
 
-	private void checkFramesUploaded() {
+	private synchronized void checkFramesUploaded() {
 		if (framesUploaded || frames == null || bufferedImages == null) {
 			return;
 		}
@@ -71,7 +71,7 @@ public class SimpleTickingTexture extends SimpleTexture implements Tickable {
 		framesUploaded = true;
 	}
 
-	public void setBufferedImage(BufferedImage bufferedImage) {
+	public synchronized void setBufferedImage(BufferedImage bufferedImage) {
 		if (bufferedImage == null) {
 			frames = null;
 			bufferedImages = null;
@@ -79,11 +79,9 @@ public class SimpleTickingTexture extends SimpleTexture implements Tickable {
 			framesUploaded = false;
 			return;
 		}
-		int parts = bufferedImage.getHeight() / (bufferedImage.getWidth() / 2);
-		if (parts < 1) {
-			parts = 1;
-		}
-		int partHeight = bufferedImage.getHeight() / parts;
+		int frameUnit = Math.max(1, bufferedImage.getWidth() / 2);
+		int parts = Math.max(1, bufferedImage.getHeight() / frameUnit);
+		int partHeight = Math.max(1, bufferedImage.getHeight() / parts);
 		bufferedImages = new ArrayList<>(parts);
 		frames = new ArrayList<>(parts);
 		for (int part = 0; part < parts; part++) {
@@ -94,7 +92,7 @@ public class SimpleTickingTexture extends SimpleTexture implements Tickable {
 	}
 
 	@Override
-	public void tick() {
+	public synchronized void tick() {
 		checkFramesUploaded();
 		if (framesUploaded && frames.size() > 1) {
 			index = (index + 1) % frames.size();
@@ -105,7 +103,7 @@ public class SimpleTickingTexture extends SimpleTexture implements Tickable {
 	 * @return the resource location of the frame that should currently be drawn, or {@code null} while no
 	 * image has been supplied yet.
 	 */
-	public ResourceLocation getCurrentResource() {
+	public synchronized ResourceLocation getCurrentResource() {
 		checkFramesUploaded();
 		if (!framesUploaded || frames == null || index < 0 || index >= frames.size()) {
 			return null;

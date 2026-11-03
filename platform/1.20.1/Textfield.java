@@ -125,6 +125,8 @@ public class Textfield extends AbstractWidget implements ITextfield {
 		if (this.text.length() > length) {
 			this.text = this.text.substring(0, length);
 		}
+		this.cursorPosition = Math.min(this.cursorPosition, this.text.length());
+		this.selectionPos = Math.min(this.selectionPos, this.text.length());
 	}
 
 	@Override
@@ -482,6 +484,7 @@ public class Textfield extends AbstractWidget implements ITextfield {
 		if (relativeSelection > visible.length()) {
 			relativeSelection = visible.length();
 		}
+		relativeSelection = Math.max(0, relativeSelection);
 
 		if (!visible.isEmpty()) {
 			String before = cursorInView ? visible.substring(0, relativeCursor) : visible;

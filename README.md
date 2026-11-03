@@ -35,12 +35,22 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 
 | Target | State |
 |---|---|
-| 1.20.1 Fabric | **active** — core compiles against Loom, platform layer being ported |
+| **1.20.1 Fabric** | **build green + client-verified** — HUD renders in-world |
 | 1.20.1 NeoForge / Forge | next (same platform, loader glue only) |
 | 1.21.1, 1.21.x, 26.x | queued (eras E7–E10) |
 | 1.16 – 1.19 | queued (eras E1–E4), backfill |
 
-Nothing is released yet. Builds are only called done when the client launches and the HUD renders.
+![1.20.1 Fabric HUD](docs/1.20.1-fabric-hud.png)
+
+Verified in a real 1.20.1 client (Xvfb + llvmpipe, not a mock): the mod initialises in 586 ms and the
+HUD draws FPS, coordinates, facing and the AFK timer. 1001 source files compile for 1.20.1; 13 mixins
+apply cleanly.
+
+Known gaps in this build:
+
+- the mod menu key (**M**) does not open the GUI yet — the binding registers but the toggle does not fire
+- capes, 2nd chat, server ping and the friends/chat backend are wired but not yet exercised against live servers
+- Discord Rich Presence, TeamSpeak and the iTunes/WMP bridges are inert on Linux
 
 ## Building 1.20.1 Fabric
 

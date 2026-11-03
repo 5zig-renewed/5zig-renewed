@@ -18,7 +18,6 @@
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import eu.the5zig.mod.util.GLUtil;
 import eu.the5zig.mod.util.IGLUtil;
 import eu.the5zig.mod.util.RenderContext;
 import net.minecraft.client.gui.GuiGraphics;

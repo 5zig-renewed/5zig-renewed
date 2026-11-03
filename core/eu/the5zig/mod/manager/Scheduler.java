@@ -94,7 +94,7 @@ public class Scheduler {
 			try {
 				return Futures.immediateFuture(callable.call());
 			} catch (Exception e) {
-				return Futures.immediateFailedCheckedFuture(e);
+				return Futures.immediateFailedFuture(e);
 			}
 		}
 	}

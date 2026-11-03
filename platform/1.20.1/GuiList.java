@@ -17,6 +17,8 @@
  */
 
 import com.google.common.collect.Lists;
+import eu.the5zig.mod.MinecraftFactory;
+import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.elements.Clickable;
 import eu.the5zig.mod.gui.elements.IGuiList;
 import eu.the5zig.mod.gui.elements.IButton;
@@ -64,6 +66,7 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 	private IButton selectedButton;
 
 	private String header;
+	private int headerHeight;
 
 	private boolean drawDefaultBackground = false;
 	private Object backgroundTexture;
@@ -92,8 +95,8 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 
 		this.rows = rows;
 		this.clickable = clickable;
-		setLeft(left);
-		setRight(right);
+		this.x0 = left;
+		this.x1 = right;
 	}
 
 	/**
@@ -143,6 +146,7 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 		return selected == id;
 	}
 
+	@Override
 	public int callGetRowWidth() {
 		return getRowWidth();
 	}
@@ -182,6 +186,8 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 	 */
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		calculateHeightMap();
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
 		if (!this.visible) {
 			return;
 		}
@@ -189,9 +195,6 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 		if (graphics == null) {
 			return;
 		}
-
-		this.mouseX = mouseX;
-		this.mouseY = mouseY;
 
 		int scrollbar = getScrollbarPosition();
 		int scrollbarRight = scrollbar + 6;
@@ -204,11 +207,14 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 
 		if (getRight() > getLeft() && getBottom() > getTop()) {
 			graphics.enableScissor(getLeft(), getTop(), getRight(), getBottom());
-			if (getHeaderPadding() > 0) {
-				drawHeader(graphics, rowX, rowY);
+			try {
+				if (getHeaderPadding() > 0) {
+					drawHeader(graphics, rowX, rowY);
+				}
+				renderList(graphics, rowX, rowY, mouseX, mouseY, partialTicks);
+			} finally {
+				graphics.disableScissor();
 			}
-			renderList(graphics, rowX, rowY, mouseX, mouseY, partialTicks);
-			graphics.disableScissor();
 		}
 
 		int maxScroll = getMaxScroll();
@@ -242,6 +248,12 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 		if (backgroundTexture instanceof ResourceLocation) {
 			graphics.blit((ResourceLocation) backgroundTexture, getLeft(), getTop(), listWidth, listHeight,
 					0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, this.backgroundWidth, this.backgroundHeight);
+		} else if (backgroundTexture != null) {
+			// Dynamic textures (the user's chat background image) are not ResourceLocations; keep the
+			// 1.15 route through bindTexture + Gui#drawModalRectWithCustomSizedTexture.
+			MinecraftFactory.getVars().bindTexture(backgroundTexture);
+			Gui.drawModalRectWithCustomSizedTexture(getLeft(), getTop(), 0.0F, 0.0F, listWidth, listHeight,
+					this.backgroundWidth, this.backgroundHeight);
 		} else if (drawDefaultBackground || Minecraft.getInstance().player == null) {
 			graphics.setColor(0.125F, 0.125F, 0.125F, 1.0F);
 			graphics.blitRepeating(Screen.BACKGROUND_LOCATION, getLeft(), getTop(), listWidth, listHeight,
@@ -565,8 +577,6 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 	public int getHeaderPadding() {
 		return this.headerHeight;
 	}
-
-	private int headerHeight;
 
 	@Override
 	public void callSetHeaderPadding(int headerPadding) {

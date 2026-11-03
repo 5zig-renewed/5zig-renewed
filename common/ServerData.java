@@ -18,6 +18,15 @@
 
 import eu.the5zig.mod.util.IServerData;
 
+import java.util.Base64;
+
+/**
+ * 1.20.1 view over {@link net.minecraft.client.multiplayer.ServerData}.
+ * <p>
+ * The fields the core reads were renamed/split when the server list was reworked:
+ * {@code serverName/serverIP/populationInfo/serverMOTD/pingToServer/base64 icon} became
+ * {@code name/ip/players/motd/ping/iconBytes}.
+ */
 public class ServerData extends net.minecraft.client.multiplayer.ServerData implements IServerData {
 
 	public ServerData(String serverIP) {
@@ -26,31 +35,35 @@ public class ServerData extends net.minecraft.client.multiplayer.ServerData impl
 
 	@Override
 	public String getServerName() {
-		return serverName;
+		return name;
 	}
 
 	@Override
 	public String getServerIP() {
-		return serverIP;
+		return ip;
 	}
 
 	@Override
 	public String getPopulationInfo() {
-		return populationInfo;
+		if (players == null) {
+			return "";
+		}
+		return players.online() + "/" + players.max();
 	}
 
 	@Override
 	public String getMOTD() {
-		return serverMOTD;
+		return motd == null ? "" : motd.getString();
 	}
 
 	@Override
 	public long getPing() {
-		return pingToServer;
+		return ping;
 	}
 
 	@Override
 	public String getServerIcon() {
-		return getBase64EncodedIconData();
+		byte[] icon = getIconBytes();
+		return icon == null ? null : Base64.getEncoder().encodeToString(icon);
 	}
 }

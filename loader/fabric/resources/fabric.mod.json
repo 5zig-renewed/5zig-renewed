@@ -11,6 +11,7 @@
     "client": ["eu.the5zig.mod.fabric.FiveZigFabric"]
   },
   "mixins": ["mixins.the5zigmod.json"],
+  "accessWidener": "5zig.accesswidener",
   "depends": {
     "fabricloader": ">=0.15.0",
     "minecraft": "~1.20.1",

@@ -1,7 +1,25 @@
 {
   "required": true,
+  "minVersion": "0.8",
   "package": "eu.the5zig.mod.mixin",
   "compatibilityLevel": "JAVA_17",
-  "client": [],
-  "injectors": { "defaultRequire": 1 }
+  "mixins": [],
+  "client": [
+    "MixinAbstractClientPlayer",
+    "MixinChatComponent",
+    "MixinChatScreen",
+    "MixinClientPacketListener",
+    "MixinConnection",
+    "MixinDeathScreen",
+    "MixinDisconnectedScreen",
+    "MixinGameRenderer",
+    "MixinGui",
+    "MixinMinecraft",
+    "MixinPlayerTabOverlay",
+    "MixinScreen",
+    "MixinTitleScreen"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

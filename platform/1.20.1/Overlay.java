@@ -44,7 +44,7 @@ public class Overlay implements IOverlay {
 	private static final int TEXT_X = 18;
 	private static final long DISPLAY_TIME = 5000L;
 
-	Overlay() {
+	public Overlay() {
 	}
 
 	public static void updateOverlayCount(int count) {

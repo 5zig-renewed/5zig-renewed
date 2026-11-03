@@ -28,6 +28,7 @@ import eu.the5zig.mod.api.rewards.RewardsCache;
 import eu.the5zig.mod.gui.ingame.resource.CapeResource;
 import eu.the5zig.mod.gui.ingame.resource.IResourceManager;
 import eu.the5zig.mod.gui.ingame.resource.PlayerResource;
+import eu.the5zig.mod.util.NetworkPlayerInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -232,6 +233,9 @@ public class ResourceManager implements IResourceManager {
 	 * {@link GameProfile} or the {@link AbstractClientPlayer} itself, so all three are accepted.
 	 */
 	private static GameProfile getProfile(Object player) {
+		if (player instanceof NetworkPlayerInfo) {
+			return ((NetworkPlayerInfo) player).getGameProfile();
+		}
 		if (player instanceof PlayerInfo) {
 			return ((PlayerInfo) player).getProfile();
 		}
