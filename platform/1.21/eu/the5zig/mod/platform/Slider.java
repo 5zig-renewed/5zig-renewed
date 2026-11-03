@@ -35,7 +35,7 @@ import net.minecraft.util.Mth;
 public class Slider extends Button {
 
 	/**
-	 * 1.21.1's slider is sprite based: a 200x20 track plus an 8x20 handle, both from the GUI atlas.
+	 * 1.21's slider is sprite based: a 200x20 track plus an 8x20 handle, both from the GUI atlas.
 	 * The 1.15 implementation blitted the same shapes out of {@code textures/gui/widgets.png}.
 	 */
 	private static final net.minecraft.resources.ResourceLocation SLIDER_SPRITE =

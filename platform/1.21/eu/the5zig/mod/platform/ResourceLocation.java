@@ -27,7 +27,7 @@ import java.util.Objects;
 /**
  * The platform implementation of {@link IResourceLocation}.
  * <p>
- * 1.20.1 could simply extend {@code net.minecraft.resources.ResourceLocation}; 1.21.1 made that class
+ * 1.20.1 could simply extend {@code net.minecraft.resources.ResourceLocation}; 1.21 made that class
  * {@code final}, made its constructors private and moved construction to
  * {@code fromNamespaceAndPath}/{@code parse}. This is therefore a thin <em>wrapper</em> around a
  * vanilla resource location instead of a subclass; everything that hands a location to vanilla code

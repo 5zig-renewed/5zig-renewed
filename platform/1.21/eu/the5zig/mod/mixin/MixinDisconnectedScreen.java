@@ -51,6 +51,6 @@ public abstract class MixinDisconnectedScreen {
 		}
 	}
 
-	// 1.21.1's DisconnectedScreen no longer overrides Screen#render, so the countdown is drawn from
+	// 1.21's DisconnectedScreen no longer overrides Screen#render, so the countdown is drawn from
 	// the Screen#render hook in {@link MixinScreen} instead (which checks the screen's type).
 }

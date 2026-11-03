@@ -247,15 +247,18 @@ public class Variables implements IVariables {
 		drawString(string, x, y, color, true);
 	}
 
-		/**
+	/**
 	 * 1.21.9+ treats text colours as strict ARGB, so a legacy {@code 0xRRGGBB} value (alpha 0)
 	 * renders nothing. The core passes colours without an alpha byte, so restore the missing alpha.
+	 * <p>
+	 * 1.21 itself still repairs the alpha in {@code Font#adjustColor}, so this guard is a no-op
+	 * there; it keeps the call site correct if the HUD is ever drawn through a newer path.
 	 */
 	private static int forceOpaque(int color) {
 		return (color & 0xFF000000) == 0 ? color | 0xFF000000 : color;
 	}
 
-@Override
+	@Override
 	public void drawString(String string, int x, int y, int color, boolean withShadow) {
 		if (string == null) {
 			return;
@@ -659,7 +662,7 @@ public class Variables implements IVariables {
 		if (minecraft.level != null) {
 			minecraft.level.disconnect();
 		}
-		// 1.21.1's Minecraft#clearClientLevel takes the screen to show and installs it itself.
+		// 1.21's Minecraft#clearClientLevel takes the screen to show and installs it itself.
 		if (singleplayer || realms) {
 			minecraft.clearClientLevel(new TitleScreen());
 		} else {
@@ -763,7 +766,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public GameProfile getGameProfile() {
-		// 1.21.1's User only carries the profile id and name; the GameProfile is rebuilt here.
+		// 1.21's User only carries the profile id and name; the GameProfile is rebuilt here.
 		User user = getMinecraft().getUser();
 		return new GameProfile(user.getProfileId(), user.getName());
 	}
@@ -1036,7 +1039,7 @@ public class Variables implements IVariables {
 		if (referenceDamage <= 0.0F) {
 			return 100;
 		}
-		// 1.21.1 moved damage protection onto the server: EnchantmentHelper#getDamageProtection now
+		// 1.21 moved damage protection onto the server: EnchantmentHelper#getDamageProtection now
 		// needs a ServerLevel (enchantments are data driven and resolved against the server registry
 		// access), and the client only ever holds a ClientLevel, so no enchantment term is applied.
 		return 100 - referenceDamage;
@@ -1072,7 +1075,7 @@ public class Variables implements IVariables {
 	}
 
 	private PotionEffectImpl wrapPotionEffect(MobEffectInstance potionEffect) {
-		// 1.21.1 stores effects as registry holders; ids come from the registry and durations need a
+		// 1.21 stores effects as registry holders; ids come from the registry and durations need a
 		// tick rate for the new three-argument formatter.
 		Holder<MobEffect> holder = potionEffect.getEffect();
 		MobEffect effect = holder.value();
@@ -1377,7 +1380,7 @@ public class Variables implements IVariables {
 					payload.readableBytes(), channel, MAX_PAYLOAD_SIZE);
 			return;
 		}
-		// 1.21.1 only lets registered payload types through; PluginMessages owns the 5zig API channels.
+		// 1.21 only lets registered payload types through; PluginMessages owns the 5zig API channels.
 		byte[] data = new byte[payload.readableBytes()];
 		payload.readBytes(data);
 		PluginMessages.send(channel, data);
@@ -1644,7 +1647,7 @@ public class Variables implements IVariables {
 				// Unknown type (e.g. "msa" written by a future version): keep the Mojang default.
 			}
 		}
-		// 1.21.1's User carries a UUID rather than a GameProfile; offline accounts get the same
+		// 1.21's User carries a UUID rather than a GameProfile; offline accounts get the same
 		// name-derived id vanilla uses.
 		UUID profileId;
 		try {
@@ -1666,7 +1669,7 @@ public class Variables implements IVariables {
 				}
 			}
 		}
-		throw new UnsupportedOperationException("Minecraft 1.21.1 exposes no user field that could be replaced");
+		throw new UnsupportedOperationException("Minecraft 1.21 exposes no user field that could be replaced");
 	}
 
 	@Override

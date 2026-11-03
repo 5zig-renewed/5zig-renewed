@@ -56,8 +56,8 @@ public class Textfield extends AbstractWidget implements ITextfield {
 	private static final int BACKGROUND_COLOR = -16777216;
 	private static final int CURSOR_COLOR = -3092272;
 	private static final int HIGHLIGHT_COLOR = -16776961;
-	private static final int TEXT_COLOR = 14737632;
-	private static final int TEXT_COLOR_DISABLED = 7368816;
+	private static final int TEXT_COLOR = 0xFFE0E0E0;
+	private static final int TEXT_COLOR_DISABLED = 0xFF707070;
 
 	private final Font font;
 	private final int id;

@@ -48,9 +48,11 @@ public abstract class MixinChatComponent {
 	@Unique
 	private static boolean the5zig$processingChat;
 
-	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V", at = @At("HEAD"))
-	private void the5zig$drawSecondChat(GuiGraphics graphics, net.minecraft.client.gui.Font font, int ticks, int mouseX, int mouseY,
-			boolean focused, boolean bl, CallbackInfo callbackInfo) {
+	// 1.21.10 still renders the whole chat through ChatComponent#render(GuiGraphics, int, int, int,
+	// boolean); 1.21.11 moved the font in and split the "draw" flag out.
+	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;IIIZ)V", at = @At("HEAD"))
+	private void the5zig$drawSecondChat(GuiGraphics graphics, int ticks, int mouseX, int mouseY,
+			boolean focused, CallbackInfo callbackInfo) {
 		if (!CoreState.isReady()) {
 			return;
 		}

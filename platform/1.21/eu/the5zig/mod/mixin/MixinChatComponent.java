@@ -48,7 +48,7 @@ public abstract class MixinChatComponent {
 	@Unique
 	private static boolean the5zig$processingChat;
 
-	// 1.21.1 added a trailing "chat is hidden" flag to the descriptor.
+	// 1.21 added a trailing "chat is hidden" flag to the descriptor.
 	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;IIIZ)V", at = @At("HEAD"))
 	private void the5zig$drawSecondChat(GuiGraphics graphics, int ticks, int mouseX, int mouseY, boolean hidden,
 			CallbackInfo callbackInfo) {

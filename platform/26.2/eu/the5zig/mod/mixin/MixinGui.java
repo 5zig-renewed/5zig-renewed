@@ -19,74 +19,39 @@
 package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.platform.HudFrame;
 import eu.the5zig.mod.util.CoreState;
-import eu.the5zig.mod.util.RenderContext;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Publishes the frame's {@link GuiGraphicsExtractor} to {@link RenderContext} and drives the mod's HUD.
+ * Screen-change hook.
  * <p>
- * 1.20.1 replaced 1.15's global {@code Tessellator} with a {@code GuiGraphicsExtractor} parameter threaded
- * through every draw call, while the 5zig core still draws through {@code IVariables.drawString}
- * and friends. The bracketing and the actual overlay draw live in {@link HudFrame} because Forge
- * overrides {@code Gui#render} in {@code ForgeGui} and needs its own mixin pointing at the same
- * logic.
+ * 1.15/1.20.1 opened screens through {@code Minecraft#setScreen}; 26.2 moved that method onto
+ * {@link Gui} (and {@code Minecraft#setScreenAndShow} just calls {@code gui.setScreen} plus a
+ * render), so the text-field flush follows it here. The HUD hooks live in {@link MixinHud},
+ * because 26.2 split the in-game overlay out of {@code Gui} into a separate {@code Hud} class.
  */
 @Mixin(Gui.class)
 public abstract class MixinGui {
 
-	@Inject(method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V", at = @At("HEAD"))
-	private void the5zig$beginFrame(GuiGraphicsExtractor graphics, net.minecraft.client.DeltaTracker deltaTracker, CallbackInfo callbackInfo) {
-		HudFrame.begin(graphics);
-	}
-
-	@Inject(method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V", at = @At("RETURN"))
-	private void the5zig$endFrame(GuiGraphicsExtractor graphics, net.minecraft.client.DeltaTracker deltaTracker, CallbackInfo callbackInfo) {
-		HudFrame.end();
-	}
-
 	/**
-	 * The 5zig hotbar numbers are drawn on top of the vanilla hotbar.
+	 * 1.15 cleared the text field registry whenever a screen was opened. The mod itself is
+	 * initialised from {@code ClientLifecycleEvents}, not from here, so that a failure can never
+	 * take down {@code Gui#setScreen}.
 	 */
-	@Inject(method = "extractHotbarAndDecorations(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V", at = @At("TAIL"))
-	private void the5zig$afterHotbar(GuiGraphicsExtractor graphics, net.minecraft.client.DeltaTracker deltaTracker, CallbackInfo callbackInfo) {
-		HudFrame.afterHotbar(graphics);
-	}
-
-	@Inject(method = "tick(Z)V", at = @At("TAIL"))
-	private void the5zig$tick(boolean pauseGame, CallbackInfo callbackInfo) {
+	@Inject(method = "setScreen(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("HEAD"))
+	private void the5zig$setScreen(Screen screen, CallbackInfo callbackInfo) {
 		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
-			The5zigMod.getGuiIngame().tick();
+			The5zigMod.getKeybindingManager().flushTextfields();
 		} catch (Throwable ignored) {
-			// Cosmetic state only.
-		}
-	}
-
-	/**
-	 * 1.15 hooked {@code IngameGui#addChatMessage} for chat type 2; 1.20.1 routes the action bar
-	 * through {@code Gui#setOverlayMessage}.
-	 */
-	@Inject(method = "setOverlayMessage(Lnet/minecraft/network/chat/Component;Z)V", at = @At("HEAD"), cancellable = true)
-	private void the5zig$actionBar(Component message, boolean animateColour, CallbackInfo callbackInfo) {
-		if (!CoreState.isReady() || message == null) {
-			return;
-		}
-		try {
-			if (The5zigMod.getListener().onActionBar(message.getString())) {
-				callbackInfo.cancel();
-			}
-		} catch (Throwable ignored) {
-			// Leave vanilla behaviour untouched if a listener misbehaves.
+			// Text field bookkeeping is best effort.
 		}
 	}
 }

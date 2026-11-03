@@ -243,7 +243,7 @@ public class Variables implements IVariables {
 		if (graphics == null) {
 			return;
 		}
-		graphics.drawCenteredString(getFontrenderer(), string, x, y, color);
+		graphics.drawCenteredString(getFontrenderer(), string, x, y, forceOpaque(color));
 	}
 
 	@Override
@@ -549,7 +549,7 @@ public class Variables implements IVariables {
 	@Override
 	public void playSound(String domain, String sound, float pitch) {
 		try {
-			SoundEvent event = SoundEvent.createVariableRangeEvent(new ResourceLocation(domain, sound).toIdentifier());
+			SoundEvent event = SoundEvent.createVariableRangeEvent(new ResourceLocation(domain, sound).toResourceLocation());
 			getMinecraft().getSoundManager().play(SimpleSoundInstance.forUI(event, pitch));
 		} catch (Exception e) {
 			// A missing/unknown sound resource must never take the HUD or chat down.
@@ -909,10 +909,11 @@ public class Variables implements IVariables {
 
 	@Override
 	public boolean isFancyGraphicsEnabled() {
-		// 1.21.5+ replaced the old FAST/FANCY/FABULOUS GraphicsStatus with a GraphicsPreset option
-		// that also has a CUSTOM value once individual video settings are tweaked.
-		GraphicsPreset preset = getGameSettings().graphicsPreset().get();
-		return preset == GraphicsPreset.FANCY || preset == GraphicsPreset.FABULOUS || preset == GraphicsPreset.CUSTOM;
+		// 1.21.11 replaced the FAST/FANCY/FABULOUS GraphicsStatus with a GraphicsPreset option that
+		// also has a CUSTOM value once individual video settings are tweaked. 1.21.10 still has the
+		// three-valued enum.
+		GraphicsStatus status = getGameSettings().graphicsMode().get();
+		return status == GraphicsStatus.FANCY || status == GraphicsStatus.FABULOUS;
 	}
 
 	@Override
@@ -1820,7 +1821,7 @@ public class Variables implements IVariables {
 		if (separator < 0) {
 			return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("minecraft", new ResourceLocation("minecraft", resourceName).callGetResourcePath());
 		}
-		return new ResourceLocation(resourceName.substring(0, separator), resourceName.substring(separator + 1)).toIdentifier();
+		return new ResourceLocation(resourceName.substring(0, separator), resourceName.substring(separator + 1)).toResourceLocation();
 	}
 
 	private static net.minecraft.resources.ResourceLocation toTextureLocation(Object resourceLocation) {
@@ -1829,7 +1830,7 @@ public class Variables implements IVariables {
 		}
 		if (resourceLocation instanceof IResourceLocation) {
 			IResourceLocation location = (IResourceLocation) resourceLocation;
-			return new ResourceLocation(location.callGetResourceDomain(), location.callGetResourcePath()).toIdentifier();
+			return new ResourceLocation(location.callGetResourceDomain(), location.callGetResourcePath()).toResourceLocation();
 		}
 		return null;
 	}

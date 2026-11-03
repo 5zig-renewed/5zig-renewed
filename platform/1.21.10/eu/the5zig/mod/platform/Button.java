@@ -20,12 +20,17 @@
 package eu.the5zig.mod.platform;
 
 import eu.the5zig.mod.gui.elements.IButton;
+import eu.the5zig.mod.util.RenderColor;
 import eu.the5zig.mod.util.RenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 
 /**
  * Created by 5zig.
@@ -185,15 +190,22 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 	}
 
 	/**
-	 * 1.21.5+ draws widgets from GUI-atlas sprites rather than a blitted textures/gui/widgets.png,
-	 * and the abstract hook is {@code renderContents}; {@code renderDefaultSprite} handles the
-	 * enabled/disabled/hovered variants (including the alpha fade).
+	 * 1.21.5+ draws widgets from GUI-atlas sprites rather than a blitted textures/gui/widgets.png.
+	 * Up to 1.21.10 the hook is {@code renderWidget(GuiGraphics, int, int, float)}; 1.21.11 split it
+	 * into {@code renderContents} + {@code renderDefaultSprite}. The sprite table lives in
+	 * {@code AbstractButton} as a private constant, so the three GUI-atlas sprites are bundled here.
 	 */
 	@Override
-	protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		this.renderDefaultSprite(graphics);
+	protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITES.get(this.active, this.isHoveredOrFocused()),
+				getX(), getY(), getWidth(), getHeight(), ARGB.white(this.alpha));
 		drawLabel(graphics);
 	}
+
+	private static final WidgetSprites SPRITES = new WidgetSprites(
+			ResourceLocation.withDefaultNamespace("widget/button"),
+			ResourceLocation.withDefaultNamespace("widget/button_disabled"),
+			ResourceLocation.withDefaultNamespace("widget/button_highlighted"));
 
 	/**
 	 * Draws the (centered) label, like 1.15's {@code Gui.drawCenteredString(getMessage(), x + width / 2, y + (height - 8) / 2, color)}.
@@ -201,7 +213,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 	protected void drawLabel(GuiGraphics graphics) {
 		int color = this.active ? COLOR_ENABLED : COLOR_DISABLED;
 		graphics.drawCenteredString(Minecraft.getInstance().font, getMessage(), getX() + getWidth() / 2,
-				getY() + (getHeight() - 8) / 2, color);
+				getY() + (getHeight() - 8) / 2, RenderColor.opaque(color));
 	}
 
 	/**

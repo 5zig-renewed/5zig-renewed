@@ -62,7 +62,7 @@ public abstract class MixinScreen {
 			the5zig$ownsRenderContext = false;
 			RenderContext.clear();
 		}
-		// 1.21.1's DisconnectedScreen does not override render(), so the auto-reconnect countdown is
+		// 1.21's DisconnectedScreen does not override render(), so the auto-reconnect countdown is
 		// drawn from here rather than from a mixin on that class.
 		if ((Object) this instanceof net.minecraft.client.gui.screens.DisconnectedScreen && CoreState.isReady()) {
 			try {
@@ -76,7 +76,7 @@ public abstract class MixinScreen {
 	}
 
 	/**
-	 * 1.15 hooked {@code Screen#renderBackground(int)}; 1.21.1 hands the screen a
+	 * 1.15 hooked {@code Screen#renderBackground(int)}; 1.21 hands the screen a
 	 * {@code GuiGraphics} plus the mouse position and partial tick.
 	 */
 	@Inject(method = "renderBackground(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", at = @At("HEAD"), cancellable = true)

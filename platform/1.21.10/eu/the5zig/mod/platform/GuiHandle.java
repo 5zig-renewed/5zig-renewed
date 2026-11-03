@@ -226,7 +226,7 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		int y1 = (int) Math.min(top, bottom);
 		int x2 = (int) Math.max(left, right);
 		int y2 = (int) Math.max(top, bottom);
-		graphics.fill(x1, y1, x2, y2, color);
+		graphics.fill(x1, y1, x2, y2, eu.the5zig.mod.util.RenderColor.opaque(color));
 	}
 
 	/**
@@ -243,7 +243,9 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		int y2 = (int) Math.max(top, bottom);
 		// 1.15 fed the colours in by vertex order, modern fillGradient is always top-to-bottom, so a
 		// "vertical" gradient simply swaps the two colours.
-		graphics.fillGradient(x1, y1, x2, y2, vertical ? endColor : startColor, vertical ? startColor : endColor);
+		graphics.fillGradient(x1, y1, x2, y2,
+				eu.the5zig.mod.util.RenderColor.opaque(vertical ? endColor : startColor),
+				eu.the5zig.mod.util.RenderColor.opaque(vertical ? startColor : endColor));
 	}
 
 	public Gui getChild() {

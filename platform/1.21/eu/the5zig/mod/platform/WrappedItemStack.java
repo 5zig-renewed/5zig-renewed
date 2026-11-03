@@ -53,7 +53,7 @@ import java.util.UUID;
 public class WrappedItemStack implements ItemStack {
 
 	/**
-	 * 1.21.1 identifies the item's own attack-damage modifier by resource location rather than by a
+	 * 1.21 identifies the item's own attack-damage modifier by resource location rather than by a
 	 * fixed UUID, so the old {@code nameDisplayModifier} UUID is only kept for API compatibility.
 	 */
 	@Deprecated
@@ -93,7 +93,7 @@ public class WrappedItemStack implements ItemStack {
 	@Override
 	public List<String> getLore() {
 		Minecraft minecraft = Minecraft.getInstance();
-		// 1.21.1 threads a TooltipContext through the tooltip lookup; EMPTY is what the item renderer
+		// 1.21 threads a TooltipContext through the tooltip lookup; EMPTY is what the item renderer
 		// uses when there is no level to resolve map data or registry holders from.
 		List<Component> components = item.getTooltipLines(Item.TooltipContext.EMPTY, minecraft.player, TooltipFlag.Default.NORMAL);
 		List<String> lines = new ArrayList<>(components.size());
@@ -105,7 +105,7 @@ public class WrappedItemStack implements ItemStack {
 
 	@Override
 	public int getHealAmount() {
-		// 1.21.1 moved food data from Item to the FOOD data component.
+		// 1.21 moved food data from Item to the FOOD data component.
 		FoodProperties food = item.get(DataComponents.FOOD);
 		return food != null ? food.nutrition() : 0;
 	}
@@ -129,7 +129,7 @@ public class WrappedItemStack implements ItemStack {
 		if (!withGenericAttributes) {
 			return;
 		}
-		// 1.21.1 only exposes the modifiers through ItemStack#forEachModifier, and both the attribute
+		// 1.21 only exposes the modifiers through ItemStack#forEachModifier, and both the attribute
 			// and the modifier are holders/records now.
 		List<Map.Entry<Attribute, AttributeModifier>> modifiers = new ArrayList<>();
 		item.forEachModifier(EquipmentSlot.MAINHAND,
@@ -137,7 +137,7 @@ public class WrappedItemStack implements ItemStack {
 		for (Map.Entry<Attribute, AttributeModifier> entry : modifiers) {
 			AttributeModifier modifier = entry.getValue();
 			double value = modifier.amount();
-			// EnchantmentHelper#getDamageBonus no longer exists in 1.21.1 (the enchantment system was
+			// EnchantmentHelper#getDamageBonus no longer exists in 1.21 (the enchantment system was
 			// rewritten around data-driven effects), so only the item's own modifier is shown.
 			if (entry.getKey() != Attributes.ATTACK_DAMAGE.value() && entry.getKey() != Attributes.ARMOR.value()) {
 				continue;

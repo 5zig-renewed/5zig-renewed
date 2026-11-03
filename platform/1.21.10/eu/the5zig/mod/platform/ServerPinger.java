@@ -53,11 +53,11 @@ public class ServerPinger implements IServerPinger {
 		}
 		net.minecraft.client.multiplayer.ServerData data = (net.minecraft.client.multiplayer.ServerData) serverData;
 		try {
-			// 1.21.9 added the two runnables (success/failure callbacks) and the event loop group
-			// holder; NIO works everywhere, the epoll/kqueue variants are an optimisation only.
+			// 1.21.9 added the two runnables (success/failure callbacks); the third argument (an
+			// EventLoopGroupHolder choosing epoll/kqueue over NIO) only exists from 1.21.11 on.
 			this.handle.pingServer(data, () -> {
 			}, () -> {
-			}, net.minecraft.server.network.EventLoopGroupHolder.remote(true));
+			});
 		} catch (UnknownHostException e) {
 			data.ping = -1L;
 			data.motd = LegacyText.fromLegacy(ChatColor.DARK_RED + "Can't resolve hostname");

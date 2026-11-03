@@ -50,7 +50,7 @@ public abstract class MixinPlayerTabOverlay {
 			}
 			int ping = playerInfo.getLatency();
 			String display = ping <= 0 ? "?" : Integer.toString(ping);
-			int color = ChatColor.getPingColor(ping);
+			int color = eu.the5zig.mod.util.RenderColor.opaque(ChatColor.getPingColor(ping));
 
 			// The icon is drawn at (x + width - 11, y) with a size of 10x8; centre the text on it
 			// and halve it so a three digit ping still fits. 1.21.5+ replaced the 3D PoseStack in

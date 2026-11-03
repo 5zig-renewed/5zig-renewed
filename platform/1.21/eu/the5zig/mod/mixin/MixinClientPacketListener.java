@@ -71,7 +71,7 @@ public abstract class MixinClientPacketListener {
 	/**
 	 * Plugin messages ("MC|Brand", the 5zig server API channel, ...).
 	 * <p>
-	 * 1.21.1 replaced the raw {@code Identifier + byte[]} packet with typed {@code CustomPacketPayload}s
+	 * 1.21 replaced the raw {@code Identifier + byte[]} packet with typed {@code CustomPacketPayload}s
 	 * which are decoded <em>before</em> the listener sees them; unknown channels become a
 	 * {@code DiscardedPayload} that carries only the channel id, so their bytes never reach this hook.
 	 * The brand payload is still readable and is the one the core needs for server detection, so it is

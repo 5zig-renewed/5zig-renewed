@@ -47,6 +47,6 @@ public class StringButton extends Button {
 			color = 16777120;
 		}
 		graphics.drawCenteredString(Minecraft.getInstance().font, getMessage(), getX() + getWidth() / 2,
-				getY() + (getHeight() - 8) / 2, color);
+				getY() + (getHeight() - 8) / 2, eu.the5zig.mod.util.RenderColor.opaque(color));
 	}
 }

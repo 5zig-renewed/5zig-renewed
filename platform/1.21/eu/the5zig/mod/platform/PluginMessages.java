@@ -31,9 +31,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Bridges the core's raw plugin-channel API onto 1.21.1's typed payload system.
+ * Bridges the core's raw plugin-channel API onto 1.21's typed payload system.
  * <p>
- * 1.15/1.20.1 delivered {@code (channel, byte[])} packets; 1.21.1 decodes every custom payload into a
+ * 1.15/1.20.1 delivered {@code (channel, byte[])} packets; 1.21 decodes every custom payload into a
  * registered {@link CustomPacketPayload} type <em>before</em> the packet listener runs, and unknown
  * channels are discarded without their bodies. The 5zig server API therefore has to declare its
  * channels up front: {@link #bootstrap()} registers a raw payload type for each of them on both
@@ -41,7 +41,7 @@ import java.util.Map;
  * {@code EventListener#handlePluginMessage}.
  * <p>
  * {@link #bootstrap()} must run during client initialisation, before a server connection is opened,
- * which is why it is called from the 1.21.1 entrypoint rather than lazily.
+ * which is why it is called from the 1.21 entrypoint rather than lazily.
  */
 public final class PluginMessages {
 
@@ -107,7 +107,7 @@ public final class PluginMessages {
 		if (type == null) {
 			if (!unsupportedChannelLogged) {
 				unsupportedChannelLogged = true;
-				The5zigMod.logger.warn("[5zig Renewed] Plugin channel {} is not registered on 1.21.1; "
+				The5zigMod.logger.warn("[5zig Renewed] Plugin channel {} is not registered on 1.21; "
 						+ "custom payloads on arbitrary channels are no longer possible", channel);
 			}
 			return false;

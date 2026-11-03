@@ -19,6 +19,8 @@
 
 package eu.the5zig.mod.platform;
 
+import eu.the5zig.mod.util.RenderColor;
+
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.gui.IOverlay;
 import eu.the5zig.util.minecraft.ChatColor;
@@ -138,10 +140,10 @@ public class Overlay implements IOverlay {
 		public void render(GuiGraphics graphics, Font font, long timeSinceLastVisible) {
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TOAST_BACKGROUND_SPRITE, 0, 0, TOAST_WIDTH, TOAST_HEIGHT);
 			if (subTitle == null) {
-				graphics.drawString(font, title, TEXT_X, (TOAST_HEIGHT - font.lineHeight) / 2, 0xFFFFFF, false);
+				graphics.drawString(font, title, TEXT_X, (TOAST_HEIGHT - font.lineHeight) / 2, RenderColor.opaque(0xFFFFFF), false);
 			} else {
-				graphics.drawString(font, title, TEXT_X, 7, 0xFFFFFF, false);
-				graphics.drawString(font, subTitle, TEXT_X, 18, 0xFFFFFF, false);
+				graphics.drawString(font, title, TEXT_X, 7, RenderColor.opaque(0xFFFFFF), false);
+				graphics.drawString(font, subTitle, TEXT_X, 18, RenderColor.opaque(0xFFFFFF), false);
 			}
 		}
 

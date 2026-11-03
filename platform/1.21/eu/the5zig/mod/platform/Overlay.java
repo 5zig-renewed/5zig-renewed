@@ -41,7 +41,7 @@ import java.util.List;
 public class Overlay implements IOverlay {
 
 	/**
-	 * 1.21.1 dropped {@code textures/gui/toasts.png} in favour of the GUI sprite atlas; the standard
+	 * 1.21 dropped {@code textures/gui/toasts.png} in favour of the GUI sprite atlas; the standard
 	 * 160x32 notification background is the {@code minecraft:toast/system} sprite.
 	 */
 	private static final net.minecraft.resources.ResourceLocation TOAST_BACKGROUND =

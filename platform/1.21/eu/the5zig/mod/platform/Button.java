@@ -42,7 +42,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 	private static final int COLOR_DISABLED = 10526880;
 
 	/**
-	 * 1.21.1 replaced the 200x20 {@code textures/gui/widgets.png} button sheet with sprites from the
+	 * 1.21 replaced the 200x20 {@code textures/gui/widgets.png} button sheet with sprites from the
 	 * GUI atlas; these are the same three the vanilla {@code AbstractButton} uses.
 	 */
 	private static final WidgetSprites BUTTON_SPRITES = new WidgetSprites(

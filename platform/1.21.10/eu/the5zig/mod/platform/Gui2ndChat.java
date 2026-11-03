@@ -339,7 +339,7 @@ public class Gui2ndChat implements IGui2ndChat {
 		net.minecraft.network.chat.ClickEvent event = style.getClickEvent();
 		Minecraft minecraft = Minecraft.getInstance();
 		if (event instanceof net.minecraft.network.chat.ClickEvent.OpenUrl openUrl) {
-			net.minecraft.util.Util.getPlatform().openUri(openUrl.uri());
+			net.minecraft.Util.getPlatform().openUri(openUrl.uri());
 			return true;
 		}
 		if (event instanceof net.minecraft.network.chat.ClickEvent.RunCommand runCommand) {

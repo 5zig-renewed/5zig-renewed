@@ -139,7 +139,7 @@ public class WrappedItemStack implements ItemStack {
 			try {
 				pose.translate(x + 8, y + 10);
 				pose.scale(0.7F, 0.7F);
-				graphics.drawString(minecraft.font, Component.literal("+" + Math.round(value)).withStyle(ChatFormatting.BLUE), 0, 0, 0xFFFFFF);
+				graphics.drawString(minecraft.font, Component.literal("+" + Math.round(value)).withStyle(ChatFormatting.BLUE), 0, 0, eu.the5zig.mod.util.RenderColor.opaque(0xFFFFFF));
 			} finally {
 				pose.popMatrix();
 			}

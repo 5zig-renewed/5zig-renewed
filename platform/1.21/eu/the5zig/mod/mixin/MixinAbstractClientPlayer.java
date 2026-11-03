@@ -72,7 +72,7 @@ public abstract class MixinAbstractClientPlayer {
 			Object cape = The5zigMod.getVars().getResourceManager().getCapeLocation((Object) this);
 			ResourceLocation capeLocation;
 			if (cape instanceof eu.the5zig.mod.platform.ResourceLocation) {
-				// The 5zig wrapper type is not a vanilla resource location any more in 1.21.1.
+				// The 5zig wrapper type is not a vanilla resource location any more in 1.21.
 				capeLocation = ((eu.the5zig.mod.platform.ResourceLocation) cape).toMinecraft();
 			} else if (cape instanceof ResourceLocation) {
 				capeLocation = (ResourceLocation) cape;

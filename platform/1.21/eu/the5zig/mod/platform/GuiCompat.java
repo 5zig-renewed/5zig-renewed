@@ -22,7 +22,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 
 /**
- * Drawing helpers that paper over APIs 1.21.1 removed.
+ * Drawing helpers that paper over APIs 1.21 removed.
  */
 final class GuiCompat {
 
@@ -31,7 +31,7 @@ final class GuiCompat {
 
 	/**
 	 * 1.20.1's {@code GuiGraphics#blitRepeating(ResourceLocation, int, int, int, int, int, int, int, int)}
-	 * is gone in 1.21.1. Tiling is reimplemented here with the plain {@code blit} overload, which still
+	 * is gone in 1.21. Tiling is reimplemented here with the plain {@code blit} overload, which still
 	 * honours the current {@code setColor} tint the callers rely on.
 	 *
 	 * @param graphics   the frame's graphics.

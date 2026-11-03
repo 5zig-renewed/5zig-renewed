@@ -35,26 +35,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * <p>
  * Ticking is handled by {@code ClientTickEvents} in {@code FiveZigFabric}; the per-click counters
  * and the combat-range bookkeeping have no Fabric event, so they stay mixins.
+ * <p>
+ * 26.2 removed {@code Minecraft#setScreen} (screens are opened on {@code Gui#setScreen}), so the
+ * text-field flush hook moved to {@code MixinGui}.
  */
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
-
-	/**
-	 * 1.15 cleared the text field registry whenever a screen was opened. The mod itself is
-	 * initialised from {@code ClientLifecycleEvents}, not from here, so that a failure can never
-	 * take down {@code Minecraft#setScreen}.
-	 */
-	@Inject(method = "setScreen(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("HEAD"))
-	private void the5zig$setScreen(Screen screen, CallbackInfo callbackInfo) {
-		if (!CoreState.isReady()) {
-			return;
-		}
-		try {
-			The5zigMod.getKeybindingManager().flushTextfields();
-		} catch (Throwable ignored) {
-			// Text field bookkeeping is best effort.
-		}
-	}
 
 	/**
 	 * Left click: CPS counter and the range of the last attack.

@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class SimpleTickingTexture extends SimpleTexture implements Tickable {
 
-	// 1.21.1's TextureManager speaks vanilla resource locations, and the 5zig wrapper no longer is
+	// 1.21's TextureManager speaks vanilla resource locations, and the 5zig wrapper no longer is
 	// one, so this class keeps the vanilla type throughout.
 	private final net.minecraft.resources.ResourceLocation resourceLocation;
 

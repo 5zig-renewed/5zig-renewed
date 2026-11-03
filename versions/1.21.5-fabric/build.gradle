@@ -21,11 +21,17 @@ dependencies {
     // 5zig's own deps not provided by Minecraft. httpclient is not guaranteed to arrive
     // transitively, and the core's Spotify/HTTP code imports it directly.
     implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    include('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { transitive = false }
     implementation 'net.sf.jacob-project:jacob:1.14.3'
+    include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
     implementation 'org.json:json:20231013'
+    include('org.json:json:20231013') { transitive = false }
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+    include('org.apache.httpcomponents:httpclient:4.5.13') { transitive = false }
     implementation 'io.netty:netty-codec-http:4.1.97.Final'
+    include('io.netty:netty-codec-http:4.1.97.Final') { transitive = false }
 }
 
 // ---------------------------------------------------------------------------------------------
