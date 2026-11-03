@@ -4,6 +4,10 @@
 
 <h1 align="center">5zig Renewed</h1>
 
+<p align="center">
+  <a href="https://sladge.net"><img src="https://sladge.net/badge.svg" alt="AI Slop Inside" width="136" height="20"></a>
+</p>
+
 The 5zig Mod, renewed for Minecraft 1.16 – 26.3 on **Fabric**, **NeoForge** and **Forge**.
 
 5zig died at 1.15.2 (last upstream commit: July 2022). This is a continuation that keeps the mod's
