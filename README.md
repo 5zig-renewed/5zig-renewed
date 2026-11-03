@@ -1,4 +1,8 @@
-# 5zig Renewed
+<p align="center">
+  <img src="assets/logo.svg" width="128" alt="5zig Renewed">
+</p>
+
+<h1 align="center">5zig Renewed</h1>
 
 The 5zig Mod, renewed for Minecraft 1.16 – 26.3 on **Fabric**, **NeoForge** and **Forge**.
 
