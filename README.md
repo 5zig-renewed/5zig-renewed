@@ -41,7 +41,9 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | 1.21.1, 1.21.x, 26.x | queued (eras E7–E10) |
 | 1.16 – 1.19 | queued (eras E1–E4), backfill |
 
-![1.20.1 Fabric HUD](docs/1.20.1-fabric-hud.png)
+| Fabric | Forge |
+|---|---|
+| ![1.20.1 Fabric HUD](docs/1.20.1-fabric-hud.png) | ![1.20.1 Forge HUD](docs/1.20.1-forge-hud.png) |
 
 Both builds were verified in real headless clients (Xvfb + llvmpipe): mod loads, core initialises in
 249–540 ms, 12 key bindings register, and the overlay draws FPS, coordinates, facing and the AFK
