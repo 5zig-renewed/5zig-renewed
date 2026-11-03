@@ -28,7 +28,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ import java.util.List;
  */
 public class Overlay implements IOverlay {
 
-	private static final Identifier TOAST_BACKGROUND_SPRITE = Identifier.withDefaultNamespace("toast/system");
+	private static final ResourceLocation TOAST_BACKGROUND_SPRITE = ResourceLocation.withDefaultNamespace("toast/system");
 	private static final int TOAST_WIDTH = 160;
 	private static final int TOAST_HEIGHT = 32;
 	private static final int TEXT_X = 18;

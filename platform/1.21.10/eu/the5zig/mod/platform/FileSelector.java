@@ -28,7 +28,7 @@ import eu.the5zig.util.Callback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
 import org.apache.commons.io.FilenameUtils;
 

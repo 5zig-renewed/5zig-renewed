@@ -19,7 +19,7 @@
 package eu.the5zig.mod.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Remembers the texture that {@code IVariables#bindTexture} bound last.
@@ -32,12 +32,12 @@ import net.minecraft.resources.Identifier;
  */
 public final class BoundTexture {
 
-	private static Identifier current;
+	private static ResourceLocation current;
 
 	private BoundTexture() {
 	}
 
-	public static void bind(Identifier location) {
+	public static void bind(ResourceLocation location) {
 		current = location;
 		// Keep the legacy immediate-mode path working as well: several core widgets still draw
 		// through GLUtil/GuiHandle helpers that rely on the texture unit 0 binding.
@@ -46,11 +46,11 @@ public final class BoundTexture {
 		}
 	}
 
-	public static Identifier current() {
+	public static ResourceLocation current() {
 		return current;
 	}
 
-	public static Identifier currentOr(Identifier fallback) {
+	public static ResourceLocation currentOr(ResourceLocation fallback) {
 		return current != null ? current : fallback;
 	}
 }

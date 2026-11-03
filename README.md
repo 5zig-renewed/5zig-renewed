@@ -37,12 +37,13 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 |---|---|---|
 | **1.20.1 Fabric** | green, self-contained jar (17.8 MB, 5 libs nested) | **HUD + M menu + translations** |
 | **1.20.1 Forge** | green, jarJar'd (17.7 MB) | **HUD** |
-| **1.20.1 NeoForge** | green (ForgeGradle 6 + official mappings) | **HUD** |
-| **1.21.1 Fabric** | green | **HUD** |
+| **1.20.1 NeoForge** | green, jarJar'd (17.7 MB) | **HUD** |
+| **1.21.1 Fabric** | green, self-contained jar (17.8 MB) | **HUD** |
 | **1.21.11 Fabric** | green | **HUD** (strict-ARGB colour fix) |
 | **26.1.2 Fabric** | green (Java 25, unobfuscated) | **HUD** (`GuiGraphicsExtractor#text` + strict-ARGB fix) |
 | **1.21.4 Fabric** | green | **HUD** |
-| **1.21.8 Fabric** | green | **HUD** |
+| **1.21.8 Fabric** | green, refmap + `useLegacyMixinAp` | **HUD** |
+| **1.21.5 Fabric** | green, refmap, plugin channels restored | **HUD** |
 
 Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation.
 

@@ -62,13 +62,13 @@ public class SimpleTickingTexture extends SimpleTexture {
 			ResourceLocation frameLocation = new ResourceLocation(resourceLocation.callGetResourceDomain(),
 					resourceLocation.callGetResourcePath() + i);
 			net.minecraft.client.renderer.texture.AbstractTexture existing =
-					textureManager.getTexture(frameLocation.toIdentifier());
+					textureManager.getTexture(frameLocation.toResourceLocation());
 			SimpleTexture frameTexture;
 			if (existing instanceof SimpleTexture) {
 				frameTexture = (SimpleTexture) existing;
 			} else {
 				frameTexture = new SimpleTexture();
-				textureManager.register(frameLocation.toIdentifier(), frameTexture);
+				textureManager.register(frameLocation.toResourceLocation(), frameTexture);
 			}
 			frameTexture.setBufferedImage(bufferedImages.get(i));
 			frameTexture.checkTextureUploaded();

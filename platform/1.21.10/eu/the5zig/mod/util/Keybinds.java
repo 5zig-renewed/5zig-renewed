@@ -64,7 +64,7 @@ public final class Keybinds {
 	public static synchronized KeyMapping.Category category(String name) {
 		String display = name == null || name.isEmpty() ? CATEGORY : name;
 		return CATEGORIES.computeIfAbsent(display, key ->
-				KeyMapping.Category.register(net.minecraft.resources.Identifier.fromNamespaceAndPath(
+				KeyMapping.Category.register(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
 						"the5zigmod", key.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9/._-]", "_"))));
 	}
 

@@ -21,7 +21,7 @@ package eu.the5zig.mod.platform;
 
 import eu.the5zig.mod.gui.elements.ITextfield;
 import eu.the5zig.mod.util.RenderContext;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

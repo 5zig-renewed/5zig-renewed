@@ -33,7 +33,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +58,8 @@ public class GuiHandle extends Screen implements IGuiHandle {
 	 * 1.15's {@code Screen#blit} drew from whatever texture had been bound last. Modern Minecraft
 	 * has no texture binding at all, so {@link BoundTexture} records it instead.
 	 */
-	private static final Identifier DEFAULT_TEXTURE =
-			Identifier.fromNamespaceAndPath("minecraft", "textures/gui/widgets.png");
+	private static final ResourceLocation DEFAULT_TEXTURE =
+			ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/widgets.png");
 
 	private Gui child;
 
@@ -68,7 +68,7 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		this.child = child;
 	}
 
-	public static Identifier getBoundTexture() {
+	public static ResourceLocation getBoundTexture() {
 		return BoundTexture.currentOr(DEFAULT_TEXTURE);
 	}
 

@@ -20,7 +20,6 @@
 package eu.the5zig.mod.platform;
 
 import eu.the5zig.mod.util.IResourceLocation;
-import net.minecraft.resources.Identifier;
 
 import java.util.Locale;
 
@@ -28,12 +27,14 @@ import java.util.Locale;
  * The platform implementation of {@link IResourceLocation}.
  * <p>
  * Up to 1.21.8 this extended the Minecraft resource location so it could be handed to every vanilla
- * API unchanged. 1.21.9's rename to {@link Identifier} also made the class {@code final}, so the
- * vanilla value is now held by composition and unwrapped explicitly through
- * {@link #toIdentifier()} at the (few) call sites that talk to the game.
+ * API unchanged. Since 1.21.9 the vanilla value is {@code final}, so it is held by composition and
+ * unwrapped explicitly through {@link #toResourceLocation()} at the (few) call sites that talk to the
+ * game. 1.21.11 renamed the vanilla class to {@code Identifier}; 1.21.10 still calls it
+ * {@code ResourceLocation}, which is why every reference to it here is fully qualified - the simple
+ * name is taken by this wrapper.
  * <p>
  * Both namespace and path are sanitised the way the 1.15 implementation did it - lower case,
- * stripped down to {@code [a-z0-9/._-]} - because {@link Identifier} still rejects anything else
+ * stripped down to {@code [a-z0-9/._-]} - because the vanilla class still rejects anything else
  * with a hard exception.
  */
 public class ResourceLocation implements IResourceLocation {
@@ -41,24 +42,24 @@ public class ResourceLocation implements IResourceLocation {
 	private static final String DEFAULT_NAMESPACE = "minecraft";
 	private static final String FALLBACK_PATH = "missing";
 
-	private final Identifier identifier;
+	private final net.minecraft.resources.ResourceLocation identifier;
 
 	public ResourceLocation(String resourcePath) {
 		this(namespaceOf(resourcePath), pathOf(resourcePath));
 	}
 
 	public ResourceLocation(String resourceDomain, String resourcePath) {
-		this.identifier = Identifier.fromNamespaceAndPath(sanitizeNamespace(resourceDomain), sanitizePath(resourcePath));
+		this.identifier = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(sanitizeNamespace(resourceDomain), sanitizePath(resourcePath));
 	}
 
-	private ResourceLocation(Identifier identifier) {
+	private ResourceLocation(net.minecraft.resources.ResourceLocation identifier) {
 		this.identifier = identifier;
 	}
 
 	/**
 	 * The Minecraft value backing this resource location.
 	 */
-	public Identifier toIdentifier() {
+	public net.minecraft.resources.ResourceLocation toResourceLocation() {
 		return identifier;
 	}
 
@@ -68,22 +69,22 @@ public class ResourceLocation implements IResourceLocation {
 	 * @param identifier the identifier to wrap.
 	 * @return the 5zig resource location, or {@code null} if the argument was {@code null}.
 	 */
-	public static ResourceLocation fromMinecraft(Identifier identifier) {
+	public static ResourceLocation fromMinecraft(net.minecraft.resources.ResourceLocation identifier) {
 		if (identifier == null) {
 			return null;
 		}
-		if (identifier instanceof Identifier && identifier.getClass() == Identifier.class) {
+		if (identifier instanceof net.minecraft.resources.ResourceLocation && identifier.getClass() == net.minecraft.resources.ResourceLocation.class) {
 			return new ResourceLocation(identifier);
 		}
 		return new ResourceLocation(identifier.getNamespace(), identifier.getPath());
 	}
 
 	/**
-	 * @deprecated use {@link #fromMinecraft(Identifier)}. Kept because the 1.15 platform called
-	 * this on obfuscated names.
+	 * @deprecated use {@link #fromMinecraft(net.minecraft.resources.ResourceLocation)}. Kept because
+	 * the 1.15 platform called this on obfuscated names.
 	 */
 	@Deprecated
-	public static ResourceLocation fromObfuscated(Identifier identifier) {
+	public static ResourceLocation fromObfuscated(net.minecraft.resources.ResourceLocation identifier) {
 		return fromMinecraft(identifier);
 	}
 

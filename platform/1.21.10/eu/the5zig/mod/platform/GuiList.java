@@ -34,8 +34,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.resources.Identifier;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 import java.util.List;
@@ -249,9 +249,9 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 		int listWidth = getRight() - getLeft();
 		int listHeight = getBottom() - getTop();
 
-		if (backgroundTexture instanceof Identifier) {
+		if (backgroundTexture instanceof ResourceLocation) {
 			// 1.21.x blit needs the pipeline explicitly and takes (u, v, width, height, texWidth, texHeight).
-			graphics.blit(RenderPipelines.GUI_TEXTURED, (Identifier) backgroundTexture, getLeft(), getTop(),
+			graphics.blit(RenderPipelines.GUI_TEXTURED, (ResourceLocation) backgroundTexture, getLeft(), getTop(),
 					0.0F, 0.0F, listWidth, listHeight, this.backgroundWidth, this.backgroundHeight);
 		} else if (backgroundTexture != null) {
 			// Dynamic textures (the user's chat background image) are not ResourceLocations; keep the

@@ -117,13 +117,13 @@ public class ResourceManager implements IResourceManager {
 
 		final ResourceLocation capeLocation = new ResourceLocation("the5zigmod", "capes/" + gameProfile.id().toString().replace("-", ""));
 		final SimpleTickingTexture capeTexture;
-		AbstractTexture texture = getTextureManager().getTexture(capeLocation.toIdentifier());
+		AbstractTexture texture = getTextureManager().getTexture(capeLocation.toResourceLocation());
 		if (texture instanceof SimpleTickingTexture) {
 			capeTexture = (SimpleTickingTexture) texture;
 			capeTexture.setBufferedImage(null);
 		} else {
 			capeTexture = new SimpleTickingTexture(capeLocation);
-			getTextureManager().register(capeLocation.toIdentifier(), capeTexture);
+			getTextureManager().register(capeLocation.toResourceLocation(), capeTexture);
 		}
 
 		EXECUTOR_SERVICE.execute(new Runnable() {

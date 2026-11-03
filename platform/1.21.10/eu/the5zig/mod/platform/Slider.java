@@ -23,7 +23,7 @@ import eu.the5zig.mod.util.SliderCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 /**
@@ -59,8 +59,8 @@ public class Slider extends Button {
 	}
 
 	/** GUI-atlas sprites replacing the 1.15 textures/gui/widgets.png rectangle blits. */
-	private static final Identifier SLIDER_SPRITE = Identifier.withDefaultNamespace("widget/slider");
-	private static final Identifier SLIDER_HANDLE_SPRITE = Identifier.withDefaultNamespace("widget/slider_handle");
+	private static final ResourceLocation SLIDER_SPRITE = ResourceLocation.withDefaultNamespace("widget/slider");
+	private static final ResourceLocation SLIDER_HANDLE_SPRITE = ResourceLocation.withDefaultNamespace("widget/slider_handle");
 
 	@Override
 	protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {

@@ -45,7 +45,7 @@ import eu.the5zig.mod.util.component.style.MessageStyle;
 import eu.the5zig.util.Callback;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.GraphicsPreset;
+import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -80,7 +80,6 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.ARGB;
@@ -904,7 +903,7 @@ public class Variables implements IVariables {
 			return null;
 		}
 		BlockPos pos = ((BlockHitResult) getMinecraft().hitResult).getBlockPos();
-		Identifier key = BuiltInRegistries.BLOCK.getKey(getWorld().getBlockState(pos).getBlock());
+		net.minecraft.resources.ResourceLocation key = BuiltInRegistries.BLOCK.getKey(getWorld().getBlockState(pos).getBlock());
 		return new ResourceLocation(key.getNamespace(), key.getPath());
 	}
 
@@ -931,7 +930,7 @@ public class Variables implements IVariables {
 		if (!key.isPresent()) {
 			return null;
 		}
-		Identifier location = key.get().identifier();
+		net.minecraft.resources.ResourceLocation location = key.get().location();
 		String translationKey = "biome." + location.getNamespace() + "." + location.getPath();
 		String translated = Component.translatable(translationKey).getString();
 		return translated.equals(translationKey) ? location.getPath() : translated;
@@ -1377,7 +1376,7 @@ public class Variables implements IVariables {
 		// 1.21.x has no textures/gui/icons.png any more: the HUD food/saturation icons are GUI
 		// atlas sprites. The core passes the 1.8-era (u, v) offsets of that sheet, so translate the
 		// handful it actually uses to their modern sprite names.
-		Identifier sprite = foodSprite(u, v);
+		net.minecraft.resources.ResourceLocation sprite = foodSprite(u, v);
 		if (sprite == null) {
 			return;
 		}
@@ -1389,23 +1388,23 @@ public class Variables implements IVariables {
 	 *
 	 * @return the sprite, or {@code null} for an offset this port does not know.
 	 */
-	private static Identifier foodSprite(int u, int v) {
+	private static net.minecraft.resources.ResourceLocation foodSprite(int u, int v) {
 		if (v != 27) {
 			return null;
 		}
 		switch (u) {
 			case 16:
-				return Identifier.withDefaultNamespace("hud/food_empty");
+				return net.minecraft.resources.ResourceLocation.withDefaultNamespace("hud/food_empty");
 			case 52:
-				return Identifier.withDefaultNamespace("hud/food_full");
+				return net.minecraft.resources.ResourceLocation.withDefaultNamespace("hud/food_full");
 			case 61:
-				return Identifier.withDefaultNamespace("hud/food_half");
+				return net.minecraft.resources.ResourceLocation.withDefaultNamespace("hud/food_half");
 			case 88:
-				return Identifier.withDefaultNamespace("hud/food_full_hunger");
+				return net.minecraft.resources.ResourceLocation.withDefaultNamespace("hud/food_full_hunger");
 			case 133:
-				return Identifier.withDefaultNamespace("hud/food_empty_hunger");
+				return net.minecraft.resources.ResourceLocation.withDefaultNamespace("hud/food_empty_hunger");
 			case 97:
-				return Identifier.withDefaultNamespace("hud/food_half_hunger");
+				return net.minecraft.resources.ResourceLocation.withDefaultNamespace("hud/food_half_hunger");
 			default:
 				return null;
 		}
@@ -1503,7 +1502,7 @@ public class Variables implements IVariables {
 			// TextureManager#register no longer derives a "dynamic/<name>_<n>" id itself; build a
 			// sanitized one in the mod's own namespace.
 			String safeName = name == null ? "image" : name.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9/._-]", "_");
-			Identifier identifier = Identifier.fromNamespaceAndPath("the5zigmod", "dynamic/" + safeName);
+			net.minecraft.resources.ResourceLocation identifier = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("the5zigmod", "dynamic/" + safeName);
 			getTextureManager().register(identifier, texture);
 			return identifier;
 		} catch (IOException e) {
@@ -1523,7 +1522,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public void bindTexture(Object resourceLocation) {
-		Identifier location = toTextureLocation(resourceLocation);
+		net.minecraft.resources.ResourceLocation location = toTextureLocation(resourceLocation);
 		if (location == null) {
 			return;
 		}
@@ -1532,21 +1531,21 @@ public class Variables implements IVariables {
 
 	@Override
 	public void deleteTexture(Object resourceLocation) {
-		if (resourceLocation instanceof Identifier) {
-			getTextureManager().release((Identifier) resourceLocation);
+		if (resourceLocation instanceof net.minecraft.resources.ResourceLocation) {
+			getTextureManager().release((net.minecraft.resources.ResourceLocation) resourceLocation);
 		}
 	}
 
 	@Override
 	public Object createDynamicImage(Object resourceLocation, int width, int height) {
 		DynamicTexture texture = new DynamicTexture(() -> "5zig dynamic image", width, height, false);
-		getTextureManager().register((Identifier) resourceLocation, texture);
+		getTextureManager().register((net.minecraft.resources.ResourceLocation) resourceLocation, texture);
 		return texture;
 	}
 
 	@Override
 	public Object getTexture(Object resourceLocation) {
-		return getTextureManager().getTexture((Identifier) resourceLocation);
+		return getTextureManager().getTexture((net.minecraft.resources.ResourceLocation) resourceLocation);
 	}
 
 	@Override
@@ -1816,17 +1815,17 @@ public class Variables implements IVariables {
 		}
 	}
 
-	private static Identifier toResourceLocation(String resourceName) {
+	private static net.minecraft.resources.ResourceLocation toResourceLocation(String resourceName) {
 		int separator = resourceName.indexOf(':');
 		if (separator < 0) {
-			return Identifier.fromNamespaceAndPath("minecraft", new ResourceLocation("minecraft", resourceName).callGetResourcePath());
+			return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("minecraft", new ResourceLocation("minecraft", resourceName).callGetResourcePath());
 		}
 		return new ResourceLocation(resourceName.substring(0, separator), resourceName.substring(separator + 1)).toIdentifier();
 	}
 
-	private static Identifier toTextureLocation(Object resourceLocation) {
-		if (resourceLocation instanceof Identifier) {
-			return (Identifier) resourceLocation;
+	private static net.minecraft.resources.ResourceLocation toTextureLocation(Object resourceLocation) {
+		if (resourceLocation instanceof net.minecraft.resources.ResourceLocation) {
+			return (net.minecraft.resources.ResourceLocation) resourceLocation;
 		}
 		if (resourceLocation instanceof IResourceLocation) {
 			IResourceLocation location = (IResourceLocation) resourceLocation;
