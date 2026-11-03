@@ -247,8 +247,7 @@ public class Variables implements IVariables {
 		drawString(string, x, y, color, true);
 	}
 
-	@Override
-	/**
+		/**
 	 * 1.21.9+ treats text colours as strict ARGB, so a legacy {@code 0xRRGGBB} value (alpha 0)
 	 * renders nothing. The core passes colours without an alpha byte, so restore the missing alpha.
 	 */
@@ -256,6 +255,7 @@ public class Variables implements IVariables {
 		return (color & 0xFF000000) == 0 ? color | 0xFF000000 : color;
 	}
 
+@Override
 	public void drawString(String string, int x, int y, int color, boolean withShadow) {
 		if (string == null) {
 			return;

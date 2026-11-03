@@ -100,8 +100,35 @@ processResources {
     }
 }
 
+// eu.the5zig.mod.Version reads these three attributes from the first META-INF/MANIFEST.MF
+// that advertises "5zig-Version"; without them the HUD and the version string fall back
+// to "bDEV". Same trio as the 1.20.1 root and forge builds.
+def jarManifestAttributes = [
+        '5zig-Version'     : project.version,
+        'Minecraft-Version': minecraft_version,
+        '5zig-Build'       : 'alpha',
+]
+
+tasks.named('jar') {
+    manifest { attributes(jarManifestAttributes) }
+}
+
+// Loom ships the remapped artifact, so the attributes have to be on remapJar as well.
+tasks.named('remapJar') {
+    manifest { attributes(jarManifestAttributes) }
+}
+
 loom {
     accessWidenerPath = file('../../loader/fabric-1.21.11/resources/5zig.accesswidener')
+    // Loom 1.13 defaults `useLegacyMixinAp` to false, so nothing emitted a refmap and
+    // remapJar left the mixin config without a "refmap" entry: in a real install the
+    // @Inject/@Redirect targets stayed in named form and failed to resolve against the
+    // intermediary-remapped game jar. Turn the Mixin annotation processor back on. It
+    // writes <archivesName>-refmap.json (named -> intermediary), which Loom then nests
+    // in the jar root and links from the mixin configs.
+    mixin {
+        useLegacyMixinAp = true
+    }
     runs {
         client {
             client()

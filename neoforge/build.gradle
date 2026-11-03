@@ -52,9 +52,49 @@ sourceSets {
     }
 }
 
+// ---- jar-in-jar -------------------------------------------------------------
+// Same mechanism as the working forge/ build. NeoForge 1.20.1 (47.1.106) runs
+// FML 47.2.x, whose JarInJarDependencyLocator reads META-INF/jarjar/metadata.json,
+// so ForgeGradle's JarJar produces a jar the NeoForge loader can consume directly.
+// Libraries stay intact as nested jars under META-INF/jarjar/, so sqlite-jdbc keeps
+// its native .so inside its own jar instead of being exploded into ours.
+//
+// JarJar metadata holds a Maven version *range* and FG rejects plain versions
+// ("Invalid version range"), so every dependency is registered with an exact
+// range `[v]` while Gradle still resolves the pinned coordinates.
+// transitive = false keeps Minecraft's own netty/jackson/etc. out of the jar.
+def jarJarExt = extensions.getByName('jarJar')
+jarJarExt.enable()
+
+def jarJarModules = [
+        ['com.github.5zig-reborn', 'DiscordIPC', 'master-SNAPSHOT', '[1.0,)'],
+        ['net.sf.jacob-project', 'jacob', '1.14.3', '[1.14.3]'],
+        ['org.json', 'json', '20231013', '[20231013]'],
+        ['org.xerial', 'sqlite-jdbc', '3.45.3.0', '[3.45.3.0]'],
+        ['io.netty', 'netty-codec-http', '4.1.97.Final', '[4.1.97.Final]'],
+]
+
+jarJarModules.each { groupId, name, depVersion, range ->
+    def dep = dependencies.create("${groupId}:${name}:${depVersion}") { transitive = false }
+    dependencies.add('jarJar', dep)
+    jarJarExt.ranged(dep, range)
+}
+
+// The combined jar is the release artifact; the plain jar stays available as
+// "-slim" for debugging without the embedded libraries.
+tasks.named('jarJar') { archiveClassifier = '' }
+tasks.named('jar') { archiveClassifier = 'slim' }
+
+tasks.named('build') { dependsOn tasks.named('reobfJarJar') }
+
+// eu.the5zig.mod.Version reads these from the first META-INF/MANIFEST.MF that
+// advertises "5zig-Version"; without them the HUD shows "bDEV".
 jar {
     manifest {
-        attributes('MixinConfigs': 'mixins.the5zigmod.json,mixins.the5zigmod.neoforge.json',
+        attributes('5zig-Version': project.version,
+                   'Minecraft-Version': '1.20.1',
+                   '5zig-Build': 'alpha',
+                   'MixinConfigs': 'mixins.the5zigmod.json,mixins.the5zigmod.neoforge.json',
                    'Specification-Title': 'the5zigmod',
                    'Specification-Version': project.version)
     }

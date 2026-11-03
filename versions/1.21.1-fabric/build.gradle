@@ -22,11 +22,20 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:0.116.17+1.21.1"
 
     // 5zig's own deps not provided by Minecraft 1.21.1
+    // `implementation` puts them on the dev classpath, `include` nests the same
+    // artifacts into the mod jar (jar-in-jar, listed in fabric.mod.json "jars").
+    // transitive = false: only the named jar is embedded; their transitive peers
+    // (netty-codec, netty-common, ...) are already shipped by Minecraft.
     implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    include('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { transitive = false }
     implementation 'net.sf.jacob-project:jacob:1.14.3'
+    include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
     implementation 'org.json:json:20231013'
+    include('org.json:json:20231013') { transitive = false }
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
     implementation 'io.netty:netty-codec-http:4.1.97.Final'
+    include('io.netty:netty-codec-http:4.1.97.Final') { transitive = false }
 }
 
 sourceSets {
@@ -74,6 +83,24 @@ processResources {
     filesMatching('fabric.mod.json') {
         expand 'version': project.version
     }
+}
+
+// eu.the5zig.mod.Version reads these three attributes from the first META-INF/MANIFEST.MF
+// that advertises "5zig-Version"; without them the HUD and the version string fall back
+// to "bDEV". Same trio as the 1.20.1 root and forge builds.
+def jarManifestAttributes = [
+        '5zig-Version'     : project.version,
+        'Minecraft-Version': '1.21.1',
+        '5zig-Build'       : 'alpha',
+]
+
+tasks.named('jar') {
+    manifest { attributes(jarManifestAttributes) }
+}
+
+// Loom ships the remapped artifact, so the attributes have to be on remapJar as well.
+tasks.named('remapJar') {
+    manifest { attributes(jarManifestAttributes) }
 }
 
 loom {

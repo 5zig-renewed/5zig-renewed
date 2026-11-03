@@ -1,0 +1,122 @@
+plugins {
+    id 'fabric-loom' version '1.13.4'
+}
+
+version = '4.0.0-alpha.1'
+group = 'eu.the5zig.renewed'
+base { archivesName = '5zig-renewed-1.21.8-fabric' }
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:0.17.3"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.136.1+1.21.8"
+
+    // 5zig's own deps not provided by Minecraft. httpclient used to come in transitively through
+    // authlib 4; authlib 7 dropped it, and the core's Spotify/HTTP code imports it directly.
+    implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    implementation 'net.sf.jacob-project:jacob:1.14.3'
+    implementation 'org.json:json:20231013'
+    implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+    implementation 'io.netty:netty-codec-http:4.1.97.Final'
+}
+
+// ---------------------------------------------------------------------------------------------
+// Core overlay
+//
+// The core was written against authlib 4 (GameProfile#getId/#getName, UserAuthentication,
+// YggdrasilAuthenticationService). Minecraft 1.21.8 ships authlib 6, where GameProfile is a record
+// with id()/name() and the whole legacy Yggdrasil client is gone, and commons-lang3 3.19 added
+// org.apache.commons.lang3.Strings which collides with Guava's Strings in two files.
+//
+// Rather than editing core/ (shared with the verified 1.20.1 build), the handful of affected files
+// live in compat-src/ and the rest of the core is copied into the build directory with those files
+// filtered out.
+// ---------------------------------------------------------------------------------------------
+def coreOverlay = [
+        'eu/the5zig/mod/account/AccountManager.java',
+        'eu/the5zig/mod/chat/network/packets/PacketEncryption.java',
+]
+
+tasks.register('coreCompatTree', Sync) {
+    from('../../core') {
+        exclude coreOverlay
+        exclude 'eu/the5zig/mod/installer/**'
+    }
+    into layout.buildDirectory.dir('core-compat')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+                    'compat-src',
+                    layout.buildDirectory.dir('core-compat').get().asFile.path,
+                    '../../common',
+                    '../../api',
+                    '../../platform/1.21.8',
+                    '../../loader/fabric/java',
+            ]
+        }
+        resources {
+            srcDirs = ['../../core/resources', '../../loader/fabric-1.21.8/resources', '../../loader/resources']
+        }
+    }
+}
+
+tasks.named('compileJava') { dependsOn 'coreCompatTree' }
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+    // Surface every breakage in one pass while porting a new Minecraft version.
+    options.compilerArgs << '-Xmaxerrs' << '2000'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}
+
+loom {
+    accessWidenerPath = file('../../loader/fabric-1.21.8/resources/5zig.accesswidener')
+    // Loom 1.13 defaults `useLegacyMixinAp` to false, so nothing emits a refmap and remapJar
+    // leaves the mixin config without a "refmap" entry: in a real install the @Inject/@Redirect
+    // targets would stay in named form and fail to resolve against the intermediary-remapped game
+    // jar. Turning the Mixin annotation processor back on writes
+    // <archivesName>-refmap.json (named -> intermediary), which Loom nests in the jar root and
+    // links from the mixin configs.
+    mixin {
+        useLegacyMixinAp = true
+    }
+    runs {
+        client {
+            client()
+            ideConfigGenerated = true
+            // headless verification hook: boot straight into the test world
+            programArgs '--quickPlaySingleplayer', 'New World'
+        }
+    }
+}
+
+tasks.register('printCompileClasspath') {
+    doLast {
+        def f = file('compile-classpath.txt')
+        f.text = sourceSets.main.compileClasspath.asPath
+        println "classpath entries: " + sourceSets.main.compileClasspath.files.size()
+    }
+}

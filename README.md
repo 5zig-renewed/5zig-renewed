@@ -41,6 +41,8 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.21.1 Fabric** | green | **HUD** |
 | **1.21.11 Fabric** | green | **HUD** (strict-ARGB colour fix) |
 | **26.1.2 Fabric** | green (Java 25, unobfuscated) | **HUD** (`GuiGraphicsExtractor#text` + strict-ARGB fix) |
+| **1.21.4 Fabric** | green | **HUD** |
+| **1.21.8 Fabric** | green | **HUD** |
 
 Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation.
 
