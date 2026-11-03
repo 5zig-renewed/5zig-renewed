@@ -6,12 +6,14 @@ version = '4.0.0-alpha.1'
 group = 'eu.the5zig.renewed'
 base { archivesName = '5zig-renewed-1.20.1-forge' }
 
+def minecraftVersion = '1.20.1'
+
 java {
     toolchain { languageVersion = JavaLanguageVersion.of(17) }
 }
 
 minecraft {
-    mappings channel: 'official', version: '1.20.1'
+    mappings channel: 'official', version: minecraftVersion
     copyIdeResources = true
     runs {
         client {
@@ -31,9 +33,10 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.1-47.4.28'
+    minecraft "net.minecraftforge:forge:${minecraftVersion}-47.4.28"
 
-    // minecraftLibrary = visible to the mod's class loader at dev/runtime
+    // minecraftLibrary = visible to the mod's class loader in dev; jarJar (below)
+    // embeds the same artifacts into the shipped jar.
     minecraftLibrary('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
     minecraftLibrary 'net.sf.jacob-project:jacob:1.14.3'
     minecraftLibrary 'org.json:json:20231013'
@@ -44,13 +47,52 @@ dependencies {
 sourceSets {
     main {
         java { srcDirs = ['../core', '../common', '../api', '../platform/1.20.1', '../loader/forge/java'] }
-        resources { srcDirs = ['../core/resources', '../loader/forge/resources'] }
+        // ../loader/resources carries the generated lang/<LANGVERSION>/ bundles shared with Fabric
+        resources { srcDirs = ['../core/resources', '../loader/forge/resources', '../loader/resources'] }
     }
 }
 
+// ---- jar-in-jar -------------------------------------------------------------
+// ForgeGradle's JarJar embeds the libraries under META-INF/jarjar/ and generates
+// the META-INF/jarjar/metadata.json Forge's JarJar loader reads. Jars that carry
+// natives (sqlite-jdbc) stay intact as nested jars instead of being exploded.
+//
+// JarJar metadata holds a Maven version *range*, and FG rejects plain versions
+// ("Invalid version range"), so every dependency is registered with an exact
+// range `[v]` while Gradle still resolves the pinned coordinates.
+// transitive = false keeps Minecraft's own netty / jackson / etc. out of the jar.
+def jarJarExt = extensions.getByName('jarJar')
+jarJarExt.enable()
+
+def jarJarModules = [
+        ['com.github.5zig-reborn', 'DiscordIPC', 'master-SNAPSHOT', '[1.0,)'],
+        ['net.sf.jacob-project', 'jacob', '1.14.3', '[1.14.3]'],
+        ['org.json', 'json', '20231013', '[20231013]'],
+        ['org.xerial', 'sqlite-jdbc', '3.45.3.0', '[3.45.3.0]'],
+        ['io.netty', 'netty-codec-http', '4.1.97.Final', '[4.1.97.Final]'],
+]
+
+jarJarModules.each { groupId, name, depVersion, range ->
+    def dep = dependencies.create("${groupId}:${name}:${depVersion}") { transitive = false }
+    dependencies.add('jarJar', dep)
+    jarJarExt.ranged(dep, range)
+}
+
+// The combined jar is the release artifact; the plain jar stays available as
+// "-slim" for debugging without the embedded libraries.
+tasks.named('jarJar') { archiveClassifier = '' }
+tasks.named('jar') { archiveClassifier = 'slim' }
+
+tasks.named('build') { dependsOn tasks.named('reobfJarJar') }
+
+// eu.the5zig.mod.Version reads these from the first META-INF/MANIFEST.MF that
+// advertises "5zig-Version"; without them the HUD shows "bDEV".
 jar {
     manifest {
-        attributes('MixinConfigs': 'mixins.the5zigmod.json,mixins.the5zigmod.forge.json',
+        attributes('5zig-Version': project.version,
+                   'Minecraft-Version': minecraftVersion,
+                   '5zig-Build': 'alpha',
+                   'MixinConfigs': 'mixins.the5zigmod.json,mixins.the5zigmod.forge.json',
                    'Specification-Title': 'the5zigmod',
                    'Specification-Version': project.version)
     }

@@ -36,9 +36,11 @@ rm -f "$PROJECT"/run/saves/*/session.lock 2>/dev/null
 
 # --- run ---------------------------------------------------------------------
 say "starting client in $PROJECT"
+GRADLE_BIN="${GRADLE_BIN:-$HOME/work/tools/gradle-8.10.2/bin/gradle}"
+JAVA_HOME_OVERRIDE="${JAVA_HOME_OVERRIDE:-/usr/lib/jvm/java-17-openjdk}"
 ( cd "$PROJECT" && DISPLAY="$DISPLAY_NUM" LIBGL_ALWAYS_SOFTWARE=1 MESA_GL_VERSION_OVERRIDE=4.5 \
-    JAVA_HOME=/usr/lib/jvm/java-17-openjdk \
-    ~/work/tools/gradle-8.10.2/bin/gradle runClient --no-daemon > "$LOG" 2>&1 ) &
+    JAVA_HOME="$JAVA_HOME_OVERRIDE" \
+    "$GRADLE_BIN" runClient --no-daemon > "$LOG" 2>&1 ) &
 RUNNER=$!
 
 deadline=$((SECONDS + TIMEOUT))

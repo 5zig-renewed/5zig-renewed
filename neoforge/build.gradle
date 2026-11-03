@@ -1,6 +1,5 @@
 plugins {
-    id 'java'
-    id 'net.neoforged.gradle.userdev' version '7.1.39'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
 version = '4.0.0-alpha.1'
@@ -8,47 +7,60 @@ group = 'eu.the5zig.renewed'
 base { archivesName = '5zig-renewed-1.20.1-neoforge' }
 
 java {
-    // NeoGradle's source transformer (jst) runs on the toolchain JVM and needs 21+;
-    // the mod itself is still compiled to Java 17 bytecode via options.release.
-    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
+
+minecraft {
+    // NeoForge 1.20.1 (47.1.106) ships a Forge-format userdev jar whose classes still live in
+    // net.minecraftforge.*; ForgeGradle 6 consumes it exactly like a Forge userdev and applies the
+    // official Mojang mappings on top, so the platform layer compiles unchanged.
+    mappings channel: 'official', version: '1.20.1'
+    copyIdeResources = true
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            // headless verification hook: boot straight into the test world
+            args '--quickPlaySingleplayer', 'New World'
+            mods { the5zigmod { source sourceSets.main } }
+        }
+    }
 }
 
 repositories {
     mavenCentral()
     maven { url = 'https://jitpack.io' }
+    maven { url = 'https://maven.minecraftforge.net/' }
+    maven { url = 'https://maven.neoforged.net/releases' }
 }
 
 dependencies {
-    implementation 'net.neoforged:forge:1.20.1-47.1.106'
+    minecraft 'net.neoforged:forge:1.20.1-47.1.106'
 
-    // deps 5zig needs that Minecraft 1.20.1 does not ship
-    implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
-    implementation 'net.sf.jacob-project:jacob:1.14.3'
-    implementation 'org.json:json:20231013'
-    implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
-    implementation 'io.netty:netty-codec-http:4.1.97.Final'
+    // minecraftLibrary = visible to the mod's class loader at dev/runtime
+    minecraftLibrary('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    minecraftLibrary 'net.sf.jacob-project:jacob:1.14.3'
+    minecraftLibrary 'org.json:json:20231013'
+    minecraftLibrary 'org.xerial:sqlite-jdbc:3.45.3.0'
+    minecraftLibrary 'io.netty:netty-codec-http:4.1.97.Final'
 }
 
 sourceSets {
     main {
-        java {
-            srcDirs = ['../core', '../common', '../api', '../platform/1.20.1', '../loader/neoforge/java']
-        }
-        resources {
-            srcDirs = ['../core/resources', '../loader/neoforge/resources']
-        }
+        java { srcDirs = ['../core', '../common', '../api', '../platform/1.20.1', '../loader/neoforge/java'] }
+        resources { srcDirs = ['../core/resources', '../loader/neoforge/resources', '../loader/resources'] }
+    }
+}
+
+jar {
+    manifest {
+        attributes('MixinConfigs': 'mixins.the5zigmod.json,mixins.the5zigmod.neoforge.json',
+                   'Specification-Title': 'the5zigmod',
+                   'Specification-Version': project.version)
     }
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.release = 17
-}
-
-runs {
-    client {
-        client()
-        systemProperty 'forge.logging.console.level', 'debug'
-        modSource project.sourceSets.main
-    }
 }

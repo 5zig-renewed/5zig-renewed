@@ -1612,9 +1612,10 @@ public class Variables implements IVariables {
 
 	@Override
 	public void dispatchKeypresses() {
-		// There is no LWJGL2 keyboard event queue to poll on 1.20.1. Key presses are pushed into
-		// MinecraftFactory.getClassProxyCallback().fireKeyPressEvent(...) by the keyboard hook while
-		// the event is handled, so this tick hook has nothing left to do.
+		// 1.15 drained the LWJGL2 keyboard queue here and fired a KeyPressEvent per press. 1.20.1
+		// has no queue, so MixinKeyboardHandler records the presses and this per-tick entry point
+		// delivers them (and runs the state-based key handling, i.e. the menu key).
+		KeyDispatch.dispatch();
 	}
 
 	@Override

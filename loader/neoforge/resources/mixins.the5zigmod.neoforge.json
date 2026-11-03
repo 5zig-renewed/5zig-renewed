@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "eu.the5zig.mod.neoforge.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": ["MixinForgeGui"],
+  "injectors": { "defaultRequire": 1 }
+}

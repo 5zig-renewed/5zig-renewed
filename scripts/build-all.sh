@@ -11,6 +11,7 @@ ONLY=""
 
 G810="$HOME/work/tools/gradle-8.10.2/bin/gradle"
 G814="$HOME/work/tools/gradle-8.14.3/bin/gradle"
+G98="$HOME/.tools/gradle/gradle-9.8.2/bin/gradle"
 
 # project:gradle:jdk  — the combination each era needs (see docs/porting-playbook.md)
 run_project() {
@@ -39,18 +40,20 @@ collect() {
 
 JDK17=/usr/lib/jvm/java-17-openjdk
 JDK21=/usr/lib/jvm/java-21-openjdk
+JDK25=/usr/lib/jvm/java-25-openjdk
 JDK27=/usr/lib/jvm/java-27-openjdk
 
 run_project "$ROOT"         "$G810" "$JDK17" "1.20.1-fabric"
 run_project "$ROOT/forge"   "$G810" "$JDK17" "1.20.1-forge"
-run_project "$ROOT/neoforge" "$G814" "$JDK21" "1.20.1-neoforge"
+run_project "$ROOT/neoforge" "$G810" "$JDK17" "1.20.1-neoforge"
 
 for proj in "$ROOT"/versions/*/; do
     [ -d "$proj" ] || continue
     name="$(basename "$proj")"
     case "$name" in
-        26.*) run_project "$proj" "$G814" "$JDK27" "$name" ;;
-        *)    run_project "$proj" "$G810" "$JDK17" "$name" ;;
+        26.*)   run_project "$proj" "$G98"  "$JDK25" "$name" ;;
+        1.21.11*) run_project "$proj" "$G814" "$JDK21" "$name" ;;
+        *)      run_project "$proj" "$G810" "$JDK21" "$name" ;;
     esac
 done
 

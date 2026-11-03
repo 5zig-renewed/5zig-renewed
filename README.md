@@ -59,12 +59,23 @@ layout unloadable there; three core classes resolve platform types reflectively 
 ### Known gaps
 
 - the mod menu key (**M**) does not open the GUI on either loader yet
-- translations are missing: 5zig reads `lang/<version>/<locale>.properties`, which upstream generates
-  from the `translations` repo at release time, so keys render raw (`ingame.fps`)
 - capes, 2nd chat, server ping and the friends/chat backend are wired but not exercised against live servers
 - Discord Rich Presence, TeamSpeak and the iTunes/WMP bridges are inert on Linux
-- dependencies (DiscordIPC, sqlite, jacob, json, netty-http) are on the dev classpath but not
-  jar-in-jar'd, so the release jars are not self-contained yet
+
+## Release jars
+
+Both 1.20.1 jars are self-contained: `DiscordIPC`, `jacob`, `org.json`, `sqlite-jdbc` and
+`netty-codec-http` are embedded, and `eu.the5zig.mod.Version` gets its `5zig-Version` /
+`Minecraft-Version` / `5zig-Build` manifest attributes from the build.
+
+| Loader | Mechanism | Artifact |
+|---|---|---|
+| Fabric | Loom `include` → jar-in-jar (`META-INF/jars/`, listed in `fabric.mod.json` `"jars"`) | `build/libs/5zig-renewed-1.20.1-fabric-<version>.jar` |
+| Forge | ForgeGradle JarJar → `META-INF/jarjar/` + `META-INF/jarjar/metadata.json` | `forge/build/libs/5zig-renewed-1.20.1-forge-<version>.jar` (the plain jar is kept as `-slim.jar`) |
+
+Native-carrying jars (`sqlite-jdbc`) stay intact as nested jars. Translations are generated into
+`loader/resources/lang/44/` (shared by both loaders) by `scripts/generate-lang.py`, which converts
+the [translations](https://github.com/5zig-reborn/translations) sources for `Version.LANGVERSION`.
 
 ## Building 1.20.1 Fabric
 

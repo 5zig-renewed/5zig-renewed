@@ -19,6 +19,7 @@
 package eu.the5zig.mod.forge;
 
 import eu.the5zig.mod.MinecraftFactory;
+import eu.the5zig.mod.BytecodeHook;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.util.CoreState;
@@ -148,6 +149,7 @@ public final class FiveZigForge {
 				return;
 			}
 			try {
+				BytecodeHook.onDispatchKeyPresses();
 				The5zigMod.getListener().onTick();
 			} catch (Throwable throwable) {
 				if (!tickFailureLogged) {

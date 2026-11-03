@@ -1,0 +1,122 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.fabricmc.net/' }
+    maven { url = 'https://jitpack.io' }
+}
+
+dependencies {
+    // 26.x ships unobfuscated jars, so there is no `mappings` line at all: the platform
+    // layer links against the real names that are in the jar.
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // 5zig's own deps, not provided by Minecraft
+    implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    implementation 'net.sf.jacob-project:jacob:1.14.3'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    implementation 'org.json:json:20231013'
+    implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    implementation 'io.netty:netty-codec-http:4.1.97.Final'
+}
+
+sourceSets {
+    main {
+        java {
+            // `build/core-compat` is the core with the authlib-7 / commons-lang3-3.19 overlay files
+            // filtered out (see coreCompatTree below); `compat-src` holds the 26.x versions of those
+            // files. core/ itself is never modified.
+            srcDirs = ['build/core-compat', 'compat-src', '../../common', '../../api',
+                       '../../platform/26.1.2', '../../loader/fabric-26.1.2/java']
+            exclude 'eu/the5zig/mod/installer/**'
+        }
+        resources {
+            srcDirs = ['../../core/resources', '../../loader/fabric-26.1.2/resources', '../../loader/resources']
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Core overlay
+//
+// The core was written against authlib 4 (GameProfile#getId/#getName, UserAuthentication,
+// YggdrasilAuthenticationService). Minecraft 26.1.2 ships authlib 7, where GameProfile is a record
+// with id()/name() and the legacy Yggdrasil password client is gone, and commons-lang3 3.19 added
+// org.apache.commons.lang3.Strings which collides with Guava's Strings in two files.
+//
+// Rather than editing core/ (shared with the verified 1.20.1 build), the affected files live in
+// compat-src/ and the rest of the core is copied into the build directory with those files excluded.
+// ---------------------------------------------------------------------------------------------
+def coreOverlay = [
+        'eu/the5zig/mod/account/AccountManager.java',
+        'eu/the5zig/mod/chat/network/NetworkManager.java',
+        'eu/the5zig/mod/chat/network/packets/PacketEncryption.java',
+        'eu/the5zig/mod/gui/GuiHypixelStats.java',
+        'eu/the5zig/mod/gui/GuiNameHistory.java',
+        'eu/the5zig/mod/manager/ChatFilterManager.java',
+        'eu/the5zig/mod/manager/DataManager.java',
+        'eu/the5zig/mod/modules/items/server/ServerPing.java',
+        'eu/the5zig/mod/server/octc/OCCListener.java',
+        'eu/the5zig/mod/util/ChatHighlighting.java',
+        'eu/the5zig/teamspeak/impl/ServerTabImpl.java',
+        'eu/the5zig/teamspeak/util/ImageManager.java',
+]
+
+tasks.register('coreCompatTree', Sync) {
+    from('../../core') {
+        exclude coreOverlay
+    }
+    into 'build/core-compat'
+}
+
+tasks.named('compileJava').configure {
+    dependsOn 'coreCompatTree'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 25
+    options.compilerArgs << '-Xmaxerrs' << '2000'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}
+
+loom {
+    runs {
+        client {
+            client()
+            ideConfigGenerated = true
+            // headless verification hook: boot straight into the test world
+            programArgs '--quickPlaySingleplayer', 'New World'
+        }
+    }
+}
+
+tasks.register('printCompileClasspath') {
+    doLast {
+        def f = file('compile-classpath.txt')
+        f.text = sourceSets.main.compileClasspath.asPath
+        println "classpath entries: " + sourceSets.main.compileClasspath.files.size()
+    }
+}

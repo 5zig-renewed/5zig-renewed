@@ -18,6 +18,7 @@
 
 package eu.the5zig.mod.fabric;
 
+import eu.the5zig.mod.BytecodeHook;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.util.CoreState;
@@ -56,6 +57,7 @@ public class FiveZigFabric implements ClientModInitializer {
 	private static volatile boolean coreReady;
 	private static boolean initialisationAttempted;
 	private static boolean tickFailureLogged;
+	private static boolean keyDispatchFailureLogged;
 	private static boolean initFailureLogged;
 
 	@Override
@@ -67,6 +69,7 @@ public class FiveZigFabric implements ClientModInitializer {
 		Keybinds.setRegistrar(KeyBindingHelper::registerKeyBinding);
 		Keybinds.bootstrap();
 		Keybinds.closeRegistrationWindow();
+		LOGGER.info("[5zig Renewed] Registered {} key bindings", Keybinds.count());
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(this::onClientStarted);
 		ClientLifecycleEvents.CLIENT_STOPPING.register(this::onClientStopping);
@@ -103,6 +106,17 @@ public class FiveZigFabric implements ClientModInitializer {
 	private void onClientTick(Minecraft client) {
 		if (!coreReady || !The5zigMod.hasBeenInitialized()) {
 			return;
+		}
+		try {
+			// 1.15 called Minecraft#dispatchKeypresses every tick. The press events themselves are
+			// delivered by MixinKeyboardHandler; this call is the per-tick key handling (menu key)
+			// and must run before the tick listeners so a press is seen in the same tick.
+			BytecodeHook.onDispatchKeyPresses();
+		} catch (Throwable throwable) {
+			if (!keyDispatchFailureLogged) {
+				keyDispatchFailureLogged = true;
+				LOGGER.error("[5zig Renewed] Key dispatch failed; further key errors will be suppressed", throwable);
+			}
 		}
 		try {
 			The5zigMod.getListener().onTick();

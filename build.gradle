@@ -19,11 +19,20 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:0.92.2+1.20.1"
 
     // 5zig's own deps not provided by Minecraft 1.20.1
+    // `implementation` puts them on the dev classpath, `include` nests the same
+    // artifacts into the mod jar (jar-in-jar, listed in fabric.mod.json "jars").
+    // transitive = false: only the named jar is embedded; their transitive peers
+    // (netty-codec, netty-common, ...) are already shipped by Minecraft.
     implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    include('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { transitive = false }
     implementation 'net.sf.jacob-project:jacob:1.14.3'
+    include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
     implementation 'org.json:json:20231013'
+    include('org.json:json:20231013') { transitive = false }
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
     implementation 'io.netty:netty-codec-http:4.1.97.Final'
+    include('io.netty:netty-codec-http:4.1.97.Final') { transitive = false }
 }
 
 sourceSets {
@@ -33,7 +42,8 @@ sourceSets {
             exclude 'eu/the5zig/mod/installer/**'
         }
         resources {
-            srcDirs = ['core/resources', 'loader/fabric/resources']
+            // loader/resources holds the generated lang/<LANGVERSION>/ bundles (shared with Forge)
+            srcDirs = ['core/resources', 'loader/fabric/resources', 'loader/resources']
         }
     }
 }
@@ -53,6 +63,25 @@ processResources {
     filesMatching('fabric.mod.json') {
         expand 'version': project.version
     }
+}
+
+// eu.the5zig.mod.Version reads these three attributes from the first
+// META-INF/MANIFEST.MF that advertises "5zig-Version"; without them the HUD and
+// the version string fall back to "bDEV".
+def jarManifestAttributes = [
+        '5zig-Version'     : project.version,
+        'Minecraft-Version': minecraft_version,
+        '5zig-Build'       : 'alpha',
+]
+
+tasks.named('jar') {
+    manifest { attributes(jarManifestAttributes) }
+}
+
+// Loom builds the shipped artifact in remapJar; give it the same manifest so the
+// attributes survive remapping.
+tasks.named('remapJar') {
+    manifest { attributes(jarManifestAttributes) }
 }
 
 loom {

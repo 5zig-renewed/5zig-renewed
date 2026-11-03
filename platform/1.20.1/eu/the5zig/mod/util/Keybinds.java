@@ -55,6 +55,12 @@ public final class Keybinds {
 	public static final String CATEGORY = "The 5zig Mod";
 
 	/**
+	 * Binding that opens the mod's main menu. Kept in sync with
+	 * {@code KeybindingManager#toggleMod}.
+	 */
+	public static final String TOGGLE_MOD = "the5zigmod.key.toggle_mod";
+
+	/**
 	 * Loader hook used while the loader's registration window is still open.
 	 */
 	public interface Registrar {
@@ -136,6 +142,34 @@ public final class Keybinds {
 		return BINDINGS.containsKey(description);
 	}
 
+	/**
+	 * @return the vanilla mapping behind a binding id, or {@code null} if no such binding exists.
+	 */
+	public static synchronized KeyMapping mapping(String description) {
+		FiveZigKeybinding binding = BINDINGS.get(description);
+		return binding == null ? null : binding.mapping;
+	}
+
+	/**
+	 * Resolves the key code a mapping is currently bound to, in the encoding the core expects:
+	 * GLFW key codes for keyboard keys and {@code -(100 + button)} for mouse buttons (see
+	 * {@code ZoomListener}).
+	 */
+	public static int keyCodeOf(KeyMapping mapping) {
+		try {
+			InputConstants.Key key = InputConstants.getKey(mapping.saveString());
+			if (key == null) {
+				return GLFW.GLFW_KEY_UNKNOWN;
+			}
+			if (key.getType() == InputConstants.Type.MOUSE) {
+				return -(100 + key.getValue());
+			}
+			return key.getValue();
+		} catch (Throwable throwable) {
+			return GLFW.GLFW_KEY_UNKNOWN;
+		}
+	}
+
 	private static FiveZigKeybinding bind(String description, int keyCode) {
 		return bind(description, keyCode, CATEGORY);
 	}
@@ -158,7 +192,10 @@ public final class Keybinds {
 
 	/**
 	 * Appends a mapping to the live {@code Options.keyMappings} array. The field is final, but its
-	 * contents are not, and every loader re-reads the array when resolving keys.
+	 * contents are not. The array is what the controls screen and {@code Options#save()} enumerate;
+	 * the key&rarr;mapping lookup used by {@code KeyMapping#click} is rebuilt by
+	 * {@code KeyMapping#resetMapping()} from every mapping ever constructed, so an appended mapping
+	 * is clickable as well.
 	 */
 	private static void appendToOptions(KeyMapping mapping) {
 		try {
@@ -198,12 +235,7 @@ public final class Keybinds {
 
 		@Override
 		public int callGetKeyCode() {
-			InputConstants.Key key = InputConstants.getKey(mapping.saveString());
-			if (key.getType() == InputConstants.Type.MOUSE) {
-				// 5zig encodes mouse buttons as -(100 + button); see ZoomListener.
-				return -(100 + key.getValue());
-			}
-			return key.getValue();
+			return keyCodeOf(mapping);
 		}
 	}
 }

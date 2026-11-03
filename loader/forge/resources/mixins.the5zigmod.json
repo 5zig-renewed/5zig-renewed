@@ -15,6 +15,7 @@
     "MixinGameRenderer",
     "MixinGui",
     "MixinMinecraft",
+    "MixinKeyboardHandler",
     "MixinPlayerTabOverlay",
     "MixinScreen",
     "MixinTitleScreen"
