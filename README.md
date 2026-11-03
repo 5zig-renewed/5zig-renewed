@@ -53,6 +53,10 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **26.2 Fabric** | green; `Hud` split handled by its own mixin | **HUD** |
 | **1.20.4 Fabric** | green, self-contained | **HUD** |
 | **1.21.7 Fabric** | green, self-contained | **HUD** |
+| **1.21.3 Fabric** | green, self-contained | **HUD** |
+| **1.21.6 Fabric** | green, self-contained | **HUD** |
+| **1.21.9 Fabric** | green, self-contained | **HUD** |
+| **1.21.1 NeoForge** | green, ModDevGradle 2.0.148 | **HUD** |
 
 Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation.
 
