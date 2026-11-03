@@ -23,7 +23,8 @@ for d in "$MIRRORS"/*.git; do
             --description "Mirror of 5zig-reborn/$name (read-only upsteam snapshot)" >/dev/null
         echo "  $name: created"
     fi
-    git -C "$d" push --mirror "https://github.com/$ORG/$name.git" 2>&1 | tail -1
+    git -C "$d" push --force "https://x-access-token:$(gh auth token)@github.com/$ORG/$name.git" \
+        "+refs/heads/*:refs/heads/*" "+refs/tags/*:refs/tags/*" 2>&1 | tail -2 || true
     # restore upstream default branch name
     def="$(git -C "$d" symbolic-ref --short HEAD 2>/dev/null || echo master)"
     gh api -X PATCH "repos/$ORG/$name" -f default_branch="$def" >/dev/null || true
