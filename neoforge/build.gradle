@@ -41,6 +41,10 @@ dependencies {
     minecraftLibrary('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
     minecraftLibrary 'net.sf.jacob-project:jacob:1.14.3'
     minecraftLibrary 'org.json:json:20231013'
+    minecraftLibrary 'com.googlecode.json-simple:json-simple:1.1.1'
+    minecraftLibrary 'com.kohlschutter.junixsocket:junixsocket-core:2.5.1'
+    minecraftLibrary 'com.kohlschutter.junixsocket:junixsocket-common:2.5.1'
+    minecraftLibrary 'com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1'
     minecraftLibrary 'org.xerial:sqlite-jdbc:3.45.3.0'
     minecraftLibrary 'io.netty:netty-codec-http:4.1.97.Final'
 }
@@ -70,6 +74,9 @@ def jarJarModules = [
         ['com.github.5zig-reborn', 'DiscordIPC', 'master-SNAPSHOT', '[1.0,)'],
         ['net.sf.jacob-project', 'jacob', '1.14.3', '[1.14.3]'],
         ['org.json', 'json', '20231013', '[20231013]'],
+        ['com.googlecode.json-simple', 'json-simple', '1.1.1', '[1.1.1]'],
+        ['com.kohlschutter.junixsocket', 'junixsocket-common', '2.5.1', '[2.5.1]'],
+        ['com.kohlschutter.junixsocket', 'junixsocket-native-common', '2.5.1', '[2.5.1]'],
         ['org.xerial', 'sqlite-jdbc', '3.45.3.0', '[3.45.3.0]'],
         ['io.netty', 'netty-codec-http', '4.1.97.Final', '[4.1.97.Final]'],
 ]

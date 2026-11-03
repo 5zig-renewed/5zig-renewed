@@ -25,6 +25,18 @@ dependencies {
     include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
     implementation 'org.json:json:20231013'
     include('org.json:json:20231013') { transitive = false }
+
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+    include('com.googlecode.json-simple:json-simple:1.1.1') { transitive = false }
+
+    implementation 'com.kohlschutter.junixsocket:junixsocket-core:2.5.1'
+
+    include('com.kohlschutter.junixsocket:junixsocket-core:2.5.1') { transitive = false }
+
+    include('com.kohlschutter.junixsocket:junixsocket-common:2.5.1') { transitive = false }
+
+    include('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') { transitive = false }
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
     include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'

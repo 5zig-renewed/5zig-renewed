@@ -28,6 +28,17 @@ dependencies {
     implementation 'net.sf.jacob-project:jacob:1.14.3'
     include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
     implementation 'org.json:json:20231013'
+    // json-simple backs the core's own JSON parsing (DiscordRPCManager, server list). It is NOT
+    // provided by Minecraft, and its absence only shows up in a packaged install — dev runs have it
+    // on the classpath transitively.
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    // DiscordIPC talks to the Discord socket over Unix domain sockets on Linux/macOS; the library
+    // is transitive-only in dev, so a packaged jar needs it nested explicitly.
+    implementation 'com.kohlschutter.junixsocket:junixsocket-core:2.5.1'
+    include('com.kohlschutter.junixsocket:junixsocket-core:2.5.1') { transitive = false }
+    include('com.kohlschutter.junixsocket:junixsocket-common:2.5.1') { transitive = false }
+    include('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') { transitive = false }
+    include('com.googlecode.json-simple:json-simple:1.1.1') { transitive = false }
     include('org.json:json:20231013') { transitive = false }
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
     include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }

@@ -25,10 +25,21 @@ dependencies {
     // 5zig's own deps, not provided by Minecraft
     implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
     implementation 'net.sf.jacob-project:jacob:1.14.3'
+    include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
     implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    include('org.apache.httpcomponents:httpclient:4.5.14') { transitive = false }
     implementation 'org.json:json:20231013'
+    include('org.json:json:20231013') { transitive = false }
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    include('com.googlecode.json-simple:json-simple:1.1.1') { transitive = false }
+    implementation 'com.kohlschutter.junixsocket:junixsocket-core:2.5.1'
+    include('com.kohlschutter.junixsocket:junixsocket-core:2.5.1') { transitive = false }
+    include('com.kohlschutter.junixsocket:junixsocket-common:2.5.1') { transitive = false }
+    include('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') { transitive = false }
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
     implementation 'io.netty:netty-codec-http:4.1.97.Final'
+    include('io.netty:netty-codec-http:4.1.97.Final') { transitive = false }
 
     // Mixin annotation processor: 26.x has no mappings, so Loom cannot start its own AP
     // (see the refmap section below). These are the same artifacts Loom puts on the
