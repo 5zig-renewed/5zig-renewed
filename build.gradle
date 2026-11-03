@@ -61,6 +61,8 @@ loom {
         client {
             client()
             ideConfigGenerated = true
+            // headless verification hook: boot straight into the test world
+            programArgs '--quickPlaySingleplayer', 'New World'
         }
     }
 }

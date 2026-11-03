@@ -25,7 +25,7 @@ public class GLUtil {
 
 	static {
 		try {
-			handle = (IGLUtil) Class.forName("GLUtilHandle").newInstance();
+			handle = (IGLUtil) Class.forName("eu.the5zig.mod.platform.GLUtilHandle").newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

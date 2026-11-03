@@ -98,7 +98,7 @@ public abstract class MixinClientPacketListener {
 			return;
 		}
 		try {
-			Object wrapped = Class.forName("WrappedItemStack")
+			Object wrapped = Class.forName("eu.the5zig.mod.platform.WrappedItemStack")
 					.getConstructor(net.minecraft.world.item.ItemStack.class)
 					.newInstance(packet.getItem());
 			The5zigMod.getListener().onInventorySetSlot(packet.getSlot(), (ItemStack) wrapped);

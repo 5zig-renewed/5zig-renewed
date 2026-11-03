@@ -52,7 +52,7 @@ public abstract class Gui {
 
 	static {
 		try {
-			handleClass = Class.forName("GuiHandle");
+			handleClass = Class.forName("eu.the5zig.mod.platform.GuiHandle");
 			handleConstructor = handleClass.getConstructor(Gui.class);
 
 			drawModalRectWithCustomSizedTexture = handleClass.getMethod("callDrawModalRectWithCustomSizedTexture", int.class, int.class, float.class, float.class, int.class, int.class, float
