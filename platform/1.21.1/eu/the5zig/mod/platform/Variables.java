@@ -248,6 +248,14 @@ public class Variables implements IVariables {
 	}
 
 	@Override
+	/**
+	 * 1.21.9+ treats text colours as strict ARGB, so a legacy {@code 0xRRGGBB} value (alpha 0)
+	 * renders nothing. The core passes colours without an alpha byte, so restore the missing alpha.
+	 */
+	private static int forceOpaque(int color) {
+		return (color & 0xFF000000) == 0 ? color | 0xFF000000 : color;
+	}
+
 	public void drawString(String string, int x, int y, int color, boolean withShadow) {
 		if (string == null) {
 			return;
@@ -258,7 +266,7 @@ public class Variables implements IVariables {
 			// crashing: there is no GuiGraphics to draw into.
 			return;
 		}
-		graphics.drawString(getFontrenderer(), string, x, y, color, withShadow);
+		graphics.drawString(getFontrenderer(), string, x, y, forceOpaque(color), withShadow);
 	}
 
 	@Override

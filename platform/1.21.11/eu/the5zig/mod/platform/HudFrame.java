@@ -48,6 +48,7 @@ public final class HudFrame {
 		RenderContext.clear();
 		RenderContext.set(graphics);
 
+
 		if (!The5zigMod.hasBeenInitialized() || !CoreState.isReady()) {
 			return;
 		}
@@ -77,6 +78,7 @@ public final class HudFrame {
 	 * Draws the "text above the hotbar" additions on top of the vanilla hotbar.
 	 */
 	public static void afterHotbar(GuiGraphics graphics) {
+
 		if (!The5zigMod.hasBeenInitialized() || !CoreState.isReady()) {
 			return;
 		}
