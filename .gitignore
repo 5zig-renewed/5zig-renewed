@@ -1,5 +1,28 @@
+# Gradle / build output (root, per-loader and per-version projects)
 build/
 .gradle/
 run/
 compile-classpath.txt
 *.log
+
+# per-version projects (versions/<mc>-<loader>/)
+versions/*/build/
+versions/*/.gradle/
+versions/*/run/
+versions/*/compile-classpath.txt
+
+# loader projects
+forge/build/
+forge/.gradle/
+forge/run/
+neoforge/build/
+neoforge/.gradle/
+neoforge/run/
+
+# loom / neoform scratch
+.gradle/loom-cache/
+build/neoForm/
+build/createSrgToMcp/
+
+# decompiled reference trees are not part of the repo
+mc-src/
