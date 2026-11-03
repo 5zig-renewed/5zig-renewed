@@ -62,7 +62,7 @@ public abstract class MixinScreen {
 			the5zig$ownsRenderContext = false;
 			RenderContext.clear();
 		}
-		// DisconnectedScreen no longer overrides render() in 1.21.11, so the auto-reconnect
+		// DisconnectedScreen no longer overrides render(), so the auto-reconnect
 		// countdown is driven from the generic screen hook.
 		if (CoreState.isReady() && (Object) this instanceof net.minecraft.client.gui.screens.DisconnectedScreen) {
 			try {

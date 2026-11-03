@@ -31,7 +31,8 @@ import java.util.List;
  * {@code width / 2} pixels tall (the 2:1 face/cape layout of the 5zig texture service); every frame is
  * registered with the vanilla {@link TextureManager} as its own texture.
  * <p>
- * 1.21.11 removed {@code net.minecraft.client.renderer.texture.Tickable} (texture animation is now
+ * Modern versions no longer drive texture animation through
+ * {@code net.minecraft.client.renderer.texture.Tickable} (sprite contents metadata does),
  * driven by sprite contents metadata), so the current frame is derived from the wall clock instead of
  * being advanced by a client tick. That keeps the animation running without a per-frame driver and
  * costs nothing when the cape is not drawn.

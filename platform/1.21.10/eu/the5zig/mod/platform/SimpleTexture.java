@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * A texture whose contents are supplied as a {@link BufferedImage} instead of a resource pack file.
  * <p>
- * 1.21.11 removed the numeric GL texture ids, {@code TextureUtil.prepareImage} and the synchronous
+ * 1.21.9+ removed the numeric GL texture ids, {@code TextureUtil.prepareImage} and the synchronous
  * {@code ImageIO}-style upload path: a texture is now a {@code GpuTexture} owned by an
  * {@link DynamicTexture}, which allocates on construction and re-uploads its {@link NativeImage} on
  * {@link DynamicTexture#upload()}. This class therefore wraps a dynamic texture instead of extending

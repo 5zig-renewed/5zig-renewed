@@ -217,6 +217,10 @@ public class GuiHandle extends Screen implements IGuiHandle {
 				(int) textureWidth, (int) textureHeight);
 	}
 
+	private static int opaque(int color) {
+		return (color & 0xFF000000) == 0 ? color | 0xFF000000 : color;
+	}
+
 	public static void drawRect(double left, double top, double right, double bottom, int color) {
 		GuiGraphics graphics = RenderContext.get();
 		if (graphics == null) {
@@ -226,7 +230,7 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		int y1 = (int) Math.min(top, bottom);
 		int x2 = (int) Math.max(left, right);
 		int y2 = (int) Math.max(top, bottom);
-		graphics.fill(x1, y1, x2, y2, color);
+		graphics.fill(x1, y1, x2, y2, opaque(color));
 	}
 
 	/**

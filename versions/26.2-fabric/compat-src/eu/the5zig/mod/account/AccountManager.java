@@ -81,7 +81,7 @@ public class AccountManager {
      * @throws UnsupportedOperationException always: 26.x has no password authentication any more.
      */
     public void addAccount(String email, String password) throws AuthenticationException {
-        throw new UnsupportedOperationException("5zig 26.1.2: e-mail/password account login is not available - "
+        throw new UnsupportedOperationException("5zig 26.2: e-mail/password account login is not available - "
                 + "Minecraft 26.x uses Microsoft authentication (authlib 7 removed UserAuthentication)");
     }
 
@@ -105,7 +105,7 @@ public class AccountManager {
         if ("legacy".equals(account.getAccountType())) {
             The5zigMod.getVars().setSession(account.getName(), account.getName(), "0", "legacy");
         } else {
-            throw new UnsupportedOperationException("5zig 26.1.2: switching to the online account '"
+            throw new UnsupportedOperationException("5zig 26.2: switching to the online account '"
                     + account.getEmail() + "' needs a Microsoft sign-in, which this build cannot perform");
         }
         account.setSelected(true);

@@ -63,7 +63,9 @@ public final class LegacyText {
 					}
 					if (formatting == ChatFormatting.RESET) {
 						style = Style.EMPTY;
-					} else if (formatting.isFormat()) {
+					} else if (!isColor(formatting)) {
+						// 26.2 dropped ChatFormatting#isFormat (the enum now only carries the code);
+						// the colour entries are exactly the ones TextColor knows a legacy value for.
 						style = style.applyFormat(formatting);
 					} else {
 						style = style.withColor(formatting);
@@ -107,7 +109,8 @@ public final class LegacyText {
 		if (style.getColor() != null) {
 			ChatFormatting color = legacyColor(style.getColor());
 			if (color != null) {
-				out.append('\u00a7').append(color.getChar());
+				// ChatFormatting#toString is the section-sign code itself ("\u00a7c").
+				out.append(color);
 			}
 		}
 		if (style.isObfuscated()) {
@@ -127,9 +130,19 @@ public final class LegacyText {
 		}
 	}
 
+	/**
+	 * 26.2 removed {@code ChatFormatting#isColor} / {@code #getColor}: the enum only carries the
+	 * code character now and the palette lives in {@code TextColor}. A formatting entry is exactly
+	 * one the {@code TextColor} legacy table does not resolve.
+	 */
+	private static boolean isColor(ChatFormatting formatting) {
+		return TextColor.fromLegacyFormat(formatting) != null;
+	}
+
 	private static ChatFormatting legacyColor(TextColor color) {
 		for (ChatFormatting formatting : ChatFormatting.values()) {
-			if (formatting.isColor() && formatting.getColor() != null && formatting.getColor() == color.getValue()) {
+			TextColor legacy = TextColor.fromLegacyFormat(formatting);
+			if (legacy != null && legacy.getValue() == color.getValue()) {
 				return formatting;
 			}
 		}

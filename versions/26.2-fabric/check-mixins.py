@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Verify that every mixin method target in platform/26.1.2 exists in the 26.1.2 jar."""
+"""Verify that every mixin method target in platform/26.2 exists in the 26.2 jar."""
 import os, re, subprocess, sys
 
-JAR = os.path.expanduser("~/.gradle/caches/fabric-loom/26.1.2/minecraft-merged.jar")
-MIXIN_DIR = "/platform/26.1.2/eu/the5zig/mod/mixin"
+JAR = os.path.expanduser("~/.gradle/caches/fabric-loom/26.2/minecraft-merged.jar")
+MIXIN_DIR = "/platform/26.2/eu/the5zig/mod/mixin"
 
 # cache of javap descriptor sets per class
 _cache = {}

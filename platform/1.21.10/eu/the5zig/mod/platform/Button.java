@@ -19,6 +19,7 @@
 
 package eu.the5zig.mod.platform;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import eu.the5zig.mod.gui.elements.IButton;
 import eu.the5zig.mod.util.RenderColor;
 import eu.the5zig.mod.util.RenderContext;
@@ -39,12 +40,19 @@ import net.minecraft.util.ARGB;
  * 1.20.1 port: the vanilla widget is {@code net.minecraft.client.gui.components.Button}, which
  * renders itself through {@code renderWidget(GuiGraphics, int, int, float)}. The 5zig core still
  * drives its widgets manually, so {@link #draw(int, int)} grabs the frame's {@code GuiGraphics}
- * from {@link RenderContext} and forwards to the vanilla render path.
+ * from {@link RenderContext} and forwards to the vanilla render path. 1.21.11 made
+ * {@code renderWidget} final and moved the sprite/label into {@code renderContents} +
+ * {@code renderDefaultSprite}; 1.21.10 still has the single overridable hook used here.
  */
 public class Button extends net.minecraft.client.gui.components.Button implements IButton {
 
 	private static final int COLOR_ENABLED = 14737632;
 	private static final int COLOR_DISABLED = 10526880;
+
+	private static final WidgetSprites SPRITES = new WidgetSprites(
+			ResourceLocation.withDefaultNamespace("widget/button"),
+			ResourceLocation.withDefaultNamespace("widget/button_disabled"),
+			ResourceLocation.withDefaultNamespace("widget/button_highlighted"));
 
 	private int disabledTicks = 0;
 	private int id;
@@ -200,12 +208,11 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITES.get(this.active, this.isHoveredOrFocused()),
 				getX(), getY(), getWidth(), getHeight(), ARGB.white(this.alpha));
 		drawLabel(graphics);
+		if (this.isHovered()) {
+			graphics.requestCursor(this.isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
+		}
 	}
 
-	private static final WidgetSprites SPRITES = new WidgetSprites(
-			ResourceLocation.withDefaultNamespace("widget/button"),
-			ResourceLocation.withDefaultNamespace("widget/button_disabled"),
-			ResourceLocation.withDefaultNamespace("widget/button_highlighted"));
 
 	/**
 	 * Draws the (centered) label, like 1.15's {@code Gui.drawCenteredString(getMessage(), x + width / 2, y + (height - 8) / 2, color)}.

@@ -47,7 +47,7 @@ public class SimpleTexture {
 		if (bufferedImage == null) {
 			return;
 		}
-		throw new UnsupportedOperationException("5zig 26.1.2: dynamic texture upload is not implemented "
+		throw new UnsupportedOperationException("5zig 26.2: dynamic texture upload is not implemented "
 				+ "(26.x textures are GPU resources; the cape/item-model upload path still needs porting)");
 	}
 
@@ -60,7 +60,7 @@ public class SimpleTexture {
 	}
 
 	public int getId() {
-		throw new UnsupportedOperationException("5zig 26.1.2: GL texture ids no longer exist "
+		throw new UnsupportedOperationException("5zig 26.2: GL texture ids no longer exist "
 				+ "(AbstractTexture exposes a GpuTexture instead)");
 	}
 }

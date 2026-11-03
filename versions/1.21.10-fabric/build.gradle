@@ -22,17 +22,22 @@ dependencies {
     // authlib 4; authlib 7 dropped it, and the core's Spotify/HTTP code imports it directly.
     implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
     implementation 'net.sf.jacob-project:jacob:1.14.3'
+    include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
     implementation 'org.json:json:20231013'
+    include('org.json:json:20231013') { transitive = false }
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+    include('org.apache.httpcomponents:httpclient:4.5.13') { transitive = false }
     implementation 'io.netty:netty-codec-http:4.1.97.Final'
+    include('io.netty:netty-codec-http:4.1.97.Final') { transitive = false }
 }
 
 // ---------------------------------------------------------------------------------------------
 // Core overlay
 //
 // The core was written against authlib 4 (GameProfile#getId/#getName, UserAuthentication,
-// YggdrasilAuthenticationService). Minecraft 1.21.11 ships authlib 7, where GameProfile is a record
+// YggdrasilAuthenticationService). Minecraft 1.21.10 ships authlib 7, where GameProfile is a record
 // with id()/name() and the whole legacy Yggdrasil client is gone, and commons-lang3 3.19 added
 // org.apache.commons.lang3.Strings which collides with Guava's Strings in two files.
 //

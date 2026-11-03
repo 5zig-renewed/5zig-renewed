@@ -480,7 +480,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public boolean isChatOpened() {
-		return getMinecraft().screen instanceof ChatScreen;
+		return getMinecraft().gui.screen() instanceof ChatScreen;
 	}
 
 	@Override
@@ -511,7 +511,7 @@ public class Variables implements IVariables {
 	 * initialized yet.
 	 */
 	private EditBox getChatField() {
-		Screen screen = getMinecraft().screen;
+		Screen screen = getMinecraft().gui.screen();
 		if (!(screen instanceof ChatScreen)) {
 			return null;
 		}
@@ -532,7 +532,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public boolean isSignGUIOpened() {
-		return getMinecraft().screen instanceof AbstractSignEditScreen;
+		return getMinecraft().gui.screen() instanceof AbstractSignEditScreen;
 	}
 
 	@Override
@@ -655,7 +655,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public void displayScreen(Object gui) {
-		getMinecraft().setScreen((Screen) gui);
+		getMinecraft().gui.setScreen((Screen) gui);
 	}
 
 	@Override
@@ -664,7 +664,7 @@ public class Variables implements IVariables {
 		MinecraftFactory.getClassProxyCallback().resetServer();
 		ServerData serverData = new ServerData(host, host + ":" + port, net.minecraft.client.multiplayer.ServerData.Type.OTHER);
 		// 26.x added a TransferState argument (null == an ordinary, user-initiated connect).
-		ConnectScreen.startConnecting(minecraft.screen, minecraft, new ServerAddress(host, port), serverData, false, null);
+		ConnectScreen.startConnecting(minecraft.gui.screen(), minecraft, new ServerAddress(host, port), serverData, false, null);
 	}
 
 	@Override
@@ -755,7 +755,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public String getOpenContainerTitle() {
-		Screen screen = getMinecraft().screen;
+		Screen screen = getMinecraft().gui.screen();
 		if (screen instanceof AbstractContainerScreen) {
 			return ((AbstractContainerScreen<?>) screen).getTitle().getString();
 		}
@@ -805,7 +805,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public boolean isTerrainLoading() {
-		return getMinecraft().screen instanceof LevelLoadingScreen;
+		return getMinecraft().gui.screen() instanceof LevelLoadingScreen;
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -958,8 +958,14 @@ public class Variables implements IVariables {
 		if (getWorld() == null) {
 			return "No world";
 		}
-		// "E: <rendered>/<loaded>, B: <culled>, SD: <simulation distance>"
-		String statistics = getMinecraft().levelRenderer.getEntityStatistics();
+		// "E: <rendered>/<loaded>, SD: <simulation distance>"
+		// 26.2 split level extraction out of LevelRenderer into LevelExtractor. Its
+		// entityStatistics() is @Nullable (null while the extractor has no level), unlike the old
+		// LevelRenderer method which the HUD only reached with a world loaded.
+		String statistics = getMinecraft().levelExtractor.entityStatistics();
+		if (statistics == null) {
+			return "0/0";
+		}
 		int start = statistics.indexOf("E: ");
 		if (start < 0) {
 			return "0/0";
@@ -1124,7 +1130,7 @@ public class Variables implements IVariables {
 		if (player == null) {
 			return 0;
 		}
-		Screen screen = getMinecraft().screen;
+		Screen screen = getMinecraft().gui.screen();
 		if (screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>) {
 			// 26.x draws inventory effects from EffectsInInventory, which the container screen owns.
 			return 0;
@@ -1331,7 +1337,8 @@ public class Variables implements IVariables {
 
 	@Override
 	public boolean shouldDrawHUD() {
-		return !getGameSettings().hideGui;
+		// 26.2 moved the F1 state from Options to Hud.
+		return !getMinecraft().gui.hud.isHidden();
 	}
 
 	@Override
@@ -1393,7 +1400,7 @@ public class Variables implements IVariables {
 		if (minecraft == null || minecraft.gui == null) {
 			return;
 		}
-		minecraft.gui.getChat().addClientSystemMessage(component);
+		minecraft.gui.hud.getChat().addClientSystemMessage(component);
 	}
 
 	@Override
@@ -1423,7 +1430,7 @@ public class Variables implements IVariables {
 		}
 		// 26.x replaced plugin channels with typed CustomPacketPayloads: a receiver only accepts a
 		// payload type it has a codec for, so arbitrary raw bytes cannot be sent any more.
-		throw new UnsupportedOperationException("5zig 26.1.2: sendCustomPayload('" + channel
+		throw new UnsupportedOperationException("5zig 26.2: sendCustomPayload('" + channel
 				+ "') is not available - Minecraft 26.x replaced raw plugin channels with typed CustomPacketPayloads");
 	}
 
@@ -1438,7 +1445,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public Gui getCurrentScreen() {
-		Screen screen = getMinecraft().screen;
+		Screen screen = getMinecraft().gui.screen();
 		if (!(screen instanceof GuiHandle)) {
 			return null;
 		}
@@ -1447,7 +1454,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public Object getMinecraftScreen() {
-		return getMinecraft().screen;
+		return getMinecraft().gui.screen();
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -1551,7 +1558,7 @@ public class Variables implements IVariables {
 			return;
 		}
 		graphics.blitSprite(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
-				net.minecraft.client.gui.Gui.getMobEffectSprite(holder.get()), 0, 0, 18, 18);
+				net.minecraft.client.gui.Hud.getMobEffectSprite(holder.get()), 0, 0, 18, 18);
 	}
 
 	@Override
@@ -1572,7 +1579,7 @@ public class Variables implements IVariables {
 	@Override
 	public void setIngameFocus() {
 		// setScreen(null) also re-grabs the mouse and resumes the sound engine.
-		getMinecraft().setScreen(null);
+		getMinecraft().gui.setScreen(null);
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -1714,7 +1721,7 @@ public class Variables implements IVariables {
 		}
 		Minecraft minecraft = getMinecraft();
 		if (minecraft != null && minecraft.gui != null) {
-			minecraft.gui.getChat().addClientSystemMessage(result);
+			minecraft.gui.hud.getChat().addClientSystemMessage(result);
 		}
 	}
 

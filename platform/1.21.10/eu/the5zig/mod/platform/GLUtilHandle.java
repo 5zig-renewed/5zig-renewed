@@ -25,7 +25,7 @@ import eu.the5zig.mod.util.RenderContext;
 import net.minecraft.client.gui.GuiGraphics;
 
 /**
- * 1.21.11 implementation of {@link IGLUtil}.
+ * 1.21.10 implementation of {@link IGLUtil}.
  * <p>
  * The 1.21.5 render-pipeline overhaul removed what was left of the global GL state API:
  * {@code RenderSystem} no longer has {@code setShaderColor}, {@code enableBlend},

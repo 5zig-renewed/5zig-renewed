@@ -55,7 +55,7 @@ public abstract class MixinAbstractClientPlayer {
 	}
 
 	/**
-	 * 5zig capes: 1.21.11 removed {@code AbstractClientPlayer#getCloakTextureLocation} - capes are
+	 * 5zig capes: 1.21.9+ removed {@code AbstractClientPlayer#getCloakTextureLocation} - capes are
 	 * now part of the immutable {@code PlayerSkin} record returned by {@code getSkin()}, which has no
 	 * per-player hook left. Replacing the whole skin would also drop the signed skin data, so the
 	 * custom cape texture resolved by {@link eu.the5zig.mod.platform.ResourceManager} is currently

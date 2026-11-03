@@ -221,7 +221,7 @@ public class Gui2ndChat implements IGui2ndChat {
 
 	public void printChatMessage(Component chatComponent, int id) {
 		LOG4J.info("[CHAT2] {}", chatComponent.getString());
-		this.setChatLine(chatComponent, id, Minecraft.getInstance().gui.getGuiTicks(), false);
+		this.setChatLine(chatComponent, id, Minecraft.getInstance().gui.hud.getGuiTicks(), false);
 	}
 
 	private void setChatLine(Component chatComponent, int id, int currentUpdateCounter, boolean refresh) {
@@ -339,7 +339,7 @@ public class Gui2ndChat implements IGui2ndChat {
 		if (style == null || style.getClickEvent() == null) {
 			return false;
 		}
-		ChatScreen screen = Minecraft.getInstance().screen instanceof ChatScreen ? (ChatScreen) Minecraft.getInstance().screen : null;
+		ChatScreen screen = Minecraft.getInstance().gui.screen() instanceof ChatScreen ? (ChatScreen) Minecraft.getInstance().gui.screen() : null;
 		if (screen == null) {
 			return false;
 		}
@@ -412,7 +412,7 @@ public class Gui2ndChat implements IGui2ndChat {
 	}
 
 	public boolean isChatOpened() {
-		return Minecraft.getInstance().screen instanceof ChatScreen;
+		return Minecraft.getInstance().gui.screen() instanceof ChatScreen;
 	}
 
 	/**

@@ -54,7 +54,7 @@ public abstract class MixinDisconnectedScreen {
 	}
 
 	/**
-	 * The auto-reconnect countdown is drawn from {@link MixinScreen}, because 1.21.11's
+	 * The auto-reconnect countdown is drawn from {@link MixinScreen}, because the modern
 	 * {@code DisconnectedScreen} no longer overrides {@code Screen#render} (it builds its layout from
 	 * widgets in {@code init}), so there is no method to inject into here.
 	 */

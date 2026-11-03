@@ -244,7 +244,7 @@ public class Variables implements IVariables {
 		if (graphics == null) {
 			return;
 		}
-		graphics.drawCenteredString(getFontrenderer(), string, x, y, color);
+		graphics.drawCenteredString(getFontrenderer(), string, x, y, forceOpaque(color));
 	}
 
 	@Override

@@ -16,6 +16,10 @@ repositories {
 }
 
 dependencies {
+    // 26.2 initialises lwjgl-shaderc at startup; Loom's run config does not carry its natives,
+    // so add them explicitly for runClient (runtime only, never shipped in the mod jar).
+    runtimeOnly 'org.lwjgl:lwjgl-shaderc:3.4.1'
+    runtimeOnly 'org.lwjgl:lwjgl-shaderc:3.4.1:natives-linux'
     // 26.x ships unobfuscated jars, so there is no `mappings` line at all: the platform
     // layer links against the real names that are in the jar.
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -25,10 +29,15 @@ dependencies {
     // 5zig's own deps, not provided by Minecraft
     implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
     implementation 'net.sf.jacob-project:jacob:1.14.3'
+    include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
     implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    include('org.apache.httpcomponents:httpclient:4.5.14') { transitive = false }
     implementation 'org.json:json:20231013'
+    include('org.json:json:20231013') { transitive = false }
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
     implementation 'io.netty:netty-codec-http:4.1.97.Final'
+    include('io.netty:netty-codec-http:4.1.97.Final') { transitive = false }
 
     // Mixin annotation processor: 26.x has no mappings, so Loom cannot start its own AP
     // (see the refmap section below). These are the same artifacts Loom puts on the
@@ -67,8 +76,8 @@ sourceSets {
 // Core overlay
 //
 // The core was written against authlib 4 (GameProfile#getId/#getName, UserAuthentication,
-// YggdrasilAuthenticationService). Minecraft 26.1.2 ships authlib 7, where GameProfile is a record
-// with id()/name() and the legacy Yggdrasil password client is gone, and commons-lang3 3.19 added
+// YggdrasilAuthenticationService). Minecraft 26.2 ships authlib 9, where GameProfile is a record
+// with id()/name() and the legacy Yggdrasil password client is gone, and commons-lang3 3.19+ added
 // org.apache.commons.lang3.Strings which collides with Guava's Strings in two files.
 //
 // Rather than editing core/ (shared with the verified 1.20.1 build), the affected files live in
@@ -278,6 +287,7 @@ loom {
             ideConfigGenerated = true
             // headless verification hook: boot straight into the test world
             programArgs '--quickPlaySingleplayer', 'New World'
+
         }
     }
 }

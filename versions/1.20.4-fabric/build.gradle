@@ -1,0 +1,124 @@
+plugins {
+    id 'fabric-loom' version '1.7.4'
+}
+
+version = '4.0.0-alpha.1'
+group = 'eu.the5zig.renewed'
+base { archivesName = '5zig-renewed-1.20.4-fabric' }
+
+// The build lives in versions/1.20.4-fabric but the sources live at the repository root.
+def repoRoot = file("${projectDir}/../..")
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:1.20.4"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:0.15.11"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.97.2+1.20.4"
+
+    // 5zig's own deps not provided by Minecraft 1.20.4
+    // `implementation` puts them on the dev classpath, `include` nests the same
+    // artifacts into the mod jar (jar-in-jar, listed in fabric.mod.json "jars").
+    // transitive = false: only the named jar is embedded; their transitive peers
+    // (netty-codec, netty-common, ...) are already shipped by Minecraft.
+    implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    include('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { transitive = false }
+    implementation 'net.sf.jacob-project:jacob:1.14.3'
+    include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
+    implementation 'org.json:json:20231013'
+    include('org.json:json:20231013') { transitive = false }
+    implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
+    implementation 'io.netty:netty-codec-http:4.1.97.Final'
+    include('io.netty:netty-codec-http:4.1.97.Final') { transitive = false }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+                    new File(repoRoot, 'core').path,
+                    new File(repoRoot, 'common').path,
+                    new File(repoRoot, 'api').path,
+                    // Rooted one level below the package root on purpose: the excludes below are relative
+                    // to each source directory, and rooting this one at 'eu' keeps the two authlib-6
+                    // replacements (same package paths as the core files they replace) out of them.
+                    new File(repoRoot, 'platform/1.20.4/eu').path,
+                    new File(repoRoot, 'loader/fabric/java').path,
+                    new File(repoRoot, 'loader/fabric-1.20.4/java').path
+            ]
+            exclude 'eu/the5zig/mod/installer/**'
+            // authlib 6 (1.20.4) removed the legacy Yggdrasil user authentication these two core
+            // classes are written against; the platform provides 1.20.4 copies instead of editing core.
+            exclude 'eu/the5zig/mod/account/AccountManager.java'
+            exclude 'eu/the5zig/mod/chat/network/packets/PacketEncryption.java'
+        }
+        resources {
+            srcDirs = [
+                    new File(repoRoot, 'core/resources').path,
+                    new File(repoRoot, 'loader/fabric-1.20.4/resources').path,
+                    new File(repoRoot, 'loader/resources').path
+            ]
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}
+
+// eu.the5zig.mod.Version reads these three attributes from the first META-INF/MANIFEST.MF
+// that advertises "5zig-Version"; without them the HUD and the version string fall back
+// to "bDEV". Same trio as the 1.20.1 root and forge builds.
+def jarManifestAttributes = [
+        '5zig-Version'     : project.version,
+        'Minecraft-Version': '1.20.4',
+        '5zig-Build'       : 'alpha',
+]
+
+tasks.named('jar') {
+    manifest { attributes(jarManifestAttributes) }
+}
+
+// Loom ships the remapped artifact, so the attributes have to be on remapJar as well.
+tasks.named('remapJar') {
+    manifest { attributes(jarManifestAttributes) }
+}
+
+loom {
+    accessWidenerPath = file("${repoRoot}/loader/fabric-1.20.4/resources/5zig.accesswidener")
+    runs {
+        client {
+            client()
+            ideConfigGenerated = true
+            // headless verification hook: boot straight into the test world
+            programArgs '--quickPlaySingleplayer', 'New World'
+        }
+    }
+}
+
+tasks.register('printCompileClasspath') {
+    doLast {
+        def f = file("${projectDir}/compile-classpath.txt")
+        f.text = sourceSets.main.compileClasspath.asPath
+        println "classpath entries: " + sourceSets.main.compileClasspath.files.size()
+    }
+}

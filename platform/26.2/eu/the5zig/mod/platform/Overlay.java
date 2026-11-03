@@ -147,7 +147,8 @@ public class Overlay implements IOverlay {
 
 		public static void create(String title, String subTitle, Object uniqueReference) {
 			Minecraft minecraft = Minecraft.getInstance();
-			ToastManager toastManager = minecraft == null ? null : minecraft.getToastManager();
+			// 26.2: the toast manager lives on Gui (Minecraft#getToastManager is gone).
+			ToastManager toastManager = minecraft == null || minecraft.gui == null ? null : minecraft.gui.toastManager();
 			if (toastManager == null) {
 				return;
 			}

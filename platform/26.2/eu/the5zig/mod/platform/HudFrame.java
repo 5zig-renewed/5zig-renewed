@@ -50,8 +50,8 @@ public final class HudFrame {
 			return;
 		}
 		Minecraft minecraft = Minecraft.getInstance();
-		// F1 hides the vanilla HUD; the overlay follows it.
-		if (minecraft != null && minecraft.options != null && minecraft.options.hideGui) {
+		// 26.2 moved the F1 state (and everything else HUD-related) from Options to Hud.
+		if (minecraft != null && minecraft.gui != null && minecraft.gui.hud.isHidden()) {
 			return;
 		}
 		try {
