@@ -39,8 +39,8 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.20.1 Forge** | green, jarJar'd (17.7 MB) | **HUD** |
 | **1.20.1 NeoForge** | green (ForgeGradle 6 + official mappings) | **HUD** |
 | **1.21.1 Fabric** | green | **HUD** |
-| 1.21.11 Fabric | green | core inits, mixins apply, **overlay not drawing** |
-| 26.1.2 Fabric | green (Java 25, unobfuscated) | core inits, mixins apply, **overlay not drawing** |
+| **1.21.11 Fabric** | green | **HUD** (strict-ARGB colour fix) |
+| 26.1.2 Fabric | green (Java 25, unobfuscated) | core inits, mixins apply, **overlay not drawing** — 26.x draws through a render-state extractor, not `Gui#render` |
 
 Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation.
 
@@ -56,8 +56,9 @@ byte-identical for the 1.20.1 builds.
 
 ### Known gaps
 
-- **1.21.11 / 26.1.2 HUD**: the hook runs (`HudFrame.begin` reached, core ready) but nothing appears —
-  the draw path needs work in those platforms.
+- **26.1.2 HUD**: the hook runs and the core issues draw calls, but 26.x collects GUI geometry through a
+  `GuiGraphicsExtractor` during `Gui#extractRenderState` instead of immediate-mode `Gui#render`, so text
+  submitted there never reaches the screen. Needs the extractor API, not the old draw path.
 - 1.21.11/26.1.2 jars have **no mixin refmap**, so they are dev-only until Loom emits one.
 - plugin channels, capes, 2nd chat and server ping are degraded/stubbed in the 1.21+ platforms (typed
   payloads, `getCloakTextureLocation` removal); see each `versions/*/PORT-NOTES.md`.
