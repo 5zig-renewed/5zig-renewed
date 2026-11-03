@@ -1,0 +1,66 @@
+plugins {
+    id 'fabric-loom' version '1.7.4'
+}
+
+version = '4.0.0-alpha.1'
+group = 'eu.the5zig.renewed'
+base { archivesName = '5zig-renewed-1.20.1-fabric' }
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:0.15.11"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.92.2+1.20.1"
+
+    // 5zig's own deps not provided by Minecraft 1.20.1
+    implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    implementation 'net.sf.jacob-project:jacob:1.14.3'
+    implementation 'org.json:json:20231013'
+    implementation 'io.netty:netty-codec-http:4.1.97.Final'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['core', 'common', 'api', 'platform/1.20.1', 'loader/fabric/java']
+            exclude 'eu/the5zig/mod/installer/**'
+        }
+        resources {
+            srcDirs = ['core/resources', 'loader/fabric/resources']
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+loom {
+    accessWidenerPath = file('loader/fabric/resources/5zig.accesswidener')
+    runs {
+        client {
+            client()
+            ideConfigGenerated = true
+        }
+    }
+}
+
+tasks.register('printCompileClasspath') {
+    doLast {
+        def f = file('compile-classpath.txt')
+        f.text = sourceSets.main.compileClasspath.asPath
+        println "classpath entries: " + sourceSets.main.compileClasspath.files.size()
+    }
+}

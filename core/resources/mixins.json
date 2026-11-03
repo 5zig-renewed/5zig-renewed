@@ -1,0 +1,32 @@
+{
+  "required": true,
+  "package": "eu.the5zig.mod.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.refmap.json",
+
+  "mixins": [
+    "MixinCommonMinecraft",
+    "MixinGuiIngameMenu",
+    "MixinMinecraft",
+    "MixinGuiIngame",
+    "MixinGuiOptions",
+    "MixinRenderLivingEntity",
+    "MixinGuiMainMenu",
+    "MixinEntityRenderer",
+    "MixinNetHandlerPlayClient",
+    "MixinAbstractClientPlayer",
+    "MixinEntityPlayerSP",
+    "MixinRenderPlayer",
+    "MixinGuiAchievement",
+    "MixinGuiChat",
+    "MixinGuiChatNew",
+    "MixinGuiPlayerTabOverlay",
+    "MixinGuiScreen",
+    "MixinNetworkManager",
+    "MixinGameSettings",
+    "MixinGuiConnecting",
+    "MixinGuiDisconnected",
+    "MixinServerListEntry",
+    "MixinGuiGameOver"
+  ]
+}
