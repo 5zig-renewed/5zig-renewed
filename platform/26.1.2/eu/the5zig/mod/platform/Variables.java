@@ -237,7 +237,7 @@ public class Variables implements IVariables {
 			return;
 		}
 		Component text = toText(string);
-		graphics.text(getFontrenderer(), text, x - getFontrenderer().width(text) / 2, y, color);
+		graphics.text(getFontrenderer(), text, x - getFontrenderer().width(text) / 2, y, forceOpaque(color));
 	}
 
 	@Override
@@ -250,8 +250,7 @@ public class Variables implements IVariables {
 		drawString(string, x, y, color, true);
 	}
 
-	@Override
-	/**
+		/**
 	 * 1.21.9+ treats text colours as strict ARGB, so a legacy {@code 0xRRGGBB} value (alpha 0)
 	 * renders nothing. The core passes colours without an alpha byte, so restore the missing alpha.
 	 */
@@ -259,6 +258,7 @@ public class Variables implements IVariables {
 		return (color & 0xFF000000) == 0 ? color | 0xFF000000 : color;
 	}
 
+@Override
 	public void drawString(String string, int x, int y, int color, boolean withShadow) {
 		if (string == null) {
 			return;
@@ -269,7 +269,7 @@ public class Variables implements IVariables {
 			// crashing: there is no GuiGraphicsExtractor to draw into.
 			return;
 		}
-		graphics.text(getFontrenderer(), toText(string), x, y, color, withShadow);
+		graphics.text(getFontrenderer(), toText(string), x, y, forceOpaque(color), withShadow);
 	}
 
 	/**
