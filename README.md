@@ -33,49 +33,35 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 
 ## Status
 
-| Target | State |
-|---|---|
-| **1.20.1 Fabric** | **build green + client-verified** — HUD renders in-world (FPS, XYZ, facing, AFK) |
-| **1.20.1 Forge** | **build green + client-verified** — same HUD, same core, both mixin configs applied |
-| 1.20.1 NeoForge | build config in place; NeoGradle 7 hands out SRG-named 1.20.1 classes, needs the `official` mappings channel — queued |
-| 1.21.1, 1.21.x, 26.x | queued (eras E7–E10) |
-| 1.16 – 1.19 | queued (eras E1–E4), backfill |
+| Target | Build | Client-verified |
+|---|---|---|
+| **1.20.1 Fabric** | green, self-contained jar (17.8 MB, 5 libs nested) | **HUD + M menu + translations** |
+| **1.20.1 Forge** | green, jarJar'd (17.7 MB) | **HUD** |
+| **1.20.1 NeoForge** | green (ForgeGradle 6 + official mappings) | **HUD** |
+| **1.21.1 Fabric** | green | **HUD** |
+| 1.21.11 Fabric | green | core inits, mixins apply, **overlay not drawing** |
+| 26.1.2 Fabric | green (Java 25, unobfuscated) | core inits, mixins apply, **overlay not drawing** |
 
-| Fabric | Forge |
-|---|---|
-| ![1.20.1 Fabric HUD](docs/1.20.1-fabric-hud.png) | ![1.20.1 Forge HUD](docs/1.20.1-forge-hud.png) |
+Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation.
 
-Both builds were verified in real headless clients (Xvfb + llvmpipe): mod loads, core initialises in
-249–540 ms, 12 key bindings register, and the overlay draws FPS, coordinates, facing and the AFK
-timer.
+### Platform layout
 
-### Platform location
+One platform implementation per Minecraft version under `platform/<mc>/eu/the5zig/mod/platform`, with
+loader glue in `loader/<loader>-<mc>/`. The 1.20.1 platform is the reference; later versions were
+ported from it against decompiled sources (`~/work/mc-src/<mc>/out`, not from memory).
 
-The platform layer lives in `eu.the5zig.mod.platform`, **not** the default package. Forge's
-`TransformingClassLoader` refuses to load default-package classes, which made the original 1.15
-layout unloadable there; three core classes resolve platform types reflectively and were updated
-(`MinecraftFactory`, `GLUtil`, `Gui`).
+1.21.1 and later need authlib 6/7 and commons-lang 3.19 fixes that the 1.20.1 core cannot take, so
+those builds use a version-local `compat-src` overlay plus a filtered `core` copy — `core/` stays
+byte-identical for the 1.20.1 builds.
 
 ### Known gaps
 
-- the mod menu key (**M**) does not open the GUI on either loader yet
-- capes, 2nd chat, server ping and the friends/chat backend are wired but not exercised against live servers
-- Discord Rich Presence, TeamSpeak and the iTunes/WMP bridges are inert on Linux
-
-## Release jars
-
-Both 1.20.1 jars are self-contained: `DiscordIPC`, `jacob`, `org.json`, `sqlite-jdbc` and
-`netty-codec-http` are embedded, and `eu.the5zig.mod.Version` gets its `5zig-Version` /
-`Minecraft-Version` / `5zig-Build` manifest attributes from the build.
-
-| Loader | Mechanism | Artifact |
-|---|---|---|
-| Fabric | Loom `include` → jar-in-jar (`META-INF/jars/`, listed in `fabric.mod.json` `"jars"`) | `build/libs/5zig-renewed-1.20.1-fabric-<version>.jar` |
-| Forge | ForgeGradle JarJar → `META-INF/jarjar/` + `META-INF/jarjar/metadata.json` | `forge/build/libs/5zig-renewed-1.20.1-forge-<version>.jar` (the plain jar is kept as `-slim.jar`) |
-
-Native-carrying jars (`sqlite-jdbc`) stay intact as nested jars. Translations are generated into
-`loader/resources/lang/44/` (shared by both loaders) by `scripts/generate-lang.py`, which converts
-the [translations](https://github.com/5zig-reborn/translations) sources for `Version.LANGVERSION`.
+- **1.21.11 / 26.1.2 HUD**: the hook runs (`HudFrame.begin` reached, core ready) but nothing appears —
+  the draw path needs work in those platforms.
+- 1.21.11/26.1.2 jars have **no mixin refmap**, so they are dev-only until Loom emits one.
+- plugin channels, capes, 2nd chat and server ping are degraded/stubbed in the 1.21+ platforms (typed
+  payloads, `getCloakTextureLocation` removal); see each `versions/*/PORT-NOTES.md`.
+- translations cover the 1.20.1 builds; 1.21+ ships the same bundle but newer labels were not audited.
 
 ## Building 1.20.1 Fabric
 
