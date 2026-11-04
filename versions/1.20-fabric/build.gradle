@@ -46,6 +46,8 @@ dependencies {
     include('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') { transitive = false }
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
     include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
+    implementation 'org.hsqldb:hsqldb:2.7.4'
+    include('org.hsqldb:hsqldb:2.7.4') { transitive = false }
     implementation 'io.netty:netty-codec-http:4.1.97.Final'
     include('io.netty:netty-codec-http:4.1.97.Final') { transitive = false }
 }

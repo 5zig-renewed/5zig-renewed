@@ -1,0 +1,227 @@
+plugins {
+    // ModDevGradle is NeoForge's official Gradle plugin. 2.0.148 is the one the verified 26.1.2
+    // build uses; it understands the 26.x version scheme and the unobfuscated NeoForm config that
+    // 26.x ships. It maps 26.2.0.x to Minecraft 26.2 (see
+    // VersionCapabilitiesInternal#neoForgeVersionToMinecraftVersion).
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = '4.0.0-alpha.1'
+group = 'eu.the5zig.renewed'
+base { archivesName = '5zig-renewed-26.2-neoforge' }
+
+// The build lives in neoforge-26.2/ but the sources live at the repository root.
+def repoRoot = file("${projectDir}/..")
+
+// Minecraft 26.x is built for and run on Java 25 (neoform config: "java_target": 25), so the whole
+// mod has to target class file 69.
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(25) }
+}
+
+neoForge {
+    enable {
+        // NeoForge 26.2.0.x is the Minecraft 26.2 line (FancyModLoader 11, loaderVersion [11,)).
+        version = '26.2.0.93'
+
+        // Only the compiled game jar is needed: no source attachments and no decompile/
+        // recompile step, which keeps this build inside the box's memory budget.
+        disableRecompilation = true
+    }
+
+    runs {
+        client {
+            client()
+            gameDirectory = project.file('run')
+            // headless verification hook: boot straight into the test world
+            programArgument '--quickPlaySingleplayer'
+            programArgument 'New World'
+        }
+    }
+
+    mods {
+        the5zigmod {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://jitpack.io' }
+}
+
+dependencies {
+    // 5zig's own libraries, which Minecraft does not ship. `implementation` puts them on the
+    // dev classpath; `jarJar` nests the same artifacts into the mod jar (META-INF/jarjar/ +
+    // metadata.json) so the shipped jar is self-contained, exactly like the other builds.
+    // transitive = false: only the named jar is embedded; their transitive peers
+    // (netty-codec, netty-common, gson, ...) are already shipped by Minecraft/NeoForge.
+    def discordIpc = implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') {
+        transitive = false
+        exclude group: 'com.google.code.gson'
+    }
+    def jacob = implementation('net.sf.jacob-project:jacob:1.14.3') {
+        transitive = false
+    }
+    def json = implementation('org.json:json:20231013') {
+        transitive = false
+    }
+    def sqlite = implementation('org.xerial:sqlite-jdbc:3.45.3.0') {
+        transitive = false
+    }
+    // 5zig's HSQLDB-backed storage (core/eu/the5zig/util/db) resolves org.hsqldb.jdbc.JDBCDriver
+    // by name at runtime, so the engine has to be on the classpath and nested in the shipped jar.
+    // No `additionalRuntimeClasspath` companion on 26.x: MDG rejects that configuration there.
+    def hsqldb = implementation('org.hsqldb:hsqldb:2.7.4') {
+        transitive = false
+    }
+    def nettyCodecHttp = implementation('io.netty:netty-codec-http:4.1.97.Final') {
+        transitive = false
+    }
+    // DiscordIPC's own runtime dependencies. It parses Discord's JSON with json-simple and opens
+    // the Discord socket through junixsocket's unix-domain transport on Linux/macOS, but both are
+    // only reachable transitively in dev — a packaged jar has to nest them explicitly or the core
+    // dies with NoClassDefFoundError the moment Discord RPC is constructed.
+    def jsonSimple = implementation('com.googlecode.json-simple:json-simple:1.1.1') {
+        transitive = false
+    }
+    def junixsocketCommon = implementation('com.kohlschutter.junixsocket:junixsocket-common:2.5.1') {
+        transitive = false
+    }
+    def junixsocketNative = implementation('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') {
+        transitive = false
+    }
+    // Minecraft 26.x no longer ships Apache HttpClient, which the core uses for Spotify and the
+    // "open URL" helper. httpcore is nested as well: without it the Spotify path dies with
+    // NoClassDefFoundError inside a packaged install.
+    def httpclient = implementation('org.apache.httpcomponents:httpclient:4.5.14') {
+        transitive = false
+    }
+    def httpcore = implementation('org.apache.httpcomponents:httpcore:4.4.16') {
+        transitive = false
+    }
+
+    // No `additionalRuntimeClasspath` on 26.x: MDG rejects it ("there is no additional classpath
+    // anymore for Minecraft ...") because FML 11's mod-locator rework makes the mod's own class
+    // loader see the game classpath. `implementation` alone is enough.
+
+    jarJar(discordIpc)
+    jarJar(jacob) { version { strictly '[1.14.3]' } }
+    jarJar(json) { version { strictly '[20231013]' } }
+    jarJar(sqlite) { version { strictly '[3.45.3.0]' } }
+    jarJar(hsqldb) { version { strictly '[2.7.4]' } }
+    jarJar(nettyCodecHttp) { version { strictly '[4.1.97.Final]' } }
+    jarJar(jsonSimple) { version { strictly '[1.1.1]' } }
+    jarJar(junixsocketCommon) { version { strictly '[2.5.1]' } }
+    jarJar(junixsocketNative) { version { strictly '[2.5.1]' } }
+    jarJar(httpclient) { version { strictly '[4.5.14]' } }
+    jarJar(httpcore) { version { strictly '[4.4.16]' } }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Core overlay
+//
+// The core was written against authlib 4 (GameProfile#getId/#getName, UserAuthentication,
+// YggdrasilAuthenticationService). Minecraft 26.x ships authlib 7, where GameProfile is a record
+// with id()/name() and the legacy Yggdrasil password client is gone, and commons-lang3 3.19 added
+// org.apache.commons.lang3.Strings which collides with Guava's Strings in two files.
+//
+// Rather than editing core/ (shared with the verified 1.20.1 build), the rest of the core is
+// copied into the build directory with those files excluded and the 26.x replacements come from
+// versions/26.2-fabric/compat-src — the exact tree the verified 26.2 Fabric build compiles.
+// ---------------------------------------------------------------------------------------------
+def coreOverlay = [
+        'eu/the5zig/mod/account/AccountManager.java',
+        'eu/the5zig/mod/chat/network/NetworkManager.java',
+        'eu/the5zig/mod/chat/network/packets/PacketEncryption.java',
+        'eu/the5zig/mod/gui/GuiHypixelStats.java',
+        'eu/the5zig/mod/gui/GuiNameHistory.java',
+        'eu/the5zig/mod/manager/ChatFilterManager.java',
+        'eu/the5zig/mod/manager/DataManager.java',
+        'eu/the5zig/mod/modules/items/server/ServerPing.java',
+        'eu/the5zig/mod/server/octc/OCCListener.java',
+        'eu/the5zig/mod/util/ChatHighlighting.java',
+        'eu/the5zig/teamspeak/impl/ServerTabImpl.java',
+        'eu/the5zig/teamspeak/util/ImageManager.java',
+]
+
+tasks.register('coreCompatTree', Sync) {
+    from(new File(repoRoot, 'core')) {
+        exclude coreOverlay
+    }
+    into layout.buildDirectory.dir('core-compat')
+}
+
+tasks.named('compileJava').configure {
+    dependsOn 'coreCompatTree'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+                    layout.buildDirectory.dir('core-compat').get().asFile.path,
+                    new File(repoRoot, 'versions/26.2-fabric/compat-src').path,
+                    new File(repoRoot, 'common').path,
+                    new File(repoRoot, 'api').path,
+                    // Rooted one level below the package root on purpose: the excludes below are
+                    // relative to each source directory, and rooting this one at 'eu' keeps the
+                    // platform files (same package paths as the core files they replace) out of
+                    // them.
+                    new File(repoRoot, 'platform/26.2/eu').path,
+                    new File(repoRoot, 'loader/neoforge-26.2/java').path
+            ]
+            exclude 'eu/the5zig/mod/installer/**'
+            // Dead on 26.x: only core/resources/mixins.json (the 1.20.1 Forge config) lists it, and
+            // its @Inject target `clickMouse` no longer exists (26.x renamed it `startAttack`). It
+            // is not in this build's mixin config, and with the mixin annotation processor active
+            // it would be rejected, so it is dropped from the compile.
+            exclude 'eu/the5zig/mod/mixin/MixinCommonMinecraft.java'
+            // 26.2 split the in-game overlay out of Gui into Hud. NeoForge 26.2's Hud patch renames
+            // extractHotbarAndDecorations -> extractHotbar, so the platform's MixinHud would fail
+            // require=1; loader/neoforge-26.2 carries the corrected copy. The platform's MixinGui
+            // only hooks Gui#setScreen, which NeoForge leaves intact, so it compiles unchanged.
+            // Note the pattern has no 'eu/' prefix: the platform source dir is rooted at 'eu', so
+            // this only matches the platform file and leaves the loader copy alone.
+            exclude 'the5zig/mod/mixin/MixinHud.java'
+        }
+        resources {
+            srcDirs = [
+                    new File(projectDir, 'src/main/resources').path,
+                    new File(repoRoot, 'core/resources').path,
+                    new File(repoRoot, 'loader/resources').path
+            ]
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 25
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand 'version': project.version
+    }
+}
+
+// eu.the5zig.mod.Version reads these three attributes from the first META-INF/MANIFEST.MF that
+// advertises "5zig-Version"; without them the HUD and the version string fall back to "bDEV".
+def jarManifestAttributes = [
+        '5zig-Version'         : project.version,
+        'Minecraft-Version'    : '26.2',
+        '5zig-Build'           : 'alpha',
+        // The mixin config is declared as [[mixins]] in META-INF/neoforge.mods.toml: FML 11 does
+        // not read the legacy 'MixinConfigs' manifest attribute, and listing it twice would
+        // register the same config on two paths.
+        'Specification-Title'  : 'the5zigmod',
+        'Specification-Version': project.version,
+]
+
+// Applies to both the plain jar and MDG's jar-in-jar jar, so the attributes survive packaging.
+tasks.withType(Jar).configureEach {
+    manifest { attributes(jarManifestAttributes) }
+}

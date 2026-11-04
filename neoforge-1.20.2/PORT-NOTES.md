@@ -70,6 +70,10 @@ it. Consequences:
    thread. Channels must be created **during mod construction** because the network registry locks
    when mod loading ends — hence `PluginMessages.bootstrap()` is called from the constructor instead
    of from a registration event.
+   `javap` of `neoforge-20.2.93-universal.jar` confirms there is no
+   `net.neoforged.neoforge.network.registration` package at all, so the 20.4 namespace check
+   (`IPayloadRegistrar` → `RegistrationFailedException(INVALID_NAMESPACE)`) has no counterpart here
+   and the 1.20.2 build needs no namespace argument.
 2. **`acceptMissingOr("1")`** on both sides keeps a vanilla server / single-player world without the
    5zig plugin working, the same thing `optional()` does on 20.4+.
 3. **`mandatory=true`** is required: FML 1.0.16 parses the Forge-era flag and has no `type` field
@@ -90,3 +94,7 @@ it. Consequences:
   references.
 - 36/36 named mixin method targets in the 14 platform mixins resolve against NeoGradle's patched
   and recompiled 1.20.2 jar.
+- Channel registration replayed in-process against the real `NetworkRegistry` from
+  `neoforge-20.2.93-universal.jar`: `PluginMessages.bootstrap()` creates
+  `the5zigmod:5zig`, `the5zigmod:5zig_reg`, `the5zigmod:5zig_set` once, and a second call is a no-op
+  (no duplicate-channel `IllegalArgumentException`).

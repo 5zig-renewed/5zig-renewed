@@ -1,0 +1,215 @@
+plugins {
+    // ModDevGradle (MDG) is NeoForge's official Gradle plugin. 2.0.148 already speaks the
+    // 21.6 / 21.7 / 21.9 lines: it resolves the neoforge artifact from NeoForged's maven and
+    // produces the patched game jar through NeoForm Runtime without recompilation.
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = '4.0.0-alpha.1'
+group = 'eu.the5zig.renewed'
+base { archivesName = '5zig-renewed-1.21.7-neoforge' }
+
+// The build lives in neoforge-1.21.7/ but the sources live at the repository root.
+def repoRoot = file("${projectDir}/..")
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+neoForge {
+    enable {
+        // NeoForge 21.7.25-beta is the 1.21.7 line (FancyModLoader 9).
+        version = '21.7.25-beta'
+
+        // Only the compiled game jar is needed: no source attachments and no decompile/
+        // recompile step, which keeps this build inside the box's memory budget (other
+        // builds run on the same machine). Drop this if you want sources in the IDE.
+        disableRecompilation = true
+    }
+
+    runs {
+        client {
+            client()
+            gameDirectory = project.file('run')
+            // headless verification hook: boot straight into the test world
+            programArgument '--quickPlaySingleplayer'
+            programArgument 'New World'
+        }
+    }
+
+    mods {
+        the5zigmod {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://jitpack.io' }
+}
+
+dependencies {
+    // 5zig's own libraries, which Minecraft does not ship. `implementation` puts them on the
+    // dev classpath; `jarJar` nests the same artifacts into the mod jar (META-INF/jarjar/ +
+    // metadata.json) so the shipped jar is self-contained, exactly like the other builds.
+    // transitive = false: only the named jar is embedded; their transitive peers
+    // (netty-codec, netty-common, gson, ...) are already shipped by Minecraft/NeoForge.
+    def discordIpc = implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') {
+        transitive = false
+        exclude group: 'com.google.code.gson'
+    }
+    def jacob = implementation('net.sf.jacob-project:jacob:1.14.3') {
+        transitive = false
+    }
+    def json = implementation('org.json:json:20231013') {
+        transitive = false
+    }
+    def sqlite = implementation('org.xerial:sqlite-jdbc:3.45.3.0') {
+        transitive = false
+    }
+    def nettyCodecHttp = implementation('io.netty:netty-codec-http:4.1.97.Final') {
+        transitive = false
+    }
+    // DiscordIPC's own runtime dependencies. It parses Discord's JSON with json-simple and opens
+    // the Discord socket through junixsocket's unix-domain transport on Linux/macOS, but both are
+    // only reachable transitively in dev — a packaged jar has to nest them explicitly or the core
+    // dies with NoClassDefFoundError the moment Discord RPC is constructed.
+    def jsonSimple = implementation('com.googlecode.json-simple:json-simple:1.1.1') {
+        transitive = false
+    }
+    def junixsocketCommon = implementation('com.kohlschutter.junixsocket:junixsocket-common:2.5.1') {
+        transitive = false
+    }
+    def junixsocketNative = implementation('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') {
+        transitive = false
+    }
+    // Minecraft 1.21.5+ no longer ships Apache HttpClient (authlib dropped it), which the core
+    // uses for Spotify and the "open URL" helper. Nest httpcore/commons-codec/commons-logging too:
+    // without httpcore the Spotify path dies with NoClassDefFoundError inside a packaged install.
+    def httpclient = implementation('org.apache.httpcomponents:httpclient:4.5.14') {
+        transitive = false
+    }
+    def httpcore = implementation('org.apache.httpcomponents:httpcore:4.4.16') {
+        transitive = false
+    }
+    def commonsCodec = implementation('commons-codec:commons-codec:1.17.1') {
+        transitive = false
+    }
+    def commonsLogging = implementation('commons-logging:commons-logging:1.3.4') {
+        transitive = false
+    }
+
+    // ModDevGradle puts `implementation` deps on the game classpath, which the mod's own
+    // TransformingClassLoader does not see. `additionalRuntimeClasspath` is the configuration MDG
+    // exposes for libraries the mod needs at dev runtime (FML 9 still has it).
+    additionalRuntimeClasspath discordIpc
+    additionalRuntimeClasspath jacob
+    additionalRuntimeClasspath json
+    additionalRuntimeClasspath sqlite
+    additionalRuntimeClasspath nettyCodecHttp
+    additionalRuntimeClasspath jsonSimple
+    additionalRuntimeClasspath junixsocketCommon
+    additionalRuntimeClasspath junixsocketNative
+    additionalRuntimeClasspath httpclient
+    additionalRuntimeClasspath httpcore
+    additionalRuntimeClasspath commonsCodec
+    additionalRuntimeClasspath commonsLogging
+
+    jarJar(discordIpc)
+    jarJar(jacob) { version { strictly '[1.14.3]' } }
+    jarJar(json) { version { strictly '[20231013]' } }
+    jarJar(sqlite) { version { strictly '[3.45.3.0]' } }
+    jarJar(nettyCodecHttp) { version { strictly '[4.1.97.Final]' } }
+    jarJar(jsonSimple) { version { strictly '[1.1.1]' } }
+    jarJar(junixsocketCommon) { version { strictly '[2.5.1]' } }
+    jarJar(junixsocketNative) { version { strictly '[2.5.1]' } }
+    jarJar(httpclient) { version { strictly '[4.5.14]' } }
+    jarJar(httpcore) { version { strictly '[4.4.16]' } }
+    jarJar(commonsCodec) { version { strictly '[1.17.1]' } }
+    jarJar(commonsLogging) { version { strictly '[1.3.4]' } }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Core overlay
+//
+// The core was written against authlib 4 (GameProfile#getId/#getName, UserAuthentication,
+// YggdrasilAuthenticationService). This Minecraft line ships a newer authlib and (on 1.21.9)
+// commons-lang3 3.19, whose org.apache.commons.lang3.Strings collides with Guava's Strings.
+// Rather than editing core/ (shared with the verified 1.20.1 build), the affected files are
+// filtered out of the core copy and replaced by the exact tree the verified 1.21.7 Fabric build
+// compiles (read-only: nothing under versions/ is modified).
+// ---------------------------------------------------------------------------------------------
+def coreOverlay = [
+        'eu/the5zig/mod/account/AccountManager.java',
+        'eu/the5zig/mod/chat/network/packets/PacketEncryption.java',
+]
+
+tasks.register('coreCompatTree', Sync) {
+    from(new File(repoRoot, 'core')) {
+        exclude coreOverlay
+        exclude 'eu/the5zig/mod/installer/**'
+    }
+    into layout.buildDirectory.dir('core-compat')
+}
+
+tasks.named('compileJava').configure {
+    dependsOn 'coreCompatTree'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+                    layout.buildDirectory.dir('core-compat').get().asFile.path,
+                    new File(repoRoot, 'versions/1.21.7-fabric/compat-src').path,
+                    new File(repoRoot, 'common').path,
+                    new File(repoRoot, 'api').path,
+                    // Rooted one level below the package root on purpose: the excludes below are
+                    // relative to each source directory, and rooting this one at 'eu' keeps the
+                    // platform copy of any loader-neutral file out of them. Same trick as the
+                    // other builds.
+                    new File(repoRoot, 'platform/1.21.7/eu').path,
+                    new File(repoRoot, 'loader/neoforge-1.21.7/java').path
+            ]
+            exclude 'eu/the5zig/mod/installer/**'
+        }
+        resources {
+            srcDirs = [
+                    new File(projectDir, 'src/main/resources').path,
+                    new File(repoRoot, 'core/resources').path,
+                    new File(repoRoot, 'loader/resources').path
+            ]
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand 'version': project.version
+    }
+}
+
+// eu.the5zig.mod.Version reads these three attributes from the first META-INF/MANIFEST.MF that
+// advertises "5zig-Version"; without them the HUD and the version string fall back to "bDEV".
+def jarManifestAttributes = [
+        '5zig-Version'         : project.version,
+        'Minecraft-Version'    : '1.21.7',
+        '5zig-Build'           : 'alpha',
+        // The mixin config is declared as [[mixins]] in META-INF/neoforge.mods.toml: FML does not
+        // read the legacy 'MixinConfigs' manifest attribute, and listing it twice would register
+        // the same config on two paths.
+        'Specification-Title'  : 'the5zigmod',
+        'Specification-Version': project.version,
+]
+
+// Applies to both the plain jar and MDG's jar-in-jar jar, so the attributes survive packaging.
+tasks.withType(Jar).configureEach {
+    manifest { attributes(jarManifestAttributes) }
+}

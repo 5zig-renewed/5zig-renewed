@@ -56,6 +56,16 @@ by name at runtime exactly like on 1.21.1.
    `RegisterPayloadHandlerEvent` (singular) → `IPayloadRegistrar.play(ResourceLocation, FriendlyByteBuf.Reader, IPlayPayloadHandler)`.
    Handlers run on the network thread and hop to the client thread with
    `PlayPayloadContext.workHandler().execute(...)` (there is no `enqueueWork` yet).
+   **`registrar(String)` on this line takes the namespace, not a version** (`javap` of
+   `neoforge-20.4.253-universal.jar`: `IPayloadRegistrar registrar(java.lang.String)`, backed by
+   `ModdedPacketRegistrar(String modId)`, which throws
+   `RegistrationFailedException(INVALID_NAMESPACE)` when `id.getNamespace() != modId`). The argument
+   is therefore `"the5zigmod"`; passing `"1"` fails mod load with *"Try registering payload in
+   namespace 1 for payload with id the5zigmod:5zig"*. The version is a separate builder step
+   (`versioned(String)`), left unset on purpose — `optional()` does not exempt a payload from
+   version checks, so a version would only be able to refuse connections.
+   The `1.20.6` build's `PayloadRegistrar` has the opposite meaning (its `String` is the version);
+   the two call sites are not interchangeable.
 4. **Sending is vanilla.** `PacketDistributor` on 20.4 is the builder-style API with no static
    `sendToServer`, but it is not needed: `ServerboundCustomPayloadPacket` still writes an arbitrary
    id + body, so `PluginMessages.send` sends that packet directly and `Variables#sendCustomPayload`
@@ -77,3 +87,8 @@ by name at runtime exactly like on 1.21.1.
 - Class files are version 61 (Java 17); zero `net.fabricmc` references in the artifact.
 - 36/36 named mixin method targets in the 14 platform mixins resolve against MDG's patched
   NeoForge 20.4.253 jar (`javap`-based check, private members included).
+- Payload registration replayed against the real `ModdedPacketRegistrar` from
+  `neoforge-20.4.253-universal.jar` (namespace → registrar factory, as `NetworkRegistry#setup`
+  builds it): all three ids land in the registrar under `the5zigmod`. The pre-fix `"1"` argument
+  reproduces `RegistrationFailedException: Try registering payload in namespace 1 for payload with
+  id the5zigmod:5zig`.

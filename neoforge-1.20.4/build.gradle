@@ -60,7 +60,9 @@ dependencies {
     def json = implementation('org.json:json:20231013') {
         transitive = false
     }
-    def sqlite = implementation('org.xerial:sqlite-jdbc:3.45.3.0') {
+    def sqlite = implementation('org.xerial:sqlite-jdbc:3.45.3.0')    def hsqldb = implementation('org.hsqldb:hsqldb:2.7.4') { transitive = false }
+    additionalRuntimeClasspath('org.hsqldb:hsqldb:2.7.4') { transitive = false }
+ {
         transitive = false
     }
     def nettyCodecHttp = implementation('io.netty:netty-codec-http:4.1.97.Final') {
@@ -96,6 +98,7 @@ dependencies {
     jarJar(jacob) { version { strictly '[1.14.3]' } }
     jarJar(json) { version { strictly '[20231013]' } }
     jarJar(sqlite) { version { strictly '[3.45.3.0]' } }
+    jarJar(hsqldb) { version { strictly '[2.7.4]' } }
     jarJar(nettyCodecHttp) { version { strictly '[4.1.97.Final]' } }
     jarJar(jsonSimple) { version { strictly '[1.1.1]' } }
     jarJar(junixsocketCommon) { version { strictly '[2.5.1]' } }

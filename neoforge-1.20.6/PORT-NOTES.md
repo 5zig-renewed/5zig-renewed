@@ -43,6 +43,10 @@ so MDG 2.0.148 consumes it natively.
 4. **Payload registration is the modern one.** `RegisterPayloadHandlersEvent` (plural) →
    `PayloadRegistrar.playBidirectional(CustomPacketPayload.Type, StreamCodec<RegistryFriendlyByteBuf, T>, IPayloadHandler)`
    with `context.enqueueWork(...)`; handlers are `IPayloadHandler`, not `IPlayPayloadHandler`.
+   On this line `registrar(String)` takes the **version** (`PayloadRegistrar(String version)`,
+   verified with `javap` on `neoforge-20.6.144-universal.jar`), and the namespace comes from each
+   payload's `Type` id. `registrar("1")` is therefore correct here, unlike the 20.4 build where the
+   same-looking call means namespace.
 5. **Sending must be registered.** From 1.20.5 the codec drops the body of any payload type it does
    not know, so `PluginMessages.send` goes through `PacketDistributor.sendToServer` and guards with
    `NetworkRegistry.hasChannel(connection, ConnectionProtocol.PLAY, id)` (the `canSend` equivalent).
@@ -59,3 +63,7 @@ so MDG 2.0.148 consumes it natively.
   references.
 - 36/36 named mixin method targets in the 14 platform mixins resolve against MDG's patched
   NeoForge 20.6.144 jar.
+- Payload registration replayed against the real `NetworkRegistry` from that jar
+  (`RegisterPayloadHandlersEvent` → `PayloadRegistrar` → `NetworkRegistry.register`): all three
+  `the5zigmod:*` ids land in the `PLAY` registry. So 20.6 never had the 20.4 namespace bug — its
+  registrar argument is a version, not a namespace.

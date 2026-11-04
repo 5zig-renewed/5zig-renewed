@@ -88,8 +88,12 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.21.4 NeoForge** | green, ModDevGradle | **HUD** |
 
 | **26.1.2 NeoForge** | green, 26.x toolchain | **HUD** |
+| **26.1 NeoForge** | green, ModDevGradle 2.0.148, NeoForge 26.1.0.8-beta (no stable 26.1 exists) | build-only — no client run (task rule); 29/29 mixin targets |
+| **26.1.1 NeoForge** | green, NeoForge 26.1.1.8-beta (no stable 26.1.1 exists) | build-only — no client run (task rule); 29/29 mixin targets |
+| **26.2 NeoForge** | green, NeoForge 26.2.0.93; `Gui`/`Hud` split via loader `MixinHud` | build-only — no client run (task rule); 29/29 mixin targets |
 
-Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation.
+Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation —
+except the rows explicitly marked build-only.
 
 ### Platform layout
 
@@ -127,6 +131,15 @@ NeoForge's ModDevGradle path is proven across 1.20.1 → 26.1.2). Fabric remains
 every version, NeoForge is the second loader from 1.20.2 onward.
 
 ### Known gaps
+
+- **5zig's own chat/party features are not functional.** The core keeps conversations in an HSQLDB file
+  database. The driver was never bundled, so `Class.forName("org.hsqldb.jdbc.JDBCDriver")` threw and the
+  whole conversation stack ran against a `null` connection (visible as `NullPointerException … because
+  "sql" is null`). `org.hsqldb:hsqldb:2.7.4` is now nested in every jar, which removes that failure — but
+  the conversations schema still is not created, so `SELECT * FROM version` and
+  `… FROM conversations_groupchat` fail with `object not found`. The HUD, second chat and everything
+  else that does not touch the conversation database work. This affects every version and needs a core
+  fix, not a port fix.
 
 - **NeoForge 1.20.2 / 1.20.4 / 1.20.6 and 1.21.8 / 1.21.11 do not load yet**: each NeoForge line changed
   the `PayloadRegistrar` contract (`registrar("1")` is a *namespace* on 1.20.x, and 1.21.8+ rejects an

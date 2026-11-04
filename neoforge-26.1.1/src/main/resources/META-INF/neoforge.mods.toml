@@ -1,0 +1,30 @@
+modLoader="javafml"
+# NeoForge 26.1.1.x ships FancyModLoader 11.
+loaderVersion="[11,)"
+license="GPL-3.0"
+
+[[mods]]
+modId="the5zigmod"
+version="${version}"
+displayName="5zig Renewed"
+authors="5zig Reborn contributors, 5zig Renewed contributors"
+description='''The 5zig Mod, renewed for modern Minecraft. HUD, capes, friends/chat, server tools and the plugin API. Continuation of The 5zig Mod (GPL-3.0) by 5zig Reborn.'''
+
+# FML collects mixin configs from this section; the old `MixinConfigs` manifest attribute is not
+# read, so leaving it out here would silently disable the HUD hook.
+[[mixins]]
+config="mixins.the5zigmod.json"
+
+[[dependencies.the5zigmod]]
+modId="neoforge"
+type="required"
+versionRange="[26.1,27)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.the5zigmod]]
+modId="minecraft"
+type="required"
+versionRange="[26.1.1,26.2)"
+ordering="NONE"
+side="CLIENT"
