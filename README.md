@@ -138,8 +138,10 @@ every version, NeoForge is the second loader from 1.20.2 onward.
   "sql" is null`). `org.hsqldb:hsqldb:2.7.4` is now nested in every jar, which removes that failure — but
   the conversations schema still is not created, so `SELECT * FROM version` and
   `… FROM conversations_groupchat` fail with `object not found`. The HUD, second chat and everything
-  else that does not touch the conversation database work. This affects every version and needs a core
-  fix, not a port fix.
+  else that does not touch the conversation database work. This affects every version and needs a core fix, not a port fix. It also matters less than it
+  sounds: 5zig's friends/party chat talks to the 5zig backend, which no longer exists, so those
+  features are unreachable for every user regardless. The local chat log is the only part that
+  would benefit.
 
 - **NeoForge 1.20.2 / 1.20.4 / 1.20.6 and 1.21.8 / 1.21.11 do not load yet**: each NeoForge line changed
   the `PayloadRegistrar` contract (`registrar("1")` is a *namespace* on 1.20.x, and 1.21.8+ rejects an
