@@ -123,6 +123,13 @@ Platform completeness is measurable and roughly flat across eras — the early p
 The single live `UnsupportedOperationException` in each is the `setSession` guard (replacing the client's
 `User` field); the other occurrences are the doc comment.
 
+### Release integrity
+
+Every release asset is checked to have the same byte size as the jar currently built in the tree
+(`gh api …/releases` vs the local file). Jars rebuilt after a fix — the HSQLDB bundling swept all 39
+Fabric projects — silently leave older assets published unless they are re-uploaded; 36 of 60 releases
+had drifted before this check existed.
+
 ### Verifying a build
 
 `scripts/check-client-log.sh <client.log>` fails a run on the defect classes that a world + HUD cannot
