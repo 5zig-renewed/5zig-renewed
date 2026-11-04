@@ -1,0 +1,30 @@
+modLoader="javafml"
+# NeoForge 20.4.x ships FancyModLoader 2.x (the reworked net.neoforged.* FML).
+loaderVersion="[2,)"
+license="GPL-3.0"
+
+[[mods]]
+modId="the5zigmod"
+version="${version}"
+displayName="5zig Renewed"
+authors="5zig Reborn contributors, 5zig Renewed contributors"
+description='''The 5zig Mod, renewed for modern Minecraft. HUD, capes, friends/chat, server tools and the plugin API. Continuation of The 5zig Mod (GPL-3.0) by 5zig Reborn.'''
+
+# FML 2 reads mixin configs from this section (ModFileParser#getMixinConfigs); the legacy
+# `MixinConfigs` manifest attribute is not consulted on this line.
+[[mixins]]
+config="mixins.the5zigmod.json"
+
+[[dependencies.the5zigmod]]
+modId="neoforge"
+type="required"
+versionRange="[20.4,20.5)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.the5zigmod]]
+modId="minecraft"
+type="required"
+versionRange="[1.20.4,1.20.5)"
+ordering="NONE"
+side="CLIENT"

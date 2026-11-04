@@ -24,7 +24,6 @@ import eu.the5zig.mod.platform.Keybinding;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -62,6 +61,12 @@ public final class Keybinds {
 		void register(KeyMapping mapping);
 	}
 
+	/**
+	 * SDL scancode of the keypad {@code .} key (the 26.2 default for the timer reset binding).
+	 * {@link InputConstants} has no named constant for it.
+	 */
+	private static final int KEYPAD_PERIOD = 99;
+
 	private static final Map<String, FiveZigKeybinding> BINDINGS = new LinkedHashMap<>();
 
 	private static Registrar registrar = Keybinds::appendToOptions;
@@ -95,21 +100,23 @@ public final class Keybinds {
 		bootstrapped = true;
 
 		// Keep in sync with eu.the5zig.mod.manager.KeybindingManager.
-		bind("the5zigmod.key.toggle_mod", GLFW.GLFW_KEY_M);
-		bind("the5zigmod.key.toggle_chat", GLFW.GLFW_KEY_F4);
-		bind("the5zigmod.key.coordinates_clipboard", GLFW.GLFW_KEY_F12);
-		// 26.3: a GLFW_KEY_UNKNOWN (-1) default code makes KeyMapping.setAll call
-		// InputConstants.isKeyDown(-1), which indexes a native buffer and throws
-		// IndexOutOfBoundsException. Bind to a real, unused key instead.
-		bind("the5zigmod.key.raid_calculator", GLFW.GLFW_KEY_PAUSE);
-		bind("the5zigmod.key.hypixel_stats", GLFW.GLFW_KEY_SCROLL_LOCK);
-		bind("the5zigmod.key.zoom", GLFW.GLFW_KEY_Z);
-		bind("the5zigmod.key.timer.start", GLFW.GLFW_KEY_KP_0);
-		bind("the5zigmod.key.timer.reset", GLFW.GLFW_KEY_KP_DECIMAL);
-		bind("the5zigmod.key.teamspeak", GLFW.GLFW_KEY_F9);
-		bind("the5zigmod.key.username_history", GLFW.GLFW_KEY_PAUSE);
-		bind("the5zigmod.key.toggle_chat_filter", GLFW.GLFW_KEY_SCROLL_LOCK);
-		bind("the5zigmod.key.change_account", GLFW.GLFW_KEY_INSERT);
+		// 26.3 is SDL-backed: KeyMapping codes are InputConstants values (SDL scancodes), so the
+		// GLFW_KEY_* numbers 26.2 used (M = 77, F4 = 62) would bind entirely different keys.
+		bind("the5zigmod.key.toggle_mod", InputConstants.KEY_M);
+		bind("the5zigmod.key.toggle_chat", InputConstants.KEY_F4);
+		bind("the5zigmod.key.coordinates_clipboard", InputConstants.KEY_F12);
+		// 26.3: KeyMapping.setAll polls every binding through InputConstants.isKeyDown, which
+		// indexes SDL's keyboard-state buffer. An unknown/negative code (-1, what
+		// GLFW_KEY_UNKNOWN was) is not a valid index there, so bind a real, unused key instead.
+		bind("the5zigmod.key.raid_calculator", InputConstants.KEY_PAUSE);
+		bind("the5zigmod.key.hypixel_stats", InputConstants.KEY_SCROLLLOCK);
+		bind("the5zigmod.key.zoom", InputConstants.KEY_Z);
+		bind("the5zigmod.key.timer.start", InputConstants.KEY_NUMPAD0);
+		bind("the5zigmod.key.timer.reset", KEYPAD_PERIOD);
+		bind("the5zigmod.key.teamspeak", InputConstants.KEY_F9);
+		bind("the5zigmod.key.username_history", InputConstants.KEY_PAUSE);
+		bind("the5zigmod.key.toggle_chat_filter", InputConstants.KEY_SCROLLLOCK);
+		bind("the5zigmod.key.change_account", InputConstants.KEY_INSERT);
 	}
 
 	/**
@@ -145,11 +152,10 @@ public final class Keybinds {
 	}
 
 	private static FiveZigKeybinding bind(String description, int keyCode, String category) {
-		// 26.3 regression: GLFW_KEY_UNKNOWN (-1) is passed straight to
-		// InputConstants.isKeyDown by KeyMapping.setAll, which indexes a native buffer and
-		// throws IndexOutOfBoundsException on any client that has an unbound 5zig key.
-		// Use a real (rarely used) key as the "unbound" placeholder instead.
-		int code = keyCode == 0 ? GLFW.GLFW_KEY_PAUSE : keyCode;
+		// 26.3: an unknown/absent code (0) must not reach InputConstants.isKeyDown, which indexes
+		// SDL's keyboard-state buffer with it. Use a real (rarely used) key as the "unbound"
+		// placeholder instead.
+		int code = keyCode == 0 ? InputConstants.KEY_PAUSE : keyCode;
 		// 26.3 renamed InputConstants.Type.KEYSYM to KEYBOARD (the mouse type is unchanged).
 		KeyMapping mapping = new KeyMapping(description, InputConstants.Type.KEYBOARD, code, Keybinding.categoryOf(category));
 		register(mapping);

@@ -110,7 +110,7 @@ import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLMouse;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -122,6 +122,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.Proxy;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -174,7 +175,11 @@ public class Variables implements IVariables {
 			@Override
 			public boolean isKeyDown(int key) {
 				Window window = getWindow();
-				return window != null && GLFW.glfwGetKey(window.handle(), key) == GLFW.GLFW_PRESS;
+				// 26.3 reads key state from SDL_GetKeyboardState(), indexed by SDL scancode, with no
+				// window handle involved (InputConstants.isKeyDown(int), see the 26.3 sources).
+				// InputKeyCodes.install() below put the core's Keyboard.KEY_* constants into that same
+				// code space, so `key` is already an InputConstants value.
+				return window != null && key >= 0 && InputConstants.isKeyDown(key);
 			}
 
 			@Override
@@ -183,11 +188,25 @@ public class Variables implements IVariables {
 				// screen by the keyboard handler. Nothing to configure here.
 			}
 		});
+		// Keyboard.init() numbers its KEY_* fields with GLFW key codes, which 26.3 does not have.
+		InputKeyCodes.install();
 		Mouse.init(new Mouse.MouseHandler() {
 			@Override
 			public boolean isButtonDown(int button) {
 				Window window = getWindow();
-				return window != null && GLFW.glfwGetMouseButton(window.handle(), button) == GLFW.GLFW_PRESS;
+				if (window == null) {
+					return false;
+				}
+				// GLFW numbered buttons 0=left, 1=right, 2=middle; SDL (and therefore 26.3) uses
+				// 1=left, 2=middle, 3=right and returns a SDL_BUTTON_*MASK bitfield. MouseHandler's
+				// isLeftPressed()/... are only updated while no Screen is open, so they cannot be used
+				// from the mod's own GUIs - poll SDL_GetMouseState() like MouseHandler does.
+				int sdlButton = sdlButton(button);
+				if (sdlButton < 0) {
+					return false;
+				}
+				int state = SDLMouse.SDL_GetMouseState((FloatBuffer) null, (FloatBuffer) null);
+				return (state & (1 << (sdlButton - 1))) != 0;
 			}
 
 			@Override
@@ -207,6 +226,25 @@ public class Variables implements IVariables {
 				return minecraft != null && minecraft.isWindowActive();
 			}
 		});
+	}
+
+	/**
+	 * Translates 5zig's GLFW-style mouse button index (0 = left, 1 = right, 2 = middle, the numbering
+	 * every caller in {@code core/} uses) to SDL's {@code SDL_BUTTON_*} numbering (1 = left,
+	 * 2 = middle, 3 = right, 4/5 = X1/X2).
+	 *
+	 * @return the SDL button number, or {@code -1} for an index SDL cannot represent
+	 */
+	private static int sdlButton(int button) {
+		return switch (button) {
+			case 0 -> SDLMouse.SDL_BUTTON_LEFT;
+			case 1 -> SDLMouse.SDL_BUTTON_RIGHT;
+			case 2 -> SDLMouse.SDL_BUTTON_MIDDLE;
+			case 3 -> SDLMouse.SDL_BUTTON_X1;
+			case 4 -> SDLMouse.SDL_BUTTON_X2;
+			case 5, 6, 7 -> button + 1; // SDL numbers the remaining buttons sequentially
+			default -> -1;
+		};
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -1360,18 +1398,11 @@ public class Variables implements IVariables {
 			// 5zig encodes mouse buttons as -100..-97.
 			return "M" + (key + 101);
 		}
-		if (key < 256) {
-			String name = GLFW.glfwGetKeyName(key, -1);
-			if (name == null) {
-				name = GLFW.glfwGetKeyName(-1, key);
-			}
-			if (name != null) {
-				return name.toUpperCase(Locale.ROOT);
-			}
-			// 26.3 renamed InputConstants.Type.KEYSYM to KEYBOARD.
-			return InputConstants.Type.KEYBOARD.getOrCreate(key).getDisplayName().getString();
-		}
-		return String.valueOf((char) (key - 256)).toUpperCase(Locale.ROOT);
+		// 26.3 renamed InputConstants.Type.KEYSYM to KEYBOARD, and there is no glfwGetKeyName any
+		// more: Type.KEYBOARD's display supplier turns the scancode into the SDL key name
+		// (SDL_GetKeyFromScancode + SDL_GetKeyName) and falls back to the translation key.
+		// The value handed in is a KeyMapping/InputConstants code, i.e. already a scancode.
+		return InputConstants.Type.KEYBOARD.getOrCreate(key).getDisplayName().getString().toUpperCase(Locale.ROOT);
 	}
 
 	@Override

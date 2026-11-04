@@ -20,12 +20,12 @@
 package eu.the5zig.mod.platform;
 
 import eu.the5zig.mod.gui.elements.ITextfield;
+import com.mojang.blaze3d.platform.InputConstants;
 import eu.the5zig.mod.util.RenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -303,10 +303,12 @@ public class Textfield implements ITextfield {
 		if (!enabled || !focused) {
 			return false;
 		}
-		boolean control = (modifiers & GLFW.GLFW_MOD_CONTROL) != 0;
-		boolean shift = (modifiers & GLFW.GLFW_MOD_SHIFT) != 0;
+		// 26.3: `key` is an InputConstants value (SDL scancode) and `modifiers` a SDL KMOD bitfield,
+		// not GLFW's key/mods numbering - see GuiHandle#keyPressed and InputKeyCodes.
+		boolean control = (modifiers & InputConstants.MOD_CONTROL) != 0;
+		boolean shift = (modifiers & InputConstants.MOD_SHIFT) != 0;
 		switch (key) {
-			case GLFW.GLFW_KEY_BACKSPACE:
+			case InputConstants.KEY_BACKSPACE:
 				if (selectionPos != cursorPosition) {
 					deleteSelection();
 				} else if (cursorPosition > 0) {
@@ -315,58 +317,58 @@ public class Textfield implements ITextfield {
 					selectionPos = cursorPosition;
 				}
 				return true;
-			case GLFW.GLFW_KEY_DELETE:
+			case InputConstants.KEY_DELETE:
 				if (selectionPos != cursorPosition) {
 					deleteSelection();
 				} else if (cursorPosition < text.length()) {
 					text = text.substring(0, cursorPosition) + text.substring(cursorPosition + 1);
 				}
 				return true;
-			case GLFW.GLFW_KEY_LEFT:
+			case InputConstants.KEY_LEFT:
 				cursorPosition = Math.max(0, cursorPosition - 1);
 				if (!shift) {
 					selectionPos = cursorPosition;
 				}
 				return true;
-			case GLFW.GLFW_KEY_RIGHT:
+			case InputConstants.KEY_RIGHT:
 				cursorPosition = Math.min(text.length(), cursorPosition + 1);
 				if (!shift) {
 					selectionPos = cursorPosition;
 				}
 				return true;
-			case GLFW.GLFW_KEY_HOME:
+			case InputConstants.KEY_HOME:
 				cursorPosition = 0;
 				if (!shift) {
 					selectionPos = cursorPosition;
 				}
 				return true;
-			case GLFW.GLFW_KEY_END:
+			case InputConstants.KEY_END:
 				cursorPosition = text.length();
 				if (!shift) {
 					selectionPos = cursorPosition;
 				}
 				return true;
-			case GLFW.GLFW_KEY_A:
+			case InputConstants.KEY_A:
 				if (control) {
 					selectionPos = 0;
 					cursorPosition = text.length();
 					return true;
 				}
 				return false;
-			case GLFW.GLFW_KEY_C:
+			case InputConstants.KEY_C:
 				if (control && selectionPos != cursorPosition) {
 					Minecraft.getInstance().keyboardHandler.setClipboard(selectedText());
 					return true;
 				}
 				return false;
-			case GLFW.GLFW_KEY_X:
+			case InputConstants.KEY_X:
 				if (control && selectionPos != cursorPosition) {
 					Minecraft.getInstance().keyboardHandler.setClipboard(selectedText());
 					deleteSelection();
 					return true;
 				}
 				return false;
-			case GLFW.GLFW_KEY_V:
+			case InputConstants.KEY_V:
 				if (control) {
 					insert(Minecraft.getInstance().keyboardHandler.getClipboard());
 					return true;

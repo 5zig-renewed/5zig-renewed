@@ -63,6 +63,7 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **26.3 Fabric** | green, self-contained | **HUD** (needs the keybind fix below) |
 | **1.20 Fabric** | green, self-contained | **HUD** |
 | **1.20.2 Fabric** | green, self-contained | **HUD** |
+| **1.18 Fabric** | green, self-contained | **HUD** |
 | **1.18.1 Fabric** | green, self-contained | **HUD** |
 | **1.16.5 Fabric** | green, self-contained | **HUD** |
 | **1.16.4 Fabric** | green, self-contained; byte-identical platform to 1.16.5 (only version bump) | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |

@@ -1,0 +1,160 @@
+plugins {
+    // ModDevGradle is NeoForge's own Gradle plugin and the only toolchain that consumes
+    // the real net.neoforged:* loader artefacts of the 20.2+ line. 20.4.253 publishes a
+    // moddev-config.json, so this version is natively supported.
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = '4.0.0-alpha.1'
+group = 'eu.the5zig.renewed'
+base { archivesName = '5zig-renewed-1.20.4-neoforge' }
+
+// The build lives in neoforge-1.20.4/ but the sources live at the repository root.
+def repoRoot = file("${projectDir}/..")
+
+java {
+    // Minecraft 1.20.4 is a Java 17 title.
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
+
+neoForge {
+    enable {
+        version = '20.4.253'
+        disableRecompilation = true
+    }
+
+    runs {
+        client {
+            client()
+            gameDirectory = project.file('run')
+            programArgument '--quickPlaySingleplayer'
+            programArgument 'New World'
+        }
+    }
+
+    mods {
+        the5zigmod {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://jitpack.io' }
+}
+
+dependencies {
+    // 5zig's own libraries, which Minecraft does not ship. `implementation` puts them on the dev
+    // classpath; `jarJar` nests the same artifacts into the mod jar (META-INF/jarjar/ +
+    // metadata.json) so the shipped jar is self-contained, exactly like the other builds.
+    // transitive = false: only the named jar is embedded; their transitive peers
+    // (netty-codec, netty-common, gson, ...) are already shipped by Minecraft/NeoForge.
+    def discordIpc = implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') {
+        transitive = false
+        exclude group: 'com.google.code.gson'
+    }
+    def jacob = implementation('net.sf.jacob-project:jacob:1.14.3') {
+        transitive = false
+    }
+    def json = implementation('org.json:json:20231013') {
+        transitive = false
+    }
+    def sqlite = implementation('org.xerial:sqlite-jdbc:3.45.3.0') {
+        transitive = false
+    }
+    def nettyCodecHttp = implementation('io.netty:netty-codec-http:4.1.97.Final') {
+        transitive = false
+    }
+    // DiscordIPC's own runtime dependencies. It parses Discord's JSON with json-simple and opens
+    // the Discord socket through junixsocket's unix-domain transport on Linux/macOS, but both are
+    // only reachable transitively in dev — a packaged jar has to nest them explicitly or the core
+    // dies with NoClassDefFoundError the moment Discord RPC is constructed.
+    def jsonSimple = implementation('com.googlecode.json-simple:json-simple:1.1.1') {
+        transitive = false
+    }
+    def junixsocketCommon = implementation('com.kohlschutter.junixsocket:junixsocket-common:2.5.1') {
+        transitive = false
+    }
+    def junixsocketNative = implementation('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') {
+        transitive = false
+    }
+
+    // ModDevGradle puts `implementation` deps on the game classpath, which the mod's own
+    // TransformingClassLoader does not see. `additionalRuntimeClasspath` is the configuration MDG
+    // exposes for libraries the mod needs at dev runtime.
+    additionalRuntimeClasspath discordIpc
+    additionalRuntimeClasspath jacob
+    additionalRuntimeClasspath json
+    additionalRuntimeClasspath sqlite
+    additionalRuntimeClasspath nettyCodecHttp
+    additionalRuntimeClasspath jsonSimple
+    additionalRuntimeClasspath junixsocketCommon
+    additionalRuntimeClasspath junixsocketNative
+
+    jarJar(discordIpc)
+    jarJar(jacob) { version { strictly '[1.14.3]' } }
+    jarJar(json) { version { strictly '[20231013]' } }
+    jarJar(sqlite) { version { strictly '[3.45.3.0]' } }
+    jarJar(nettyCodecHttp) { version { strictly '[4.1.97.Final]' } }
+    jarJar(jsonSimple) { version { strictly '[1.1.1]' } }
+    jarJar(junixsocketCommon) { version { strictly '[2.5.1]' } }
+    jarJar(junixsocketNative) { version { strictly '[2.5.1]' } }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+                    new File(repoRoot, 'core').path,
+                    new File(repoRoot, 'common').path,
+                    new File(repoRoot, 'api').path,
+                    new File(repoRoot, 'platform/1.20.4/eu').path,
+                    new File(repoRoot, 'loader/neoforge-1.20.4/java').path
+            ]
+            exclude 'eu/the5zig/mod/installer/**'
+            exclude 'eu/the5zig/mod/account/AccountManager.java'
+            exclude 'eu/the5zig/mod/chat/network/packets/PacketEncryption.java'
+            // The platform's payload bridge is written against the Fabric API; this build
+            // substitutes a NeoForge implementation of the same class. The platform source root
+            // sits at platform/1.20.4/eu, so excludes are relative to the package root.
+            exclude 'the5zig/mod/platform/PluginMessages.java'
+        }
+        resources {
+            srcDirs = [
+                    new File(projectDir, 'src/main/resources').path,
+                    new File(repoRoot, 'core/resources').path,
+                    new File(repoRoot, 'loader/resources').path
+            ]
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('META-INF/mods.toml') {
+        expand 'version': project.version
+    }
+}
+
+// eu.the5zig.mod.Version reads these three attributes from the first META-INF/MANIFEST.MF that
+// advertises "5zig-Version"; without them the HUD and the version string fall back to "bDEV".
+def jarManifestAttributes = [
+        '5zig-Version'         : project.version,
+        'Minecraft-Version'    : '1.20.4',
+        '5zig-Build'           : 'alpha',
+        // The mixin config is declared as [[mixins]] in META-INF/mods.toml; listing it here as
+        // well would register the same config on two paths.
+        'Specification-Title'  : 'the5zigmod',
+        'Specification-Version': project.version,
+]
+
+// Applies to both the plain jar and MDG's jar-in-jar jar, so the attributes survive packaging.
+tasks.withType(Jar).configureEach {
+    manifest { attributes(jarManifestAttributes) }
+}
