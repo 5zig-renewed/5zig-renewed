@@ -1,0 +1,25 @@
+modLoader="javafml"
+# Forge 1.21.1 is the 52.x line.
+loaderVersion="[52,)"
+license="GPL-3.0"
+
+[[mods]]
+modId="the5zigmod"
+version="${version}"
+displayName="5zig Renewed"
+authors="5zig Reborn contributors, 5zig Renewed contributors"
+description='''The 5zig Mod, renewed for modern Minecraft. HUD, capes, friends/chat, server tools and the plugin API. Continuation of The 5zig Mod (GPL-3.0) by 5zig Reborn.'''
+
+[[dependencies.the5zigmod]]
+modId="forge"
+mandatory=true
+versionRange="[52,)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.the5zigmod]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.21.1,1.21.2)"
+ordering="NONE"
+side="CLIENT"

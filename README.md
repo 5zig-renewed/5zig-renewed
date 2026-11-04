@@ -59,6 +59,8 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.21.9 Fabric** | green, self-contained | **HUD** |
 | **1.21.1 NeoForge** | green, ModDevGradle 2.0.148 | **HUD** |
 | **26.1 Fabric** | green, self-contained | **HUD** |
+| **26.1.1 Fabric** | green, self-contained | built (not client-verified) |
+| 26.3 Fabric | **does not build** — 26.3 pulls LWJGL/authlib classes the project's dependency set lacks | — |
 | **1.20.2 Fabric** | green, self-contained | **HUD** |
 | **1.21.2 Fabric** | green, self-contained | **HUD** |
 | **1.21.4 NeoForge** | green, ModDevGradle | **HUD** |
@@ -78,6 +80,10 @@ byte-identical for the 1.20.1 builds.
 
 ### Known gaps
 
+- **Packaged-jar testing is not optional.** Dev-classpath runs hide missing nested libraries: `json-simple`,
+  `junixsocket` and `httpcore` were each fatal only in the shipped jar, and the last one disabled the whole
+  mod (`NoClassDefFoundError: org/apache/http/HttpRequest` during core init). Test with a source-less Loom
+  project and `-Dfabric.addMods`.
 - 26.x draws through `GuiGraphicsExtractor` (`Gui#extractRenderState`), whose text entry point is
   `text(Font, String|Component|FormattedCharSequence, x, y, color, dropShadow)` — there is no
   `drawString`; colours are strict ARGB, so the same alpha guard is needed there.

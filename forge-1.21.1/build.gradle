@@ -1,0 +1,192 @@
+plugins {
+    id 'java'
+    // ForgeGradle 7 is what the official 1.21.1 MDK (forge-1.21.1-52.1.21-mdk.zip) declares, and
+    // FG7 refuses to run on Gradle 8 (it requires 9.3+). Unlike FG6, reobfuscation is not part of
+    // the plugin any more: the separate `renamer` plugin turns the official-named jar into the
+    // SRG-named artifact Forge actually loads in production.
+    id 'net.minecraftforge.gradle' version '[7.0.29,8.0)'
+    // Jar-in-Jar moved out of FG into its own plugin in the FG7 line.
+    id 'net.minecraftforge.jarjar' version '0.2.3'
+    id 'net.minecraftforge.renamer' version '1.1.8'
+}
+
+version = '4.0.0-alpha.1'
+group = 'eu.the5zig.renewed'
+base { archivesName = '5zig-renewed-1.21.1-forge' }
+
+def minecraftVersion = '1.21.1'
+def forgeVersion = '52.1.21'
+
+// The build lives in forge-1.21.1/ but the sources live at the repository root.
+def repoRoot = file("${projectDir}/..")
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+minecraft {
+    mappings channel: 'official', version: minecraftVersion
+
+    runs {
+        configureEach {
+            workingDir = layout.projectDirectory.dir('run')
+        }
+        register('client') {
+            // headless verification hook: boot straight into the test world
+            args '--quickPlaySingleplayer', 'New World'
+        }
+    }
+}
+
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+    maven { url = 'https://jitpack.io' }
+    mavenCentral()
+}
+
+// Creates the `jarJar` configuration and task (base jar + META-INF/jarjar/*).
+jarJar.register()
+
+dependencies {
+    implementation minecraft.dependency("net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}")
+
+    // Needed by `renamer.enableMixinRefmaps` below: the Mixin annotation processor emits the
+    // official -> SRG refmap that lets the mixins resolve on Forge's SRG-named production runtime.
+    annotationProcessor 'org.spongepowered:mixin:0.8.7:processor'
+}
+
+// 5zig's own libraries, which Minecraft does not ship. `implementation` puts them on the dev
+// runtime classpath; `jarJar` nests the same artifacts into the mod jar (META-INF/jarjar/ +
+// metadata.json) so the shipped jar is self-contained.
+//
+// transitive = false: only the named jar is embedded; their transitive peers (netty-codec,
+// netty-common, gson, ...) are already shipped by Minecraft/Forge.
+//
+// The metadata gets two values: `version` is what Gradle resolves (so it must be the real
+// coordinate, snapshots included) and `range` is what lands in META-INF/jarjar/metadata.json,
+// where it has to be a Maven version range — exact `[v]` wherever possible, so another mod
+// bundling the same library cannot select a different one. `junixsocket-core` is a pom-only
+// aggregator and must never be passed to jarJar; only -common and -native-common carry code.
+def bundledLibraries = [
+        ['com.github.5zig-reborn', 'DiscordIPC', 'master-SNAPSHOT', '[1.0,)'],
+        ['net.sf.jacob-project', 'jacob', '1.14.3', '[1.14.3]'],
+        ['org.json', 'json', '20231013', '[20231013]'],
+        ['com.googlecode.json-simple', 'json-simple', '1.1.1', '[1.1.1]'],
+        ['com.kohlschutter.junixsocket', 'junixsocket-common', '2.5.1', '[2.5.1]'],
+        ['com.kohlschutter.junixsocket', 'junixsocket-native-common', '2.5.1', '[2.5.1]'],
+        ['org.xerial', 'sqlite-jdbc', '3.45.3.0', '[3.45.3.0]'],
+        ['io.netty', 'netty-codec-http', '4.1.97.Final', '[4.1.97.Final]'],
+]
+
+bundledLibraries.each { groupId, name, depVersion, range ->
+    def coords = "${groupId}:${name}:${depVersion}"
+    dependencies.add('implementation', dependencies.create(coords) { transitive = false })
+    def embedded = dependencies.create(coords) { transitive = false }
+    dependencies.add('jarJar', embedded)
+    // `version` is what Gradle resolves (so it must be the real coordinate, snapshots included);
+    // `range` is only written into META-INF/jarjar/metadata.json, and there it has to be a Maven
+    // version range.
+    jarJar.configure(embedded) { info ->
+        info.version = depVersion
+        info.range = range
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+                    new File(repoRoot, 'core').path,
+                    new File(repoRoot, 'common').path,
+                    new File(repoRoot, 'api').path,
+                    // Rooted one level below the package root on purpose: the excludes below are
+                    // relative to each source directory, and rooting this one at 'eu' keeps the
+                    // two 1.21.1 replacements (same package paths as the core files they replace)
+                    // out of them. Same trick as versions/1.21.1-fabric.
+                    new File(repoRoot, 'platform/1.21.1/eu').path,
+                    new File(repoRoot, 'loader/forge-1.21.1/java').path
+            ]
+            exclude 'eu/the5zig/mod/installer/**'
+            // authlib 6 (1.21.1) removed the legacy Yggdrasil user authentication these two core
+            // classes are written against; the platform provides 1.21.1 copies instead of editing core.
+            exclude 'eu/the5zig/mod/account/AccountManager.java'
+            exclude 'eu/the5zig/mod/chat/network/packets/PacketEncryption.java'
+            // The platform's payload bridge is written against the Fabric API. This build replaces
+            // it with a Forge implementation of the same class (see loader/forge-1.21.1).
+            exclude 'the5zig/mod/platform/PluginMessages.java'
+        }
+        resources {
+            srcDirs = [
+                    new File(projectDir, 'src/main/resources').path,
+                    new File(repoRoot, 'core/resources').path,
+                    new File(repoRoot, 'loader/resources').path
+            ]
+        }
+    }
+}
+
+// ---- mixins -----------------------------------------------------------------
+// Forge 1.21.1 has no ForgeGui (unlike 1.20.1): the game renders the vanilla Gui, so the
+// platform's own @Mixin(Gui) hook on render(GuiGraphics, DeltaTracker) is the HUD bracket and no
+// loader-specific mixin is needed. Forge reads mixin configs from the `MixinConfigs` manifest
+// attribute (its ModFileParser does not understand [[mixins]]), which the renamer plugin adds.
+//
+// enableMixinRefmaps wires the Mixin AP into compileJava and emits a refmap; without it the
+// annotations would keep official names and silently fail to apply against the SRG-named
+// production runtime ("jar loads, no HUD").
+renamer.mixin.refMap = 'mixins.the5zigmod.refmap.json'
+renamer.enableMixinRefmaps {
+    config 'mixins.the5zigmod.json'
+}
+
+// Official -> SRG mappings for the jar rename (and the reverse map for dev runs).
+renamer.mappings(minecraft.dependency.toSrg)
+
+// Rename the jar-in-jar output: the nested libraries are already production artifacts and pass
+// through untouched, only our classes (and the refmap) are rewritten to SRG names.
+def renamedJar = renamer.classes(tasks.named('jarJar', Jar)) {
+    archiveClassifier = ''
+    mappings renamer.mixin.generatedMappings
+}
+
+// The renamed jar-in-jar is the release artifact; the plain jar stays available as "-slim" for
+// debugging without the embedded libraries.
+tasks.named('jar') { archiveClassifier = 'slim' }
+tasks.named('assemble') { dependsOn renamedJar }
+
+// The Renamer CLI declares a Java 8 toolchain (net.minecraftforge:renamer is a Java 8 target).
+// No JDK 8 is installed here and the tool only reads/writes jars, so run it on the same Java 21
+// the build already uses instead of provisioning a second JDK.
+tasks.withType(net.minecraftforge.renamer.gradle.RenameJar).configureEach { task ->
+    task.javaLauncher.set(javaToolchains.launcherFor { spec ->
+        spec.languageVersion.set(JavaLanguageVersion.of(21))
+    })
+}
+
+// eu.the5zig.mod.Version reads these from the first META-INF/MANIFEST.MF that advertises
+// "5zig-Version"; without them the HUD shows "bDEV".
+def jarManifestAttributes = [
+        '5zig-Version'         : project.version,
+        'Minecraft-Version'    : minecraftVersion,
+        '5zig-Build'           : 'alpha',
+        'Specification-Title'  : 'the5zigmod',
+        'Specification-Version': project.version,
+]
+
+tasks.withType(Jar).configureEach {
+    manifest { attributes(jarManifestAttributes) }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('META-INF/mods.toml') {
+        expand 'version': project.version
+    }
+}
