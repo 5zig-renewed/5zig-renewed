@@ -29,7 +29,7 @@ import net.minecraft.util.Mth;
  * Created by 5zig.
  * All rights reserved © 2015
  * <p>
- * 1.16.5 port of the 1.15 slider: still a {@link Button} whose background is the normal-state
+ * 1.16.2 port of the 1.15 slider: still a {@link Button} whose background is the normal-state
  * widget sprite plus the two knob halves from {@code widgets.png} (v = 66).
  */
 public class Slider extends Button {

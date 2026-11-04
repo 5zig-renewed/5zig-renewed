@@ -34,7 +34,7 @@ import java.util.List;
  * registered with the vanilla {@link TextureManager} as its own texture and swapped once per client tick.
  * <p>
  * 1.15 extended {@code SimpleTexture} and registered the frames through {@code func_229263_a_}; the
- * 1.16.5 equivalent is {@link TextureManager#register} / {@link TextureManager#getTexture}. Registering
+ * 1.16.2 equivalent is {@link TextureManager#register} / {@link TextureManager#getTexture}. Registering
  * a {@link Tickable} with the texture manager is what drives {@link #tick()}.
  */
 public class SimpleTickingTexture extends SimpleTexture implements Tickable {
@@ -58,7 +58,7 @@ public class SimpleTickingTexture extends SimpleTexture implements Tickable {
 		for (int i = 0; i < bufferedImages.size(); i++) {
 			ResourceLocation frameLocation = new ResourceLocation(resourceLocation.callGetResourceDomain(),
 					resourceLocation.callGetResourcePath() + i);
-			// 1.16.5's TextureManager has no "existing or null" lookup; an unregistered path resolves
+			// 1.16.2's TextureManager has no "existing or null" lookup; an unregistered path resolves
 			// to the missing texture, which the instanceof below rejects.
 			AbstractTexture existing = textureManager.getTexture(frameLocation);
 			SimpleTexture frameTexture;

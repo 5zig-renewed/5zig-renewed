@@ -115,13 +115,13 @@ public abstract class MixinChatComponent {
 		}
 	}
 
-	@Inject(method = "scrollChat(I)V", at = @At("HEAD"))
-	private void the5zig$scrollChat(int amount, CallbackInfo callbackInfo) {
+	@Inject(method = "scrollChat(D)V", at = @At("HEAD"))
+	private void the5zig$scrollChat(double amount, CallbackInfo callbackInfo) {
 		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
-			The5zigMod.getVars().get2ndChat().scroll(amount);
+			The5zigMod.getVars().get2ndChat().scroll((int) amount);
 		} catch (Throwable ignored) {
 			// The second chat is an optional feature.
 		}

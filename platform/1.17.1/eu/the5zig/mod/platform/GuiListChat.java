@@ -29,7 +29,7 @@ import java.util.List;
  * Created by 5zig.
  * All rights reserved © 2015
  * <p>
- * 1.18.2 port: {@code org.lwjgl.input.Mouse}/{@code Display} are gone, so the held-button and
+ * 1.17.1 port: {@code org.lwjgl.input.Mouse}/{@code Display} are gone, so the held-button and
  * focus checks go through {@code Minecraft#mouseHandler} / {@code Minecraft#isWindowActive()}.
  */
 public class GuiListChat<E extends Row> extends GuiList<E> {

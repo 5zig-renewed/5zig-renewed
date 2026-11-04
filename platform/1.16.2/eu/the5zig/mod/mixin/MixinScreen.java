@@ -65,7 +65,7 @@ public abstract class MixinScreen {
 	}
 
 	/**
-	 * 1.15 hooked {@code Screen#renderBackground(int)}; 1.16.5 hands the screen a
+	 * 1.15 hooked {@code Screen#renderBackground(int)}; 1.16.2 hands the screen a
 	 * {@code PoseStack} instead.
 	 */
 	@Inject(method = "renderBackground(Lcom/mojang/blaze3d/vertex/PoseStack;)V", at = @At("HEAD"), cancellable = true)

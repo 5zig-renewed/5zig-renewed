@@ -40,9 +40,9 @@ import org.lwjgl.opengl.GL11;
 import java.util.List;
 
 /**
- * 1.16.5 rendering facade.
+ * 1.16.2 rendering facade.
  * <p>
- * 1.16.5 draws with a {@link PoseStack} plus the static {@code GuiComponent} helpers, exactly like
+ * 1.16.2 draws with a {@link PoseStack} plus the static {@code GuiComponent} helpers, exactly like
  * the 1.19.2 layer this platform was branched from. What differs is everything around it:
  * <ul>
  *     <li>there is no shader-object API ({@code RenderSystem#setShader} arrives in 1.17); shaders are
@@ -64,7 +64,7 @@ public final class GuiContext {
 	/** Default texture size used by the single-size blit overloads. */
 	private static final int DEFAULT_TEXTURE_SIZE = 256;
 
-	/** {@code GL11.GL_QUADS}; 1.16.5's BufferBuilder takes the raw mode. */
+	/** {@code GL11.GL_QUADS}; 1.16.2's BufferBuilder takes the raw mode. */
 	private static final int GL_QUADS = 7;
 
 	private final PoseStack poseStack;
@@ -94,7 +94,7 @@ public final class GuiContext {
 
 	/**
 	 * 1.20 signature kept for source compatibility. The {@code RenderType} only selected a buffer in
-	 * 1.20 and has no equivalent here, because 1.16.5 draws GUI geometry immediately.
+	 * 1.20 and has no equivalent here, because 1.16.2 draws GUI geometry immediately.
 	 */
 	public void fillGradient(Object renderType, int x1, int y1, int x2, int y2, int colorTop, int colorBottom, int z) {
 		fillGradient(x1, y1, x2, y2, colorTop, colorBottom, z);
@@ -169,7 +169,7 @@ public final class GuiContext {
 	}
 
 	/**
-	 * Tiles a texture region over an area, like 1.20's {@code blitRepeating}. 1.16.5 has no helper
+	 * Tiles a texture region over an area, like 1.20's {@code blitRepeating}. 1.16.2 has no helper
 	 * for this, so the tiles are emitted one by one; the callers use it for the dirt background and
 	 * the scrolling list gradient only.
 	 */
@@ -239,7 +239,7 @@ public final class GuiContext {
 	}
 
 	private static void bind(ResourceLocation texture) {
-		// 1.16.5's GuiComponent helpers assume the caller enabled texturing/blending (1.20's
+		// 1.16.2's GuiComponent helpers assume the caller enabled texturing/blending (1.20's
 		// GuiGraphics did this per RenderType), and GuiComponent#fill leaves both in whatever state
 		// it used. Re-assert them so a fill followed by a blit always draws textured pixels.
 		RenderSystem.enableTexture();
@@ -297,7 +297,7 @@ public final class GuiContext {
 	// ------------------------------------------------------------------------------------------
 
 	/**
-	 * Tints the following blits. In 1.20 this also stores the colour for text; the 1.16.5 text
+	 * Tints the following blits. In 1.20 this also stores the colour for text; the 1.16.2 text
 	 * renderer takes the colour per call, so the fixed-function colour is all that is needed here.
 	 */
 	public void setColor(float red, float green, float blue, float alpha) {
@@ -335,7 +335,7 @@ public final class GuiContext {
 
 	/**
 	 * Draws a multi-line tooltip through the current screen, which owns the tooltip style and the
-	 * font. 1.16.5 exposes this on {@code Screen} rather than on a graphics object.
+	 * font. 1.16.2 exposes this on {@code Screen} rather than on a graphics object.
 	 */
 	public void renderComponentTooltip(Font font, List<Component> lines, int x, int y) {
 		if (lines.isEmpty()) {
@@ -356,7 +356,7 @@ public final class GuiContext {
 	/**
 	 * Draws the tooltip of a chat style's {@code SHOW_TEXT} hover event.
 	 * <p>
-	 * 1.20's {@code GuiGraphics} owns this method; in 1.16.5 it lives on {@code Screen} as a
+	 * 1.20's {@code GuiGraphics} owns this method; in 1.16.2 it lives on {@code Screen} as a
 	 * protected method, so the {@code SHOW_TEXT} case (the only one chat components use) is
 	 * re-implemented here through the public tooltip API.
 	 */

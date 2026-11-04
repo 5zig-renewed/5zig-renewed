@@ -32,12 +32,12 @@ import net.minecraft.network.chat.TextComponent;
  * Created by 5zig.
  * All rights reserved © 2015
  * <p>
- * 1.18.2 port: the vanilla widget is {@code net.minecraft.client.gui.components.Button}, which
+ * 1.17.1 port: the vanilla widget is {@code net.minecraft.client.gui.components.Button}, which
  * renders itself through {@code renderButton(PoseStack, int, int, float)}. The 5zig core still
  * drives its widgets manually, so {@link #draw(int, int)} grabs the frame's {@code GuiContext}
  * from {@link RenderContext} and forwards to the vanilla render path.
  * <p>
- * 1.18.2's {@code AbstractWidget} has no {@code getX()}/{@code getY()}/{@code setX}/{@code setY}
+ * 1.17.1's {@code AbstractWidget} has no {@code getX()}/{@code getY()}/{@code setX}/{@code setY}
  * accessors (they arrive in 1.20), so they are provided here for the {@link IButton} contract.
  */
 public class Button extends net.minecraft.client.gui.components.Button implements IButton {
@@ -148,7 +148,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 	}
 
 	/**
-	 * 1.18.2's {@code AbstractWidget} only exposes {@code isHoveredOrFocused()}; the 5zig core wants
+	 * 1.17.1's {@code AbstractWidget} only exposes {@code isHoveredOrFocused()}; the 5zig core wants
 	 * the plain hover flag.
 	 */
 	@Override
@@ -243,7 +243,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 		int state = 1;
 		if (!this.active) {
 			state = 0;
-		} else if (this.isHoveredOrFocused()) {
+		} else if (this.isHovered()) {
 			state = 2;
 		}
 		return 46 + state * 20;

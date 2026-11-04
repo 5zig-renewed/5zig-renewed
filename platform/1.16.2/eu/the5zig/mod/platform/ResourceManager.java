@@ -232,7 +232,7 @@ public class ResourceManager implements IResourceManager {
 	}
 
 	/**
-	 * 1.15 received a {@code NetworkPlayerInfo}; 1.16.5 callers may hand over the {@link PlayerInfo}, the
+	 * 1.15 received a {@code NetworkPlayerInfo}; 1.16.2 callers may hand over the {@link PlayerInfo}, the
 	 * {@link GameProfile} or the {@link AbstractClientPlayer} itself, so all three are accepted.
 	 */
 	private static GameProfile getProfile(Object player) {

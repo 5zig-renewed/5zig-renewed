@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Outgoing chat hook.
  * <p>
- * 1.18.2 has a single entry point: {@code LocalPlayer#chat(String)}, which prefixes commands with
+ * 1.17.1 has a single entry point: {@code LocalPlayer#chat(String)}, which prefixes commands with
  * {@code /} itself and then sends a {@code ServerboundChatPacket}. Unlike 1.19.2 there is no
  * {@code chatSigned}/{@code commandSigned} pair (chat signing arrives with 1.19) and there is no
  * {@code ClientPacketListener#sendChat} either (that is 1.19.3), so one injection covers chat and

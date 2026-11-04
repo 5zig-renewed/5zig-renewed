@@ -40,7 +40,7 @@ import java.util.List;
  * The {@link Screen} the mod's own {@link Gui} screens are rendered in.
  * <p>
  * The core of the mod was written against 1.15, where the screen drew itself through a globally
- * reachable tessellator. In 1.18.2 the frame arrives as a {@link PoseStack}; it is wrapped in a
+ * reachable tessellator. In 1.17.1 the frame arrives as a {@link PoseStack}; it is wrapped in a
  * {@link GuiContext} and published to {@link RenderContext} for the duration of
  * {@link #render(PoseStack, int, int, float)} so that the core's {@code IVariables#drawString(...)}
  * and friends keep working unchanged.
@@ -48,7 +48,7 @@ import java.util.List;
 public class GuiHandle extends Screen implements IGuiHandle {
 
 	/**
-	 * 1.15's {@code Screen#blit} drew from whatever texture had been bound last. 1.18.2 has no
+	 * 1.15's {@code Screen#blit} drew from whatever texture had been bound last. 1.17.1 has no
 	 * texture binding at all, so {@link BoundTexture} records it instead.
 	 */
 	private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation("minecraft", "textures/gui/widgets.png");
@@ -231,7 +231,7 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		int y1 = (int) Math.min(top, bottom);
 		int x2 = (int) Math.max(left, right);
 		int y2 = (int) Math.max(top, bottom);
-		// 1.15 fed the colours in by vertex order, 1.18.2's fillGradient is always top-to-bottom, so a
+		// 1.15 fed the colours in by vertex order, 1.17.1's fillGradient is always top-to-bottom, so a
 		// "vertical" gradient simply swaps the two colours.
 		graphics.fillGradient(x1, y1, x2, y2, vertical ? endColor : startColor, vertical ? startColor : endColor);
 	}

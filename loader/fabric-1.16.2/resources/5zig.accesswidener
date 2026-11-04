@@ -1,6 +1,7 @@
 accessWidener v1 named
 
-# 1.16.5 exposes "the effect icons are being drawn in the inventory" only as a protected field;
-# 1.19.2 turned it into EffectRenderingInventoryScreen#canSeeEffects(). The HUD uses it to step
-# aside while the inventory renders the same icons.
+# The HUD steps aside while the inventory renders its own effect icons. 1.16.2 already makes
+# EffectRenderingInventoryScreen#doRenderEffects public (1.16.5 demoted it to protected), so this
+# entry is a no-op here; it is kept so the access-widener file and the fabric.mod.json declaration
+# stay identical across the 1.16.x line.
 accessible field net/minecraft/client/gui/screens/inventory/EffectRenderingInventoryScreen doRenderEffects Z

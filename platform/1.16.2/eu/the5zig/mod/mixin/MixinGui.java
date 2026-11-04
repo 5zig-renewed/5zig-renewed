@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Publishes the frame's {@link PoseStack} to {@code RenderContext} and drives the mod's HUD.
  * <p>
- * 1.16.5 draws with a {@code PoseStack} threaded through every draw call (the {@code GuiGraphics}
+ * 1.16.2 draws with a {@code PoseStack} threaded through every draw call (the {@code GuiGraphics}
  * holder only arrives in 1.20), while the 5zig core still draws through
  * {@code IVariables.drawString} and friends. The bracketing and the actual overlay draw live in
  * {@link HudFrame} because Forge overrides {@code Gui#render} in {@code ForgeGui} and needs its own
@@ -72,7 +72,7 @@ public abstract class MixinGui {
 	}
 
 	/**
-	 * 1.15 hooked {@code IngameGui#addChatMessage} for chat type 2; 1.16.5 routes the action bar
+	 * 1.15 hooked {@code IngameGui#addChatMessage} for chat type 2; 1.16.2 routes the action bar
 	 * through {@code Gui#setOverlayMessage}.
 	 */
 	@Inject(method = "setOverlayMessage(Lnet/minecraft/network/chat/Component;Z)V", at = @At("HEAD"), cancellable = true)

@@ -1,1 +1,5 @@
 accessWidener v1 named
+
+# 1.17 only exposes "are the inventory's potion effects being drawn" as a protected field
+# (1.18 replaced it with the public canSeeEffects() method).
+accessible field net/minecraft/client/gui/screens/inventory/EffectRenderingInventoryScreen doRenderEffects Z

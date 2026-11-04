@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinAbstractClientPlayer {
 
 	/**
-	 * 1.15 injected into {@code getFovModifier}; 1.18.2 calls it {@code getFieldOfViewModifier}.
+	 * 1.15 injected into {@code getFovModifier}; 1.17.1 calls it {@code getFieldOfViewModifier}.
 	 */
 	@Inject(method = "getFieldOfViewModifier()F", at = @At("HEAD"), cancellable = true)
 	private void the5zig$staticFov(CallbackInfoReturnable<Float> callbackInfo) {

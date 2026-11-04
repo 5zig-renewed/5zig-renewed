@@ -63,8 +63,13 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **26.3 Fabric** | green, self-contained | **HUD** (needs the keybind fix below) |
 | **1.20 Fabric** | green, self-contained | **HUD** |
 | **1.20.2 Fabric** | green, self-contained | **HUD** |
+| **1.18.1 Fabric** | green, self-contained | **HUD** |
 | **1.16.5 Fabric** | green, self-contained | **HUD** |
+| **1.16.4 Fabric** | green, self-contained; byte-identical platform to 1.16.5 (only version bump) | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
+| **1.16.3 Fabric** | green, self-contained; `GL11` scissor (no `RenderSystem.enableScissor` before 1.16.4) | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
 | **1.18.2 Fabric** | green, self-contained | **HUD** |
+| **1.17.1 Fabric** | green, self-contained (Java 16 bytecode; Fabric API mod id `fabric`) | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
+| **1.17 Fabric** | green, self-contained; byte-identical platform to 1.17.1 (version bump only); Fabric API pinned to 0.36.0+1.17, the last build that still admits 1.17.0 | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
 | **1.19.1 Fabric** | green, self-contained | **HUD** |
 | **1.19 Fabric** | green, self-contained | **HUD** |
 | **1.20.5 Fabric** | green, self-contained | **HUD** |
@@ -97,7 +102,12 @@ Platform completeness is measurable and roughly flat across eras — the early p
 |---|--:|--:|
 | 1.20.1 (reference) | 379 | 2 |
 | 1.19.2 | 388 | 2 |
+| 1.18.2 | 388 | 2 |
+| 1.17.1 | 388 | 2 |
+| 1.17 | 388 | 2 |
 | 1.16.5 | 387 | 2 |
+| 1.16.4 | 387 | 2 |
+| 1.16.3 | 387 | 2 |
 
 The single live `UnsupportedOperationException` in each is the `setSession` guard (replacing the client's
 `User` field); the other occurrences are the doc comment.

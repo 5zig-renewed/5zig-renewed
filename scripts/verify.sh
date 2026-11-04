@@ -17,18 +17,22 @@ secs=${3:-240}
 gradle=${4:-$HOME/work/tools/gradle-8.10.2/bin/gradle}
 jhome=${5:-/usr/lib/jvm/java-17-openjdk}
 shot=${SHOT:-/tmp/verify-$(basename "$proj").png}
+# Each verification gets its own X display so a stray client from another run cannot
+# sit on top of the window we screenshot.
+VDISPLAY=${VDISPLAY:-:99}
 
 # 1. no stale clients
-pkill -f KnotClient 2>/dev/null
-pkill -f 'net.minecraftforge.*launch' 2>/dev/null
+pkill -f 'Knot[C]lient' 2>/dev/null
+pkill -f 'net.minecraftforge.*launc[h]' 2>/dev/null
 sleep 3
 
 # 2. Xvfb must actually answer
-if ! DISPLAY=:99 xdotool getdisplaygeometry >/dev/null 2>&1; then
-    rm -f /tmp/.X99-lock /tmp/.X11-unix/X99
-    setsid Xvfb :99 -screen 0 1280x800x24 +extension GLX </dev/null >/tmp/xvfb99.log 2>&1 &
+num=${VDISPLAY#:}
+if ! DISPLAY=$VDISPLAY xdotool getdisplaygeometry >/dev/null 2>&1; then
+    rm -f "/tmp/.X${num}-lock" "/tmp/.X11-unix/X${num}"
+    setsid Xvfb "$VDISPLAY" -screen 0 1280x800x24 +extension GLX </dev/null >"/tmp/xvfb${num}.log" 2>&1 &
     for _ in $(seq 1 20); do
-        DISPLAY=:99 xdotool getdisplaygeometry >/dev/null 2>&1 && break
+        DISPLAY=$VDISPLAY xdotool getdisplaygeometry >/dev/null 2>&1 && break
         sleep 1
     done
 fi
@@ -52,7 +56,7 @@ if [ -z "$(ls -A "$proj/run/saves" 2>/dev/null)" ]; then
 fi
 
 # 4. run
-( cd "$proj" && DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1 MESA_GL_VERSION_OVERRIDE=4.5 \
+( cd "$proj" && DISPLAY=$VDISPLAY LIBGL_ALWAYS_SOFTWARE=1 MESA_GL_VERSION_OVERRIDE=4.5 \
     JAVA_HOME="$jhome" "$gradle" runClient --no-daemon >"$log" 2>&1 ) &
 pid=$!
 
@@ -64,13 +68,13 @@ for _ in $(seq 1 "$secs"); do
 done
 
 sleep 12
-DISPLAY=:99 import -window root "$shot" 2>/dev/null
+DISPLAY=$VDISPLAY import -window root "$shot" 2>/dev/null
 
 core=$(grep -ac 'Core initialised' "$log" 2>/dev/null || echo 0)
 hud=$(grep -ac 'HUD rendering failed' "$log" 2>/dev/null || echo 0)
 echo "core_init=$core joined=$joined hud_errors=$hud shot=$shot"
 
 # 5. tear down
-pkill -f KnotClient 2>/dev/null
-pkill -f 'net.minecraftforge.*launch' 2>/dev/null
+pkill -f 'Knot[C]lient' 2>/dev/null
+pkill -f 'net.minecraftforge.*launc[h]' 2>/dev/null
 sleep 2

@@ -27,7 +27,7 @@ import net.minecraft.client.KeyMapping;
  * A keybinding of the mod.
  * <p>
  * 1.15 had to look the key code up in a hand-maintained name→code map because
- * {@code KeyBinding#getKeyCode()} had already been removed; 1.16.5 has no getter for the bound
+ * {@code KeyBinding#getKeyCode()} had already been removed; 1.16.2 has no getter for the bound
  * {@link InputConstants.Key} either, so the numeric code is cached and refreshed whenever the key is
  * (re)bound. The core polls {@link #callIsPressed()} every tick and compares
  * {@link #callGetKeyCode()} against raw GLFW key codes, so both must be cheap and side effect free.

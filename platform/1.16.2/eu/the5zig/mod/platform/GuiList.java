@@ -43,7 +43,7 @@ import java.util.List;
  * Created by 5zig.
  * All rights reserved © 2015
  * <p>
- * 1.16.5 port. 1.15 extended {@code AbstractList}; 1.16.5's {@code AbstractSelectionList} is
+ * 1.16.2 port. 1.15 extended {@code AbstractList}; 1.16.2's {@code AbstractSelectionList} is
  * generic over its own {@code Entry} type and cannot hold the core's {@link Row} implementations,
  * so this class carries its own scroll state, scrollbar, culling and scissor logic (which the 1.15
  * version overrode almost entirely anyway).

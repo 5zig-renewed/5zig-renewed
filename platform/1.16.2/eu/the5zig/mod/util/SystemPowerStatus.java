@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  * Reads the battery state of the machine.
  * <p>
  * The 1.19.2 platform asked OSHI, and the 1.15 one bound {@code Kernel32} through JNA. Neither path
- * works here: Minecraft 1.16.5 ships {@code oshi-core 1.1}, whose hardware layer predates the
+ * works here: Minecraft 1.16.2 ships {@code oshi-core 1.1}, whose hardware layer predates the
  * {@code PowerSource} API entirely ({@code HardwareAbstractionLayer#getPowerSources()} arrived in
  * OSHI 3.x), and this platform deliberately ships no extra native stack. The battery HUD therefore
  * reads the operating system directly:

@@ -74,7 +74,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.ClickEvent;
@@ -132,9 +131,9 @@ import java.util.Locale;
 import java.util.Optional;
 
 /**
- * 1.18.2 (Mojang mappings, Fabric) implementation of {@link IVariables}.
+ * 1.17.1 (Mojang mappings, Fabric) implementation of {@link IVariables}.
  * <p>
- * Ported from the 1.15.1 implementation. The parts that no longer exist on 1.18.2 (global texture
+ * Ported from the 1.15.1 implementation. The parts that no longer exist on 1.17.1 (global texture
  * binding, the LWJGL2 keyboard event queue, {@code ScaledResolution}, OptiFine style option objects)
  * are replaced by their modern equivalents; everything that cannot exist at all throws
  * {@link UnsupportedOperationException} with an explanation instead of pretending to work.
@@ -142,7 +141,7 @@ import java.util.Optional;
 public class Variables implements IVariables {
 
 	/**
-	 * Maximum size of a plugin channel payload accepted by a 1.18.2 server; larger packets are
+	 * Maximum size of a plugin channel payload accepted by a 1.17.1 server; larger packets are
 	 * rejected by the vanilla encoder with a disconnect.
 	 */
 	private static final int MAX_PAYLOAD_SIZE = 32767;
@@ -177,7 +176,7 @@ public class Variables implements IVariables {
 
 			@Override
 			public void enableRepeatEvents(boolean repeat) {
-				// 1.18.2 has no global GLFW repeat toggle any more; repeat behaviour is decided per
+				// 1.17.1 has no global GLFW repeat toggle any more; repeat behaviour is decided per
 				// screen by the keyboard handler. Nothing to configure here.
 			}
 		});
@@ -482,7 +481,7 @@ public class Variables implements IVariables {
 		if (!(screen instanceof ChatScreen)) {
 			return null;
 		}
-		// ChatScreen#input is protected; 1.18.2 focuses it on init, so the public focus API is used
+		// ChatScreen#input is protected; 1.17.1 focuses it on init, so the public focus API is used
 		// instead of an access widener or reflection.
 		return screen.getFocused() instanceof EditBox ? (EditBox) screen.getFocused() : null;
 	}
@@ -508,7 +507,7 @@ public class Variables implements IVariables {
 		for (IKeybinding keybinding : keybindings) {
 			if (keybinding instanceof KeyMapping) {
 				// Fallback for mappings that were not created through FiveZigKeybinds. Fabric's
-				// registry appends them to Options#keyMappings (the array itself is final on 1.18.2,
+				// registry appends them to Options#keyMappings (the array itself is final on 1.17.1,
 				// so the old "rewrite the array" approach is impossible).
 				Keybinds.registerFallback((KeyMapping) keybinding);
 				changed = true;
@@ -557,7 +556,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public void resetServer() {
-		// 1.18.2 keeps the server data on the active ClientPacketListener; getServer() always reads
+		// 1.17.1 keeps the server data on the active ClientPacketListener; getServer() always reads
 		// the live value, so this implementation has no cached state that could go stale.
 	}
 
@@ -587,7 +586,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public void setFOV(float fov) {
-		// 1.18.2 stores the field of view as a plain double on Options; the slider still clamps
+		// 1.17.1 stores the field of view as a plain double on Options; the slider still clamps
 		// it to 30..110 when Options#load runs.
 		getGameSettings().fov = fov;
 	}
@@ -762,7 +761,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public String getFPS() {
-		// 1.18.2 has no Minecraft#getFps(); the counter only exists as the leading field of the
+		// 1.17.1 has no Minecraft#getFps(); the counter only exists as the leading field of the
 		// debug overlay string ("120 fps T: ...").
 		String fpsString = getMinecraft().fpsString;
 		if (fpsString == null || fpsString.isEmpty()) {
@@ -907,8 +906,16 @@ public class Variables implements IVariables {
 		if (!level.isLoaded(pos)) {
 			return null;
 		}
-		Holder<Biome> biome = level.getBiome(pos);
-		Optional<ResourceKey<Biome>> key = biome.unwrapKey();
+		// 1.17's Level#getBiome returns the Biome itself; the Holder-based API is 1.18+. The
+		// registry key is therefore resolved through the connection's RegistryAccess.
+		Biome biome = level.getBiome(pos);
+		ClientPacketListener connection = getMinecraft().getConnection();
+		if (connection == null) {
+			return null;
+		}
+		Optional<ResourceKey<Biome>> key = connection.registryAccess()
+				.registryOrThrow(Registry.BIOME_REGISTRY)
+				.getResourceKey(biome);
 		if (!key.isPresent()) {
 			return null;
 		}
@@ -1093,12 +1100,14 @@ public class Variables implements IVariables {
 			return 0;
 		}
 		Screen screen = getMinecraft().screen;
-		if (screen instanceof EffectRenderingInventoryScreen && ((EffectRenderingInventoryScreen<?>) screen).canSeeEffects()) {
+		// 1.17 keeps this as the protected doRenderEffects field (widened in 5zig.accesswidener);
+		// 1.18 exposes it as canSeeEffects().
+		if (screen instanceof EffectRenderingInventoryScreen && ((EffectRenderingInventoryScreen<?>) screen).doRenderEffects) {
 			return 0;
 		}
 		for (MobEffectInstance effect : player.getActiveEffects()) {
 			if (effect.showIcon()) {
-				// The vanilla 1.18.2 HUD draws one row of 24x24 icons at the top right corner.
+				// The vanilla 1.17.1 HUD draws one row of 24x24 icons at the top right corner.
 				return 26;
 			}
 		}
@@ -1243,7 +1252,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public void updateScaledResolution() {
-		// 1.18.2 has no ScaledResolution object any more: the Window always carries the current
+		// 1.17.1 has no ScaledResolution object any more: the Window always carries the current
 		// GUI scale, so the values below are read live and there is no cached state to refresh.
 	}
 
@@ -1361,7 +1370,7 @@ public class Variables implements IVariables {
 	public void sendMessage(String message) {
 		LocalPlayer player = getPlayer();
 		if (player != null) {
-			// 1.18.2 has no chat signing: LocalPlayer#chat sends the plain packet and prefixes
+			// 1.17.1 has no chat signing: LocalPlayer#chat sends the plain packet and prefixes
 			// commands with '/' itself, so chat and commands share this entry point.
 			player.chat(message);
 		}
@@ -1379,7 +1388,7 @@ public class Variables implements IVariables {
 			return;
 		}
 		if (payload.readableBytes() > MAX_PAYLOAD_SIZE) {
-			The5zigMod.logger.warn("Refusing to send {} bytes on plugin channel {}: 1.18.2 servers reject payloads larger than {} bytes",
+			The5zigMod.logger.warn("Refusing to send {} bytes on plugin channel {}: 1.17.1 servers reject payloads larger than {} bytes",
 					payload.readableBytes(), channel, MAX_PAYLOAD_SIZE);
 			return;
 		}
@@ -1599,7 +1608,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public InputStream getMinecraftIcon() throws Exception {
-		// 1.18.2 does not ship the window icons as a resource any more (they are compiled into the
+		// 1.17.1 does not ship the window icons as a resource any more (they are compiled into the
 		// client), so the vanilla pack icon is used, falling back to the mod's own icon.
 		InputStream icon = Variables.class.getResourceAsStream("/pack.png");
 		if (icon == null) {
@@ -1623,7 +1632,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public void dispatchKeypresses() {
-		// 1.15 drained the LWJGL2 keyboard queue here and fired a KeyPressEvent per press. 1.18.2
+		// 1.15 drained the LWJGL2 keyboard queue here and fired a KeyPressEvent per press. 1.17.1
 		// has no queue, so MixinKeyboardHandler records the presses and this per-tick entry point
 		// delivers them (and runs the state-based key handling, i.e. the menu key).
 		KeyDispatch.dispatch();
@@ -1644,7 +1653,9 @@ public class Variables implements IVariables {
 				// Unknown type (e.g. "msa" written by a future version): keep the Mojang default.
 			}
 		}
-		User user = new User(name, uuid, token, Optional.empty(), Optional.empty(), type);
+		// 1.17's User is (name, uuid, access token, type name): no OpenID fields, no Type#getName
+		// and no MSA constant yet, so the type is spelled out here.
+		User user = new User(name, uuid, token, type == User.Type.LEGACY ? "legacy" : "mojang");
 		// Minecraft#user is private and has no setter. The field is located by type so that the
 		// lookup also works in a production environment where members are obfuscated.
 		for (Field field : Minecraft.class.getDeclaredFields()) {
@@ -1658,7 +1669,7 @@ public class Variables implements IVariables {
 				}
 			}
 		}
-		throw new UnsupportedOperationException("Minecraft 1.18.2 exposes no user field that could be replaced");
+		throw new UnsupportedOperationException("Minecraft 1.17.1 exposes no user field that could be replaced");
 	}
 
 	@Override

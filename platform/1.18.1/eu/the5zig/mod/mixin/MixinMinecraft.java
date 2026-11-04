@@ -27,7 +27,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Client-loop hooks that used to live in 1.15's {@code MixinMinecraft}.
@@ -59,9 +58,11 @@ public abstract class MixinMinecraft {
 	 * Left click: CPS counter and the range of the last attack.
 	 * <p>
 	 * 1.15 injected into {@code clickMouse}; the method is called {@code startAttack} in 1.18.1.
+	 * Unlike 1.18.2, 1.18.1's {@code startAttack} returns {@code void}, so there is no
+	 * {@code CallbackInfoReturnable} to hand back.
 	 */
-	@Inject(method = "startAttack()Z", at = @At("HEAD"))
-	private void the5zig$startAttack(CallbackInfoReturnable<Boolean> callbackInfo) {
+	@Inject(method = "startAttack()V", at = @At("HEAD"))
+	private void the5zig$startAttack(CallbackInfo callbackInfo) {
 		if (!CoreState.isReady()) {
 			return;
 		}

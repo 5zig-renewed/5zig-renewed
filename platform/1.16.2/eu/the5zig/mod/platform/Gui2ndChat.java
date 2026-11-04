@@ -46,7 +46,7 @@ import java.util.Locale;
  * the bottom left).
  * <p>
  * Ported from the 1.15.1 implementation. 1.15 drew through a global tessellator, wrapped messages
- * with {@code RenderComponentsUtil#splitText} and stored {@code TextComponent}s; 1.16.5 hands a
+ * with {@code RenderComponentsUtil#splitText} and stored {@code TextComponent}s; 1.16.2 hands a
  * {@link GuiContext} to every draw call, wraps with
  * {@link ComponentRenderUtils#wrapComponents} (which yields one {@link FormattedCharSequence} per
  * rendered line) and has no legacy text components, so hover/click resolution walks the sequence's
@@ -153,7 +153,7 @@ public class Gui2ndChat implements IGui2ndChat {
 	/**
 	 * Highlights every occurrence of the configured highlight words in a chat line.
 	 * <p>
-	 * 1.15 walked the component tree and re-measured the accumulated legacy string; the 1.16.5
+	 * 1.15 walked the component tree and re-measured the accumulated legacy string; the 1.16.2
 	 * equivalent is to measure the plain line text, which is exactly what is drawn.
 	 */
 	private void highlightChatLine(GuiContext graphics, Minecraft minecraft, String text, int x, int y, int alpha) {

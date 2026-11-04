@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Port of 1.15's {@code MixinGuiChatNew}.
  * <p>
- * 1.18.2 funnels every displayed chat line (system chat, player chat, the local echo and messages
+ * 1.17.1 funnels every displayed chat line (system chat, player chat, the local echo and messages
  * added by the mod itself) through {@code ChatComponent#addMessage(Component)}. Player chat first
  * passes through {@code enqueueMessage} (the chat-delay queue) but always lands here before it is
  * drawn. There is no message signature and no chat tag in this version — both were added by the
@@ -115,13 +115,13 @@ public abstract class MixinChatComponent {
 		}
 	}
 
-	@Inject(method = "scrollChat(I)V", at = @At("HEAD"))
-	private void the5zig$scrollChat(int amount, CallbackInfo callbackInfo) {
+	@Inject(method = "scrollChat(D)V", at = @At("HEAD"))
+	private void the5zig$scrollChat(double amount, CallbackInfo callbackInfo) {
 		if (!CoreState.isReady()) {
 			return;
 		}
 		try {
-			The5zigMod.getVars().get2ndChat().scroll(amount);
+			The5zigMod.getVars().get2ndChat().scroll((int) amount);
 		} catch (Throwable ignored) {
 			// The second chat is an optional feature.
 		}

@@ -305,8 +305,10 @@ public final class GuiContext {
 	}
 
 	/**
-	 * 1.16.5's {@code RenderSystem#enableScissor} works in window pixels with the origin at the
-	 * bottom-left, so the GUI-scaled rectangle is converted here.
+	 * 1.16.3 has no {@code RenderSystem#enableScissor} (it only arrives in 1.16.4), and its flat
+	 * {@code GlStateManager} exposes no scissor helpers either, so the GL call is made directly.
+	 * Same coordinate space as later versions: window pixels with the origin at the bottom-left,
+	 * hence the GUI-scaled rectangle is converted here.
 	 */
 	public void enableScissor(int x1, int y1, int x2, int y2) {
 		int left = Math.min(x1, x2);
@@ -316,7 +318,8 @@ public final class GuiContext {
 		Minecraft minecraft = Minecraft.getInstance();
 		double scale = minecraft.getWindow().getGuiScale();
 		int windowHeight = minecraft.getWindow().getHeight();
-		RenderSystem.enableScissor(
+		GL11.glEnable(GL11.GL_SCISSOR_TEST);
+		GL11.glScissor(
 				(int) (left * scale),
 				(int) (windowHeight - bottom * scale),
 				(int) ((right - left) * scale),
@@ -324,7 +327,7 @@ public final class GuiContext {
 	}
 
 	public void disableScissor() {
-		RenderSystem.disableScissor();
+		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 	}
 
 	/**

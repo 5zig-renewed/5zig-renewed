@@ -38,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * connection.
  * <p>
  * Chat is handled in {@code MixinChatComponent}, and the outgoing-chat hook lives in
- * {@code MixinLocalPlayer#chat(String)} — 1.18.2 has exactly one send path for chat and commands.
+ * {@code MixinLocalPlayer#chat(String)} — 1.17.1 has exactly one send path for chat and commands.
  */
 @Mixin(ClientPacketListener.class)
 public abstract class MixinClientPacketListener {

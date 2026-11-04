@@ -42,7 +42,7 @@ import java.util.function.Predicate;
  * <p/>
  * Textfield class is a Simple Wrapper for default Minecraft Textfields.
  * <p>
- * 1.16.5 port: {@code EditBox} is close, but not close enough — the core's config GUI relies on
+ * 1.16.2 port: {@code EditBox} is close, but not close enough — the core's config GUI relies on
  * 1.15 semantics ({@code setText} moving the cursor to the end, a selection that is not reset by
  * every cursor move, the {@code maxStringLength} clamp, the {@code Predicate<String>} validator and
  * an explicitly controllable focus). So this is a self-contained {@link AbstractWidget} that
@@ -552,7 +552,7 @@ public class Textfield extends AbstractWidget implements ITextfield {
 		graphics.fill(left, top, right, bottom, HIGHLIGHT_COLOR);
 	}
 
-	// No narration hook: AbstractWidget in 1.16.5 has no updateNarration(NarrationElementOutput)
+	// No narration hook: AbstractWidget in 1.16.2 has no updateNarration(NarrationElementOutput)
 	// (that interface arrives in 1.17), and the config screens do not depend on narration.
 
 	/**

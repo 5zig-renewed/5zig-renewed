@@ -3,10 +3,10 @@
 # Usage: ./fastc.sh [extra javac args]
 set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
-OUT="$HOME/.port/cache/scratch/out-1.16.5"
-CP="$(cat "$ROOT/versions/1.16.5-fabric/compile-classpath.txt")"
+OUT="$HOME/.port/cache/scratch/out-1.16.4"
+CP="$(cat "$ROOT/versions/1.16.4-fabric/compile-classpath.txt")"
 rm -rf "$OUT"; mkdir -p "$OUT"
-files=$(find "$ROOT/core" "$ROOT/common" "$ROOT/api" "$ROOT/platform/1.16.5/eu" "$ROOT/loader/fabric/java" "$ROOT/loader/fabric-1.16.5/java" -name '*.java' 2>/dev/null | grep -v 'eu/the5zig/mod/installer/')
+files=$(find "$ROOT/core" "$ROOT/common" "$ROOT/api" "$ROOT/platform/1.16.4/eu" "$ROOT/loader/fabric/java" "$ROOT/loader/fabric-1.16.4/java" -name '*.java' 2>/dev/null | grep -v 'eu/the5zig/mod/installer/')
 echo "sources: $(echo "$files" | wc -l)"
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk /usr/lib/jvm/java-17-openjdk/bin/javac \
   -nowarn -proc:none -Xmaxerrs 500 -d "$OUT" -cp "$CP" -encoding UTF-8 --release 8 $files "$@"

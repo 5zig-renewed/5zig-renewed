@@ -25,7 +25,7 @@ import net.minecraft.util.FormattedCharSequence;
 /**
  * A single, already line-broken line of the second chat.
  * <p>
- * 1.15 stored a plain {@code TextComponent} here; 1.16.5 splits messages into
+ * 1.15 stored a plain {@code TextComponent} here; 1.16.2 splits messages into
  * {@link FormattedCharSequence}s (one per rendered line) so that per-character styles survive the
  * line break, so both representations are kept: the sequence is drawn, the {@link Component} it came
  * from is what the public API returns.

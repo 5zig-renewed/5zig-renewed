@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Outgoing chat hook.
  * <p>
- * 1.16.5 has no client-side signing and no {@code ClientPacketListener#sendChat}: chat and commands
+ * 1.16.2 has no client-side signing and no {@code ClientPacketListener#sendChat}: chat and commands
  * alike funnel through {@code LocalPlayer#chat(String)}, which wraps the text in a
  * {@code ServerboundChatPacket}. The command form arrives with its leading {@code /}, so the
  * listener contract the 1.15 build fed from {@code sendChatMessage} is met directly.

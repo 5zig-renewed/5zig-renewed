@@ -6,7 +6,7 @@ version = '4.0.0-alpha.1'
 group = 'eu.the5zig.renewed'
 base { archivesName = '5zig-renewed-1.16.2-fabric' }
 
-// The build lives in versions/1.16.5-fabric but the sources live at the repository root.
+// The build lives in versions/1.16.2-fabric but the sources live at the repository root.
 def repoRoot = file("${projectDir}/../..")
 
 repositories {

@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Port of 1.15's {@code MixinGuiChatNew}.
  * <p>
- * 1.16.5 funnels every displayed chat line (system chat, player chat, the local echo and messages
+ * 1.16.2 funnels every displayed chat line (system chat, player chat, the local echo and messages
  * added by the mod itself) through {@code ChatComponent#addMessage(Component)}. The message
  * signatures and chat tags that 1.19.2 added do not exist here. The re-entrancy flag stops a message
  * that the chat filters rewrite from being processed a second time when the mod re-adds it.

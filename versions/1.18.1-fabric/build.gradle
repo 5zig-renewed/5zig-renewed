@@ -52,7 +52,7 @@ sourceSets {
                     new File(repoRoot, 'common').path,
                     new File(repoRoot, 'api').path,
                     // Rooted one level below the package root so the directory layout matches
-                    // eu.the5zig.mod.platform.* (same convention as platform/1.18.2 in its project).
+                    // eu.the5zig.mod.platform.* (same convention as the other platform/<mc>/eu dirs).
                     new File(repoRoot, 'platform/1.18.1/eu').path,
                     new File(repoRoot, 'loader/fabric/java').path,
                     new File(repoRoot, 'loader/fabric-1.18.1/java').path
@@ -106,7 +106,7 @@ loom {
         client {
             client()
             ideConfigGenerated = true
-            // 1.18.2 predates the quick-play argument (added in 1.20), so the dev client starts
+            // 1.18.1 predates the quick-play argument (added in 1.20), so the dev client starts
             // on the title screen.
         }
     }

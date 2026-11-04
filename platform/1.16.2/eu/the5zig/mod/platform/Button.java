@@ -32,12 +32,12 @@ import net.minecraft.network.chat.Component;
  * Created by 5zig.
  * All rights reserved © 2015
  * <p>
- * 1.16.5 port: the vanilla widget is {@code net.minecraft.client.gui.components.Button}, which
+ * 1.16.2 port: the vanilla widget is {@code net.minecraft.client.gui.components.Button}, which
  * renders itself through {@code renderButton(PoseStack, int, int, float)}. The 5zig core still
  * drives its widgets manually, so {@link #draw(int, int)} grabs the frame's {@code GuiContext}
  * from {@link RenderContext} and forwards to the vanilla render path.
  * <p>
- * 1.16.5's {@code AbstractWidget} has no {@code getX()}/{@code getY()}/{@code setX}/{@code setY}
+ * 1.16.2's {@code AbstractWidget} has no {@code getX()}/{@code getY()}/{@code setX}/{@code setY}
  * accessors (they arrive in 1.20), so they are provided here for the {@link IButton} contract.
  */
 public class Button extends net.minecraft.client.gui.components.Button implements IButton {
@@ -148,7 +148,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 	}
 
 	/**
-	 * 1.16.5's {@code AbstractWidget} keeps the hover flag in a protected field and exposes only
+	 * 1.16.2's {@code AbstractWidget} keeps the hover flag in a protected field and exposes only
 	 * {@code isHovered()} plus the separate focus flag; the 5zig core wants to set the plain hover
 	 * state, so it is read and written here.
 	 */

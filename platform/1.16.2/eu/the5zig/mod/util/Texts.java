@@ -24,9 +24,9 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
 /**
- * Component factory shim for 1.16.5.
+ * Component factory shim for 1.16.2.
  * <p>
- * {@code Component.literal/empty/translatable} are 1.19+ static factories. 1.16.5 constructs the
+ * {@code Component.literal/empty/translatable} are 1.19+ static factories. 1.16.2 constructs the
  * concrete {@link TextComponent}/{@link TranslatableComponent} types directly, so the few call sites
  * that need a component go through here instead of repeating the constructor choice.
  */

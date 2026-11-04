@@ -27,7 +27,7 @@ import eu.the5zig.mod.util.RenderContext;
 import eu.the5zig.mod.util.GuiContext;
 
 /**
- * 1.16.5 implementation of {@link IGLUtil}.
+ * 1.16.2 implementation of {@link IGLUtil}.
  * <p>
  * There is no fixed-function pipeline any more: matrices are the {@link com.mojang.blaze3d.vertex.PoseStack}
  * of the frame currently held by {@link RenderContext}, state changes go through {@link RenderSystem} and

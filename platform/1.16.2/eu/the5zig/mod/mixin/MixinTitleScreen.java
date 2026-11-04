@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Port of 1.15's {@code MixinGuiMainMenu#drawScreen}: prints the mod version in the top left corner
  * of the main menu.
  * <p>
- * The "last server" button of the 1.15 build is not ported yet: 1.16.5 builds its button grid in
+ * The "last server" button of the 1.15 build is not ported yet: 1.16.2 builds its button grid in
  * {@code TitleScreen#init} through {@code Button.builder(...)}, which needs the platform's
  * {@code ButtonFactory} first.
  */

@@ -38,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * connection.
  * <p>
  * Chat is handled in {@code MixinChatComponent}, and the outgoing-chat hook lives in
- * {@code MixinLocalPlayer} because 1.16.5 routes both chat and commands through
+ * {@code MixinLocalPlayer} because 1.16.2 routes both chat and commands through
  * {@code LocalPlayer#chat(String)}.
  */
 @Mixin(ClientPacketListener.class)
