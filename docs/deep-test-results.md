@@ -100,3 +100,29 @@ manually deleted `run/the5zigmod/sql/chatlogs/<uuid>.lck`. Reproduced with a `.l
 client. Fix: clear a stale lock, retry once, and fall back to `DummyDatabase` so callers never see null.
 **Verified**: the same stale lock now logs *"Could not open the conversation database … Clearing a stale
 lock and retrying"*, the retry succeeds and `check-client-log.sh` is clean.
+
+---
+
+## 3. Fabric 26.2 — pass
+
+Date: 2026-11-04 · log `/tmp/dt-f262.log`
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined, `check-client-log.sh` clean | log |
+| T1 HUD | ✅ renders | menu screenshots |
+| T2 settings GUI | ✅ Right Shift, all labels (Plugins (0) … Chat…) | `/tmp/f262-menu-c.png` |
+| T3 ESC | ✅ closes to gameplay | — |
+| T4 SPACE | ✅ X=233, Z=21 | `/tmp/f262-coords-c.png` |
+| T5 DELETE | ✅ clears both fields | `/tmp/f262-del-c.png` |
+
+No new defects: the 26.x fixes (blur, labels, key codes, textfield alpha, stale-lock recovery) hold on Fabric
+as well as NeoForge.
+
+## Deferred sections (all targets)
+
+- **T5 chat / friends / parties** cannot be functionally tested: every one of those features talks to the
+  5zig backend (`tcp.5zigreborn.eu`), which no longer exists. The client logs `Disconnected: Bad login`
+  and retries; nothing in the mode can be exercised beyond the failure path.
+- **T6 plugin API** has no plugin artifact to load, and on 26.x raw plugin channels are intentionally
+  degraded to a warning (D5). Testing it properly needs a small test plugin project.
