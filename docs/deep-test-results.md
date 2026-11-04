@@ -67,3 +67,10 @@ render. Switched the button to that call with an explicit centred x and an opaqu
 to platform 26.1 / 26.1.1 / 26.1.2 / 26.2 / 26.3. **Verified**: the menu now reads Show Mod, Auto-Report
 Crashes, Customize Display, TeamSpeak, Cape Settings, Language, Mod Scale, Display Options, Server
 Options, Discord Presence, Coordinates Clipboard, Reset Configuration, Done, Chat… on 26.3.
+
+**D5 — the plugin API throws on 26.x.** *(mitigated)*
+`Variables#sendCustomPayload` on 26.1 / 26.2 / 26.3 threw
+`UnsupportedOperationException(...)` for every call, while 1.21.10 / 1.21.11 already degraded with a
+one-off warning. A plugin that sends anything would therefore crash the game on 26.x. Changed to the same
+warn-once-and-drop behaviour on all three. The proper fix — registering a raw-payload type per 5zig
+channel so the API actually works on 26.x — is queued.

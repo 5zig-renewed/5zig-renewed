@@ -143,6 +143,8 @@ public class Variables implements IVariables {
 	 * Maximum size of a plugin channel payload accepted by a 1.20.1 server; larger packets are
 	 * rejected by the vanilla encoder with a disconnect.
 	 */
+	private static boolean warnedNoPluginChannels;
+
 	private static final int MAX_PAYLOAD_SIZE = 32767;
 
 	/** The vanilla HUD texture all hardcoded 5zig ingame blits use (food/saturation icons). */
@@ -1422,9 +1424,15 @@ public class Variables implements IVariables {
 			return;
 		}
 		// 26.x replaced plugin channels with typed CustomPacketPayloads: a receiver only accepts a
-		// payload type it has a codec for, so arbitrary raw bytes cannot be sent any more.
-		throw new UnsupportedOperationException("5zig 26.1: sendCustomPayload('" + channel
-				+ "') is not available - Minecraft 26.x replaced raw plugin channels with typed CustomPacketPayloads");
+		// payload type it has a codec for, so arbitrary raw bytes cannot be sent to a vanilla server.
+		// Degrade like 1.21.10/1.21.11 instead of throwing: a plugin that sends a message must not be
+		// able to crash the game (a full fix is to register a raw-payload type per channel, see
+		// docs/deep-test-results.md D5).
+		if (!warnedNoPluginChannels) {
+			warnedNoPluginChannels = true;
+			The5zigMod.logger.warn("5zig plugin channels are unavailable on Minecraft 26.x - raw plugin "
+					+ "payloads are dropped. First dropped channel: '{}'", channel);
+		}
 	}
 
 	@Override
