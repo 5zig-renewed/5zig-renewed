@@ -123,7 +123,7 @@ the other eleven overlay files compile against authlib 10 unchanged.
 ## Remaining gaps
 
 * **No runtime test.** The jar is compile-verified and mixin-verified only.
-* **GLFW at runtime.** The `lwjgl-glfw` dependency makes the platform *link*; it does not bundle
+* **GLFW removed — input now goes through `InputConstants`/SDL (see below).** The `lwjgl-glfw` dependency makes the platform *link*; it does not bundle
   GLFW into the jar (no `include`), and 26.3 never initialises GLFW. Two paths in
   `platform/Variables` still call into it for real, not just for compile-time constants:
   `Keyboard.isKeyDown` / `Mouse.isButtonDown` (`GLFW.glfwGetKey/glfwGetMouseButton(window.handle(), …)`)
@@ -135,3 +135,21 @@ the other eleven overlay files compile against authlib 10 unchanged.
   for the name. Everything else (`Keybinds`, `Textfield`) uses only `static final int` GLFW
   constants, which javac inlines — no runtime class reference.
 * Network-facing features (custom payloads, Hypixel stats) stay stubbed as in 26.2.
+
+## Input backend (resolved)
+
+Minecraft 26.3 ships **no GLFW** (it declares `lwjgl-sdl` only), so the earlier `lwjgl-glfw` dependency
+only made the code link — in a real install it would have thrown `NoClassDefFoundError` on the first
+keybind poll, and the calls were operating on an SDL handle anyway.
+
+The platform now uses only APIs that exist in 26.3:
+
+| Site | API |
+|---|---|
+| `Variables#isKeyDown` | `InputConstants.isKeyDown(int)` → `SDLKeyboard.SDL_GetKeyboardState()` |
+| mouse buttons | `SDLMouse.SDL_GetMouseState(FloatBuffer, FloatBuffer)` with an `SDL_BUTTON_*MASK` bitfield |
+| key display names | `InputConstants.Type.KEYBOARD.getOrCreate(key).getDisplayName()` |
+
+One consequence worth remembering: `core/util/Keyboard.init()` populates `Keyboard.KEY_*` with **GLFW**
+codes, which are a different code space from `InputConstants` values. `util/InputKeyCodes.java` rebases
+those fields right after `init()` so the core's comparisons keep working. `core/` itself is unmodified.
