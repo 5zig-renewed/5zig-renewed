@@ -84,6 +84,7 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.21.2 Fabric** | green, self-contained | **HUD** |
 | **1.21 NeoForge** | green, ModDevGradle | **HUD** |
 | **1.21.5 NeoForge** | green, ModDevGradle | **HUD** |
+| **1.21.10 NeoForge** | green, ModDevGradle | **HUD** |
 | **1.21.4 NeoForge** | green, ModDevGradle | **HUD** |
 
 | **26.1.2 NeoForge** | green, 26.x toolchain | **HUD** |
@@ -126,6 +127,10 @@ NeoForge's ModDevGradle path is proven across 1.20.1 → 26.1.2). Fabric remains
 every version, NeoForge is the second loader from 1.20.2 onward.
 
 ### Known gaps
+
+- **NeoForge 1.20.2 / 1.20.4 / 1.20.6 and 1.21.8 / 1.21.11 do not load yet**: each NeoForge line changed
+  the `PayloadRegistrar` contract (`registrar("1")` is a *namespace* on 1.20.x, and 1.21.8+ rejects an
+  implicitly-clientbound `playBidirectional`). Jars build; registration fixes are in progress.
 
 - **Minecraft 1.16.0 cannot run**: the jar builds, but every published Fabric API for the `1.16` line
   (`0.14.x`–`0.42.0+1.16`) declares `minecraft: ~1.16.2-alpha.20.28.a`, so Fabric refuses to load the
