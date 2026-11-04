@@ -608,7 +608,7 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 		}
 		Component text = Component.literal(clean).withStyle(ChatFormatting.UNDERLINE, ChatFormatting.BOLD);
 		graphics.drawCenteredString(Minecraft.getInstance().font, text,
-				getLeft() + (getRight() - getLeft()) / 2, Math.min(getTop() + 5, y), 0xFFFFFF);
+				getLeft() + (getRight() - getLeft()) / 2, Math.min(getTop() + 5, y), 0xFFFFFFFF);
 	}
 
 	private static String stripFormatting(String input) {

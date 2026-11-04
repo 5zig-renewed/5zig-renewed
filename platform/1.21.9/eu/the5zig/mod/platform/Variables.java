@@ -1532,21 +1532,30 @@ public class Variables implements IVariables {
 
 	@Override
 	public void deleteTexture(Object resourceLocation) {
-		if (resourceLocation instanceof net.minecraft.resources.ResourceLocation) {
-			getTextureManager().release((net.minecraft.resources.ResourceLocation) resourceLocation);
+		net.minecraft.resources.ResourceLocation location = toTextureLocation(resourceLocation);
+		if (location != null) {
+			getTextureManager().release(location);
 		}
 	}
 
 	@Override
 	public Object createDynamicImage(Object resourceLocation, int width, int height) {
 		DynamicTexture texture = new DynamicTexture(() -> "5zig dynamic image", width, height, false);
-		getTextureManager().register((net.minecraft.resources.ResourceLocation) resourceLocation, texture);
+		net.minecraft.resources.ResourceLocation location = toTextureLocation(resourceLocation);
+		if (location == null) {
+			return texture;
+		}
+		getTextureManager().register(location, texture);
 		return texture;
 	}
 
 	@Override
 	public Object getTexture(Object resourceLocation) {
-		return getTextureManager().getTexture((net.minecraft.resources.ResourceLocation) resourceLocation);
+		// 1.21.9 made ResourceLocation final, so the platform wrapper (IResourceLocation) can no
+		// longer be one. The settings GUI draws the fetched player skin through here on its first
+		// frame; the raw cast threw a ClassCastException instead (the "dead" Right Shift binding).
+		net.minecraft.resources.ResourceLocation location = toTextureLocation(resourceLocation);
+		return location == null ? null : getTextureManager().getTexture(location);
 	}
 
 	@Override

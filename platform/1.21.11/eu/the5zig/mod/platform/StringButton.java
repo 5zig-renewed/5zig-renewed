@@ -46,7 +46,8 @@ public class StringButton extends Button {
 		} else if (isHovered()) {
 			color = 16777120;
 		}
+		// Strict ARGB on 1.21.9+: legacy colours carry no alpha and would be invisible.
 		graphics.drawCenteredString(Minecraft.getInstance().font, getMessage(), getX() + getWidth() / 2,
-				getY() + (getHeight() - 8) / 2, color);
+				getY() + (getHeight() - 8) / 2, (color | 0xFF000000));
 	}
 }

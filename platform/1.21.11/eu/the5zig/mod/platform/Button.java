@@ -200,8 +200,10 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 	 */
 	protected void drawLabel(GuiGraphics graphics) {
 		int color = this.active ? COLOR_ENABLED : COLOR_DISABLED;
+		// 1.21.9+ treats text colours as strict ARGB; the legacy 0xRRGGBB constants have alpha 0
+		// and would draw nothing, leaving every 5zig button label blank.
 		graphics.drawCenteredString(Minecraft.getInstance().font, getMessage(), getX() + getWidth() / 2,
-				getY() + (getHeight() - 8) / 2, color);
+				getY() + (getHeight() - 8) / 2, (color | 0xFF000000));
 	}
 
 	/**

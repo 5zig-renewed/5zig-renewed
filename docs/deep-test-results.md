@@ -226,7 +226,7 @@ not clickable there, which does not matter for the GUI battery — Creative is i
 
 ---
 
-## 8. NeoForge 1.21.11 — partial
+## 8. NeoForge 1.21.11 — pass
 
 Date: 2026-11-04 · logs `/tmp/mk12111.log`, `/tmp/dt-nf12111b.log`
 
@@ -234,9 +234,10 @@ Date: 2026-11-04 · logs `/tmp/mk12111.log`, `/tmp/dt-nf12111b.log`
 |---|---|---|
 | T0 boot | ✅ joined on a fresh Creative world, `check-client-log.sh` clean | log |
 | T1 HUD | ✅ renders, plus the "no longer AFK" toast | `/tmp/n12111-ing-c.png` |
-| T2 settings GUI | ❌ **does not open on RSHIFT** (D8); vanilla pause menu instead | `/tmp/nb-menu-c.png` |
+| T2 settings GUI | ✅ full menu, every label (after D8) | `/tmp/d8-menu-c.png` |
 | T3 ESC | ✅ opens the vanilla pause menu as expected | — |
-| T4 SPACE | ✅ X=-71, Z=-7 (before the crash) | `/tmp/n12111-cd-c.png` |
+| T4 SPACE | ✅ X=1, Z=-6 | `/tmp/d8-coords-c.png` |
+| T5 DELETE | ✅ both fields empty (cursor only) | `/tmp/d8-del-c.png` |
 
 ### Defects
 
@@ -247,12 +248,28 @@ platforms: let `super.render` own the background, then draw the 5zig screen over
 the NeoForge client log. This is a genuine crash that predates every
 "verified" claim for those three versions — the HUD renders fine, so nothing showed it.
 
-**D8 — the settings binding does not fire on 1.21.11 NeoForge.** *(open)*
-`key_the5zigmod.key.settings:key.keyboard.right.shift` **is** registered in `run/options.txt`, so
-registration is fine, but pressing Right Shift opens nothing (the coords binding, `F12`, does fire on the
-same client). Needs a debug pass: check whether the core's `callIsPressed()` for the new binding is
-reached on the 1.21.x `Keybinding` implementation, and whether `Keybinds.wrap()` hands the core the same
-mapping the user rebinds in options.
+**D8 — settings GUI crashed on first frame; hotkey and binding were both fine.** *(fixed)*
+Right Shift **did** fire (`settings.callIsPressed()` true, `displayScreen` set `GuiHandle(GuiSettings)`),
+and the mod never opened a pause screen — the "pause menu" in my earlier screenshot was a **stale frame
+from a client that had already died**. The real crash:
+
+```
+ClassCastException: eu.the5zig.mod.platform.ResourceLocation cannot be cast to net.minecraft.resources.Identifier
+  at Variables.getTexture <- Base64Renderer.setBase64String <- GuiSettings.drawSkinButton
+```
+
+1.21.9 made `ResourceLocation` **final**, so the platform's `IResourceLocation` wrapper can no longer be
+cast to `Identifier`; `getTexture` / `deleteTexture` / `createDynamicImage` still did. The settings GUI is
+the only core screen that draws a fetched texture (the player skin) on frame 1, which is exactly why `F12`
+worked on the same client. Fixed in `platform/1.21.{9,10,11}` by routing through `toTextureLocation(...)`.
+
+Also fixed: `Button` / `StringButton` / `GuiList` on **1.21.11** still passed legacy `0xRRGGBB` label
+colours (alpha 0) to strict-ARGB text — every settings button rendered blank. 1.21.9/1.21.10 already
+forced opaque; 1.21.11 had missed it.
+
+**Lesson:** a dead-client screenshot is indistinguishable from "the hotkey did nothing" unless the client
+is known to be alive — which is why the battery now asserts the frame actually changed, and why every
+screenshot is paired with a crash-report check.
 
 ### Battery now asserts the GUI opened
 

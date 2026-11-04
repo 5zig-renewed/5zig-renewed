@@ -1532,21 +1532,31 @@ public class Variables implements IVariables {
 
 	@Override
 	public void deleteTexture(Object resourceLocation) {
-		if (resourceLocation instanceof Identifier) {
-			getTextureManager().release((Identifier) resourceLocation);
+		Identifier location = toTextureLocation(resourceLocation);
+		if (location != null) {
+			getTextureManager().release(location);
 		}
 	}
 
 	@Override
 	public Object createDynamicImage(Object resourceLocation, int width, int height) {
 		DynamicTexture texture = new DynamicTexture(() -> "5zig dynamic image", width, height, false);
-		getTextureManager().register((Identifier) resourceLocation, texture);
+		Identifier location = toTextureLocation(resourceLocation);
+		if (location == null) {
+			return texture;
+		}
+		getTextureManager().register(location, texture);
 		return texture;
 	}
 
 	@Override
 	public Object getTexture(Object resourceLocation) {
-		return getTextureManager().getTexture((Identifier) resourceLocation);
+		// 1.21.9 made ResourceLocation final, so the platform wrapper (IResourceLocation) can no
+		// longer be an Identifier. Every 5zig screen that draws a fetched skin/cape passes that
+		// wrapper straight through here; casting it threw a ClassCastException on the first frame
+		// of the settings GUI (the "dead" Right Shift binding) instead of drawing the texture.
+		Identifier location = toTextureLocation(resourceLocation);
+		return location == null ? null : getTextureManager().getTexture(location);
 	}
 
 	@Override
