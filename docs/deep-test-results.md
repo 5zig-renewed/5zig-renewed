@@ -143,9 +143,34 @@ Date: 2026-11-04 · log `/tmp/dt-nf2612.log`
 
 No new defects.
 
-### Testing note
+### Testing fixture (fixed)
 
-The stock test world is lethal (zombies kill the idle player within a few minutes), and `/difficulty` is
-not a working command on 26.x — the client answers `Unknown or incomplete command` for
-`difficulty peaceful`. Test order therefore matters: respawn, then run the GUI checks immediately. A
-future improvement is a bespoke flat/peaceful test world per target.
+Earlier targets were tested in an inherited survival world that killed the idle player within minutes.
+That was made worse by my own misdiagnosis: `/difficulty` appeared broken, but the real cause was that
+**the world had cheats disabled** — commands are rejected outright when `allowCommands` is off.
+
+There is now a proper fixture: `~/work/test-worlds/26x-creative-peaceful`, a **Creative, Peaceful,
+commands-enabled** world created through the vanilla UI (Game Mode: Creative, Difficulty: Peaceful,
+Allow Commands: ON) and copied into every 26.x run directory as `New World`. Verified with
+`/time set day` → *"Set minecraft:overworld to time marker minecraft:day"*.
+
+The old survival worlds were deleted. 1.21.x and older still need their own fixture: world data is
+one-way upgraded, so a 26.x world cannot be opened by them.
+
+---
+
+## 5. Fabric 26.1.2 — pass (on the new fixture)
+
+Date: 2026-11-04 · log `/tmp/mkworld.log`
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined the Creative/Peaceful world | log |
+| T1 HUD | ✅ label, FPS, X/Y/Z, facing | `/tmp/mk-7c.png` |
+| T2 settings GUI | ✅ Right Shift | `/tmp/t5-menu-c.png` |
+| T3 ESC | ✅ closes | — |
+| T4 SPACE | ✅ X=-553, Z=697 | `/tmp/t5-coords-c.png` |
+| T5 DELETE | ✅ clears both | `/tmp/t5-del-c.png` |
+| T6 commands | ✅ `/time set day` → *Set minecraft:overworld to time marker minecraft:day* | `/tmp/t5-cmd2-c.png` |
+
+No new defects.
