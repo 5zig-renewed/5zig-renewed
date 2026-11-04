@@ -1671,7 +1671,7 @@ public class Variables implements IVariables {
 				}
 			}
 		}
-		throw new UnsupportedOperationException("Minecraft 1.20.1 exposes no user field that could be replaced");
+		throw new UnsupportedOperationException("this Minecraft version exposes no user field that could be replaced");
 	}
 
 	@Override

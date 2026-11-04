@@ -1426,7 +1426,7 @@ public class Variables implements IVariables {
 			return;
 		}
 		if (payload.readableBytes() > MAX_PAYLOAD_SIZE) {
-			The5zigMod.logger.warn("Refusing to send {} bytes on plugin channel {}: 1.20.1 servers reject payloads larger than {} bytes",
+			The5zigMod.logger.warn("Refusing to send {} bytes on plugin channel {}: servers reject payloads larger than {} bytes",
 					payload.readableBytes(), channel, MAX_PAYLOAD_SIZE);
 			return;
 		}
@@ -1717,7 +1717,7 @@ public class Variables implements IVariables {
 				}
 			}
 		}
-		throw new UnsupportedOperationException("Minecraft 1.20.1 exposes no user field that could be replaced");
+		throw new UnsupportedOperationException("this Minecraft version exposes no user field that could be replaced");
 	}
 
 	@Override
