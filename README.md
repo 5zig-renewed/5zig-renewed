@@ -124,6 +124,10 @@ every version, NeoForge is the second loader from 1.20.2 onward.
 
 ### Known gaps
 
+- **Minecraft 1.16.0 cannot run**: the jar builds, but every published Fabric API for the `1.16` line
+  (`0.14.x`–`0.42.0+1.16`) declares `minecraft: ~1.16.2-alpha.20.28.a`, so Fabric refuses to load the
+  mod on 1.16.0 itself. Not fixable on our side; 1.16.1+ works.
+
 - **26.3 crashes on unbound keybindings.** `KeyMapping.setAll` feeds every key code to
   `InputConstants.isKeyDown`, which indexes a native buffer; a `GLFW_KEY_UNKNOWN` (-1) code throws
   `IndexOutOfBoundsException` during mouse grab. Always give 5zig keybinds a real default code.
