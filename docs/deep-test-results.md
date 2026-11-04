@@ -439,3 +439,28 @@ Fabric projects compile clean; NeoForge 1.21.8 verified in-client (menu 34.3%, c
 
 **1.16–1.20.1 are deliberately unchanged** — there `Screen#render` does not render the background, so
 removing the call would leave the mod's screens undimmed.
+
+---
+
+## 15. Fabric 1.21.8 — pass
+
+Date: 2026-11-04 · log `/tmp/dt-f1218.log`
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined, no crash report, log clean | log |
+| T1 HUD | ✅ | — |
+| T2 settings GUI | ✅ 34.5% of frame changed | `/tmp/dt-f1218-menu.png` |
+| T3 ESC | ✅ | — |
+| T4 SPACE | ✅ X=364, Z=-253 | `/tmp/f1218-coords-c.png` |
+| T5 DELETE | ✅ | `/tmp/dt-f1218-deleted.png` |
+
+No new defects — carries the D9 background fix.
+
+### Toolchain note (my own harness error, corrected)
+
+The first compile sweep reported `compile=1` for 1.20.2–1.21.4 with **zero** `error:` lines. That was not a
+code failure: Loom **1.7.4** cannot apply on Gradle 8.14.3 (`'Problems.forNamespace'`), and those eras are
+Loom 1.7.4 projects. Re-run with their own toolchains (1.20.2–1.20.6 → Gradle 8.10.2 + JDK 17;
+1.21–1.21.4 → Gradle 8.10.2 + JDK 21) and all 14 platforms compile clean with the D9 fix. Always read the
+exit code *and* the log before believing a sweep.
