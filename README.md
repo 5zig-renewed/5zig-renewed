@@ -63,6 +63,10 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | 26.3 Fabric | **does not build** — 26.3 pulls LWJGL/authlib classes the project's dependency set lacks | — |
 | **1.20 Fabric** | green, self-contained | **HUD** |
 | **1.20.2 Fabric** | green, self-contained | **HUD** |
+| **1.19.4 Fabric** | green, self-contained | **HUD** |
+| **1.19.3 Fabric** | green, self-contained | **HUD** |
+| **1.20.6 Fabric** | green, self-contained | **HUD** |
+| **1.20.3 Fabric** | green, self-contained | **HUD** |
 | **1.21.2 Fabric** | green, self-contained | **HUD** |
 | **1.21.4 NeoForge** | green, ModDevGradle | **HUD** |
 | 1.21.1 Forge | green (ForgeGradle 7, SRG refmap, 35/35 mixin targets) | **build-only** — FG7's dev run registers only `build/resources/main` as the mod file, so FML reports "has mods that were not found"; needs a packaged-jar test |

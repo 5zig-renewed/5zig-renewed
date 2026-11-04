@@ -1,0 +1,6 @@
+accessWidener v1 named
+
+# 1.16.5 exposes "the effect icons are being drawn in the inventory" only as a protected field;
+# 1.19.2 turned it into EffectRenderingInventoryScreen#canSeeEffects(). The HUD uses it to step
+# aside while the inventory renders the same icons.
+accessible field net/minecraft/client/gui/screens/inventory/EffectRenderingInventoryScreen doRenderEffects Z
