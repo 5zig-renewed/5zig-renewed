@@ -165,7 +165,7 @@
   "neoforge_jar": "5zig-renewed-1.21.7-neoforge-4.0.0-alpha.1.jar",
   "forge_jar": null,
   "fabric_verified": true,
-  "neoforge_verified": false
+  "neoforge_verified": true
  },
  {
   "rank": 13,
@@ -179,7 +179,7 @@
   "neoforge_jar": "5zig-renewed-1.21.6-neoforge-4.0.0-alpha.1.jar",
   "forge_jar": null,
   "fabric_verified": true,
-  "neoforge_verified": false
+  "neoforge_verified": true
  },
  {
   "rank": 14,
@@ -193,7 +193,7 @@
   "neoforge_jar": "5zig-renewed-1.21.9-neoforge-4.0.0-alpha.1.jar",
   "forge_jar": null,
   "fabric_verified": true,
-  "neoforge_verified": false
+  "neoforge_verified": true
  },
  {
   "rank": 15,
@@ -207,7 +207,7 @@
   "neoforge_jar": "5zig-renewed-1.21.3-neoforge-4.0.0-alpha.1.jar",
   "forge_jar": null,
   "fabric_verified": true,
-  "neoforge_verified": false
+  "neoforge_verified": true
  },
  {
   "rank": 16,
@@ -249,7 +249,7 @@
   "neoforge_jar": "5zig-renewed-1.21.2-neoforge-4.0.0-alpha.1.jar",
   "forge_jar": null,
   "fabric_verified": true,
-  "neoforge_verified": false
+  "neoforge_verified": true
  },
  {
   "rank": 19,
@@ -277,7 +277,7 @@
   "neoforge_jar": "5zig-renewed-26.1.1-neoforge-4.0.0-alpha.1.jar",
   "forge_jar": null,
   "fabric_verified": true,
-  "neoforge_verified": false
+  "neoforge_verified": true
  },
  {
   "rank": 21,
