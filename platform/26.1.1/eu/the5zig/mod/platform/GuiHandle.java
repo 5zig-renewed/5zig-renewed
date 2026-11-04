@@ -77,11 +77,12 @@ public class GuiHandle extends Screen implements IGuiHandle {
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		RenderContext.set(graphics);
 		try {
-			// 26.x: the background is extracted separately from the screen contents.
-			this.extractBackground(graphics, mouseX, mouseY, partialTick);
-			child.drawScreen0(mouseX, mouseY, partialTick);
-			// Screen#extractRenderState extracts the screen's own widgets, a no-op for this wrapper.
+			// 26.x extracts the background from inside Screen#extractRenderState, and
+			// GuiRenderState#blurBeforeThisStratum throws "Can only blur once per frame" if it runs
+			// twice — so the background must NOT be extracted here as well. Super first (background +
+			// this wrapper's own, empty widget list), then the 5zig screen draws on top.
 			super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+			child.drawScreen0(mouseX, mouseY, partialTick);
 		} finally {
 			RenderContext.clear();
 		}
