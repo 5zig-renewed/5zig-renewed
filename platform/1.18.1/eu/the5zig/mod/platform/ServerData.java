@@ -22,9 +22,9 @@ package eu.the5zig.mod.platform;
 import eu.the5zig.mod.util.IServerData;
 
 /**
- * 1.18.2 view over {@link net.minecraft.client.multiplayer.ServerData}.
+ * 1.18.1 view over {@link net.minecraft.client.multiplayer.ServerData}.
  * <p>
- * 1.18.2 keeps {@code name/ip/motd/ping} on the object and stores the favicon as a base64 string;
+ * 1.18.1 keeps {@code name/ip/motd/ping} on the object and stores the favicon as a base64 string;
  * the online/max player counts of later versions do not exist yet, only the sampled player list.
  */
 public class ServerData extends net.minecraft.client.multiplayer.ServerData implements IServerData {
@@ -45,7 +45,7 @@ public class ServerData extends net.minecraft.client.multiplayer.ServerData impl
 
 	@Override
 	public String getPopulationInfo() {
-		// 1.18.2 only carries the sampled player list, not the online/max counters.
+		// 1.18.1 only carries the sampled player list, not the online/max counters.
 		if (playerList == null || playerList.isEmpty()) {
 			return "";
 		}

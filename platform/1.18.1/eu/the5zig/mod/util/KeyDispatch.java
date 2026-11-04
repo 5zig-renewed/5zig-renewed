@@ -25,10 +25,10 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 /**
- * Key press queue for 1.18.2.
+ * Key press queue for 1.18.1.
  * <p>
  * 1.15 drained the LWJGL2 keyboard queue once per tick in {@code IVariables#dispatchKeypresses()}
- * and fired a {@link eu.the5zig.mod.event.KeyPressEvent} for each press. 1.18.2 has no pollable
+ * and fired a {@link eu.the5zig.mod.event.KeyPressEvent} for each press. 1.18.1 has no pollable
  * queue, so the presses are queued from the {@code KeyboardHandler} mixin and drained from the same
  * per-tick entry point.
  * <p>

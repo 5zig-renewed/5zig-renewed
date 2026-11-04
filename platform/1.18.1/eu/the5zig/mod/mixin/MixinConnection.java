@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Port of 1.15's {@code MixinNetworkManager}.
  * <p>
- * {@code NetworkManager} is called {@code Connection} in 1.18.2 and still exposes the same two
+ * {@code NetworkManager} is called {@code Connection} in 1.18.1 and still exposes the same two
  * points: {@code send} for outgoing packets and {@code channelRead0} for incoming ones. Both run
  * on the netty event loop, exactly as they did in 1.15, so listeners must not touch world state
  * without scheduling.

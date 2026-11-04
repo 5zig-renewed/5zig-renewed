@@ -37,7 +37,7 @@ import org.lwjgl.glfw.GLFW;
  * {@code KeybindingListener#onTick} by flipping the {@code showMod} config flag - the 1.15
  * behaviour of that binding. No core path opens {@link GuiSettings}: it is only reachable through
  * {@code ClassProxyCallbackImpl#displayGuiSettings}, which 1.15 called from a pause-menu button
- * that this port does not have, so on 1.18.2 the mod menu could not be opened at all.
+ * that this port does not have, so on 1.18.1 the mod menu could not be opened at all.
  * <p>
  * This class gives that binding the meaning a "menu" key is expected to have: one press opens the
  * main 5zig menu. HUD visibility stays configurable from that menu ("Show 5zig Mod" in the

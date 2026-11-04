@@ -27,7 +27,7 @@ import java.util.Locale;
  * The platform implementation of {@link IResourceLocation}.
  * <p>
  * Extends the Minecraft resource location so that it can be handed to every vanilla API that expects
- * one, while still being usable by the core through the 5zig interface. Since 1.18.2 validates
+ * one, while still being usable by the core through the 5zig interface. Since 1.18.1 validates
  * namespace and path strictly (an illegal character throws {@link net.minecraft.ResourceLocationException}),
  * both are sanitized the same way the 1.15 implementation did it: lower case and stripped down to
  * {@code [a-z0-9/._-]}.

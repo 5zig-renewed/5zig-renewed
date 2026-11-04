@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+"""Static check that every mixin target method descriptor exists in the Minecraft jar.
+
+Usage: check_mixins.py <mixin-src-dir> <minecraft-merged.jar>
+"""
+import re, subprocess, sys, os, glob
+
+MIXIN_DIR = sys.argv[1]
+JAR = sys.argv[2]
+JAVAP = '/usr/lib/jvm/java-17-openjdk/bin/javap'
+
+def target_of(path):
+    src = open(path).read()
+    m = re.search(r'@Mixin\(([\w.]+)\.class\)', src)
+    if not m:
+        return None, src
+    simple = m.group(1)
+    imp = re.search(r'import\s+([\w.]+\.%s);' % re.escape(simple), src)
+    return (imp.group(1) if imp else simple), src
+
+def methods(cls):
+    out = subprocess.run([JAVAP, '-p', '-s', '-classpath', JAR, cls], capture_output=True, text=True)
+    if out.returncode != 0:
+        return None
+    res = {}
+    lines = out.stdout.splitlines()
+    for i, line in enumerate(lines):
+        mm = re.search(r'([\w$<>]+)\(.*\)(\s+throws [\w.,\s]+)?;$', line)
+        if mm and i + 1 < len(lines) and 'descriptor:' in lines[i+1]:
+            desc = lines[i+1].split('descriptor:')[1].strip()
+            res.setdefault(mm.group(1), set()).add(desc)
+    return res
+
+ok = bad = 0
+for path in sorted(glob.glob(os.path.join(MIXIN_DIR, '*.java'))):
+    cls, src = target_of(path)
+    ms = methods(cls)
+    name = os.path.basename(path)
+    if ms is None:
+        print(f'{name}: TARGET CLASS NOT FOUND {cls}')
+        bad += 1
+        continue
+    for m in re.finditer(r'(?:method|value)\s*=\s*"([^"]+)"', src):
+        spec = m.group(1)
+        nm, _, desc = spec.partition('(')
+        desc = '(' + desc
+        if desc in ms.get(nm, set()):
+            ok += 1
+            print(f'OK   {name}: {spec}')
+        else:
+            bad += 1
+            print(f'FAIL {name}: {spec}   (known: {sorted(ms.get(nm, []))})')
+print(f'\n{ok} ok, {bad} failing')
+sys.exit(1 if bad else 0)

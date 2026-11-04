@@ -88,7 +88,7 @@ processResources {
 
 def jarManifestAttributes = [
         '5zig-Version'     : project.version,
-        'Minecraft-Version': '1.18.2',
+        'Minecraft-Version': '1.18.1',
         '5zig-Build'       : 'alpha',
 ]
 
@@ -101,7 +101,7 @@ tasks.named('remapJar') {
 }
 
 loom {
-    accessWidenerPath = file("${repoRoot}/loader/fabric-1.18.2/resources/5zig.accesswidener")
+    accessWidenerPath = file("${repoRoot}/loader/fabric-1.18.1/resources/5zig.accesswidener")
     runs {
         client {
             client()

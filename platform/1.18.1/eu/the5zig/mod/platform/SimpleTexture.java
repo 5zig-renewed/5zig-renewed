@@ -34,7 +34,7 @@ import java.io.IOException;
  * A texture whose contents are supplied as a {@link BufferedImage} instead of a resource pack file.
  * <p>
  * 1.15 uploaded the image straight through {@code TextureUtil} whenever the texture id was requested.
- * 1.18.2 keeps the same model ({@link NativeImage} + {@code TextureUtil.prepareImage} + upload), but
+ * 1.18.1 keeps the same model ({@link NativeImage} + {@code TextureUtil.prepareImage} + upload), but
  * the upload has to happen on the render thread, so it is deferred until the texture is actually bound
  * for drawing. Callers may set the image from any thread.
  */

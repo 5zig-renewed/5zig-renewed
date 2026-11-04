@@ -27,7 +27,7 @@ import net.minecraft.client.Minecraft;
 /**
  * The HUD frame, factored out of the mixins.
  * <p>
- * Data: 5zig's overlay must be drawn while a {@link PoseStack} is available, and 1.18.2 threads
+ * Data: 5zig's overlay must be drawn while a {@link PoseStack} is available, and 1.18.1 threads
  * that object through the render call. Forge adds a wrinkle: {@code net.minecraftforge.client.gui.CustomizeGuiOverlayEvent}
  * aside, the game instantiates {@code net.minecraftforge.client.gui.overlay.ForgeGui}, which
  * <em>overrides</em> {@code Gui#render}. A mixin on {@code Gui} therefore never runs on Forge, so both

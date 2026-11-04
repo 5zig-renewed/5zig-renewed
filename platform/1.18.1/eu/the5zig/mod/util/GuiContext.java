@@ -42,17 +42,17 @@ import com.mojang.math.Matrix4f;
 import java.util.List;
 
 /**
- * 1.18.2 rendering facade.
+ * 1.18.1 rendering facade.
  * <p>
  * Minecraft 1.20 introduced {@code GuiGraphics}: a {@code PoseStack} bundled with the GUI's blit
- * offset and texture binding helpers, threaded through every widget and screen. 1.18.2 still draws
+ * offset and texture binding helpers, threaded through every widget and screen. 1.18.1 still draws
  * with the {@code PoseStack} directly plus the static {@code GuiComponent} helpers, which is exactly
  * the API 5zig's 1.15 platform was written against.
  * <p>
  * The 1.20-era platform sources (which is what this port started from) call
  * {@code graphics.fill(...)}, {@code graphics.blit(...)}, {@code graphics.drawString(...)} and so on.
  * Rather than rewriting every call site into static calls, this class re-implements that small,
- * well documented drawing surface on top of 1.18.2's {@code PoseStack} — the same design the 1.20
+ * well documented drawing surface on top of 1.18.1's {@code PoseStack} — the same design the 1.20
  * layer uses, just carried by our own object instead of Mojang's.
  * <p>
  * Instances are cheap wrappers around the frame's stack; {@link RenderContext} creates one per
@@ -89,9 +89,9 @@ public final class GuiContext {
 	}
 
 	/**
-	 * 1.20 signature kept for source compatibility. 1.18.2's gradient helper is protected inside
+	 * 1.20 signature kept for source compatibility. 1.18.1's gradient helper is protected inside
 	 * {@code GuiComponent}, so the quad is built here; the {@code RenderType} only selected a
-	 * buffer in 1.20 and has no equivalent, because 1.18.2 draws GUI geometry immediately.
+	 * buffer in 1.20 and has no equivalent, because 1.18.1 draws GUI geometry immediately.
 	 */
 	public void fillGradient(Object renderType, int x1, int y1, int x2, int y2, int colorTop, int colorBottom, int z) {
 		fillGradient(x1, y1, x2, y2, colorTop, colorBottom, z);
@@ -161,7 +161,7 @@ public final class GuiContext {
 	}
 
 	/**
-	 * Tiles a texture region over an area, like 1.20's {@code blitRepeating}. 1.18.2 has no helper
+	 * Tiles a texture region over an area, like 1.20's {@code blitRepeating}. 1.18.1 has no helper
 	 * for this, so the tiles are emitted one by one; the callers use it for the dirt background and
 	 * the scrolling list gradient only.
 	 */
@@ -231,7 +231,7 @@ public final class GuiContext {
 	}
 
 	private static void bind(ResourceLocation texture) {
-		// 1.18.2's GuiComponent helpers assume the caller enabled texturing/blending (1.20's
+		// 1.18.1's GuiComponent helpers assume the caller enabled texturing/blending (1.20's
 		// GuiGraphics did this per RenderType), and GuiComponent#fill leaves both in whatever state
 		// it used. Re-assert them so a fill followed by a blit always draws textured pixels.
 		RenderSystem.enableTexture();
@@ -289,7 +289,7 @@ public final class GuiContext {
 	// ------------------------------------------------------------------------------------------
 
 	/**
-	 * Tints the following blits. In 1.20 this also stores the colour for text; the 1.18.2 text
+	 * Tints the following blits. In 1.20 this also stores the colour for text; the 1.18.1 text
 	 * renderer takes the colour per call, so the shader colour is all that is needed here.
 	 */
 	public void setColor(float red, float green, float blue, float alpha) {
@@ -297,7 +297,7 @@ public final class GuiContext {
 	}
 
 	/**
-	 * 1.18.2 has no GUI-scale aware scissor helpers ({@code GuiComponent#enableScissor} is a 1.19.2
+	 * 1.18.1 has no GUI-scale aware scissor helpers ({@code GuiComponent#enableScissor} is a 1.19.2
 	 * addition), so the GUI-space rectangle is converted to framebuffer pixels here: the GUI scale
 	 * multiplies the coordinates and the Y axis is flipped, because scissor rectangles have their
 	 * origin in the lower-left corner of the framebuffer.
@@ -318,7 +318,7 @@ public final class GuiContext {
 
 	/**
 	 * Draws a multi-line tooltip through the current screen, which owns the tooltip style and the
-	 * font. 1.18.2 exposes this on {@code Screen} rather than on a graphics object.
+	 * font. 1.18.1 exposes this on {@code Screen} rather than on a graphics object.
 	 */
 	public void renderComponentTooltip(Font font, List<Component> lines, int x, int y) {
 		if (lines.isEmpty()) {
@@ -339,7 +339,7 @@ public final class GuiContext {
 	/**
 	 * Draws the tooltip of a chat style's {@code SHOW_TEXT} hover event.
 	 * <p>
-	 * 1.20's {@code GuiGraphics} owns this method; in 1.18.2 it lives on {@code Screen} as a
+	 * 1.20's {@code GuiGraphics} owns this method; in 1.18.1 it lives on {@code Screen} as a
 	 * protected method, so the {@code SHOW_TEXT} case (the only one chat components use) is
 	 * re-implemented here through the public tooltip API.
 	 */

@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Draws the 5zig notifications as vanilla toasts.
  * <p>
- * 1.15 used {@code IToast}/{@code ToastGui#getToast}/{@code ToastGui#add}; the 1.18.2 equivalents are
+ * 1.15 used {@code IToast}/{@code ToastGui#getToast}/{@code ToastGui#add}; the 1.18.1 equivalents are
  * {@link Toast}/{@link ToastComponent#getToast}/{@link ToastComponent#addToast} with
  * {@code Minecraft#getToasts()}. The toast now receives a {@link GuiContext}, so the notification is
  * drawn directly instead of through the global {@code RenderContext}.

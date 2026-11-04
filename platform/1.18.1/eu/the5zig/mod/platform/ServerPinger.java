@@ -31,7 +31,7 @@ import java.net.UnknownHostException;
  * Pings servers for the mod's own server list (friends list server icons).
  * <p>
  * 1.15's {@code net.minecraft.client.network.ServerPinger} pinged synchronously and handed back a
- * filled {@code ServerData}. 1.18.2 renamed it to {@link ServerStatusPinger}, made the ping
+ * filled {@code ServerData}. 1.18.1 renamed it to {@link ServerStatusPinger}, made the ping
  * asynchronous (the result is written into the {@code ServerData} once the netty connection
  * answers) and split it into {@code pingServer}/{@code tick}/{@code removeAll}. The
  * {@link IServerPinger} contract still holds: {@link #ping(IServerData)} starts a ping and

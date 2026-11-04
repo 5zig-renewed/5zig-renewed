@@ -1,0 +1,118 @@
+plugins {
+    id 'fabric-loom' version '1.7.4'
+}
+
+version = '4.0.0-alpha.1'
+group = 'eu.the5zig.renewed'
+base { archivesName = '5zig-renewed-1.17.1-fabric' }
+
+// The build lives in versions/1.17.1-fabric but the sources live at the repository root.
+def repoRoot = file("${projectDir}/../..")
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:1.17.1"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:0.15.11"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.46.1+1.17"
+
+    // 5zig's own deps not provided by Minecraft 1.17.1
+    implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    include('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { transitive = false }
+    implementation 'net.sf.jacob-project:jacob:1.14.3'
+    include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
+    implementation 'org.json:json:20231013'
+    include('org.json:json:20231013') { transitive = false }
+
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    include('com.googlecode.json-simple:json-simple:1.1.1') { transitive = false }
+
+    implementation 'com.kohlschutter.junixsocket:junixsocket-core:2.5.1'
+    include('com.kohlschutter.junixsocket:junixsocket-core:2.5.1') { transitive = false }
+    include('com.kohlschutter.junixsocket:junixsocket-common:2.5.1') { transitive = false }
+    include('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') { transitive = false }
+
+    implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
+    implementation 'io.netty:netty-codec-http:4.1.97.Final'
+    include('io.netty:netty-codec-http:4.1.97.Final') { transitive = false }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+                    new File(repoRoot, 'core').path,
+                    new File(repoRoot, 'common').path,
+                    new File(repoRoot, 'api').path,
+                    new File(repoRoot, 'platform/1.17.1/eu').path,
+                    new File(repoRoot, 'loader/fabric/java').path,
+                    new File(repoRoot, 'loader/fabric-1.17.1/java').path
+            ]
+            exclude 'eu/the5zig/mod/installer/**'
+        }
+        resources {
+            srcDirs = [
+                    new File(repoRoot, 'core/resources').path,
+                    new File(repoRoot, 'loader/fabric-1.17.1/resources').path,
+                    new File(repoRoot, 'loader/resources').path
+            ]
+        }
+    }
+}
+
+// 1.17 is the first Java 16 target: the game ships class-file version 60. Compiling with a JDK 17
+// toolchain but `--release 16` keeps the output loadable by the 1.17 runtime.
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 16
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}
+
+def jarManifestAttributes = [
+        '5zig-Version'     : project.version,
+        'Minecraft-Version': '1.17.1',
+        '5zig-Build'       : 'alpha',
+]
+
+tasks.named('jar') {
+    manifest { attributes(jarManifestAttributes) }
+}
+
+tasks.named('remapJar') {
+    manifest { attributes(jarManifestAttributes) }
+}
+
+loom {
+    accessWidenerPath = file("${repoRoot}/loader/fabric-1.17.1/resources/5zig.accesswidener")
+    runs {
+        client {
+            client()
+            ideConfigGenerated = true
+        }
+    }
+}
+
+tasks.register('printCompileClasspath') {
+    doLast {
+        def f = file("${projectDir}/compile-classpath.txt")
+        f.text = sourceSets.main.compileClasspath.asPath
+        println "classpath entries: " + sourceSets.main.compileClasspath.files.size()
+    }
+}
