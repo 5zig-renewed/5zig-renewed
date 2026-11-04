@@ -151,7 +151,7 @@
   "neoforge_jar": "5zig-renewed-1.20.4-neoforge-4.0.0-alpha.1.jar",
   "forge_jar": null,
   "fabric_verified": true,
-  "neoforge_verified": false
+  "neoforge_verified": true
  },
  {
   "rank": 12,
@@ -291,7 +291,7 @@
   "neoforge_jar": "5zig-renewed-1.20.6-neoforge-4.0.0-alpha.1.jar",
   "forge_jar": null,
   "fabric_verified": true,
-  "neoforge_verified": false
+  "neoforge_verified": true
  },
  {
   "rank": 22,

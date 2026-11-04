@@ -19,7 +19,8 @@
     "MixinMinecraft",
     "MixinPlayerTabOverlay",
     "MixinScreen",
-    "MixinTitleScreen"
+    "MixinTitleScreen",
+    "MixinExtendedGui"
   ],
   "injectors": {
     "defaultRequire": 1
