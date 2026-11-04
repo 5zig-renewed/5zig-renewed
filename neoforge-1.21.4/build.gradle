@@ -1,0 +1,172 @@
+plugins {
+    // ModDevGradle (MDG) is NeoForge's official Gradle plugin for 1.21.1. Unlike the
+    // 1.20.1 build it consumes a real net.neoforged.* loader, produces the compiled game jar
+    // through NeoForm Runtime and needs no reobfuscation (NeoForge 1.20.5+ runs on Mojang
+    // official mappings, the same ones the 1.21.1 platform layer is written against).
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = '4.0.0-alpha.1'
+group = 'eu.the5zig.renewed'
+base { archivesName = '5zig-renewed-1.21.4-neoforge' }
+
+// The build lives in neoforge-1.21.4/ but the sources live at the repository root.
+def repoRoot = file("${projectDir}/..")
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+neoForge {
+    enable {
+        // NeoForge 21.4.x is the 1.21.4 line (FML 4, loaderVersion [4,)).
+        version = '21.4.161'
+
+        // Only the compiled game jar is needed: no source attachments and no decompile/
+        // recompile step, which keeps this build inside the box's memory budget (other
+        // builds run on the same machine). Drop this if you want sources in the IDE.
+        disableRecompilation = true
+    }
+
+    runs {
+        client {
+            client()
+            gameDirectory = project.file('run')
+            // headless verification hook: boot straight into the test world
+            programArgument '--quickPlaySingleplayer'
+            programArgument 'New World'
+        }
+    }
+
+    mods {
+        the5zigmod {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://jitpack.io' }
+}
+
+dependencies {
+    // 5zig's own libraries, which Minecraft does not ship. `implementation` puts them on the
+    // dev classpath; `jarJar` nests the same artifacts into the mod jar (META-INF/jarjar/ +
+    // metadata.json) so the shipped jar is self-contained, exactly like the 1.20.1 builds.
+    // transitive = false: only the named jar is embedded; their transitive peers
+    // (netty-codec, netty-common, gson, ...) are already shipped by Minecraft/NeoForge.
+    def discordIpc = implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') {
+        transitive = false
+        exclude group: 'com.google.code.gson'
+    }
+    def jacob = implementation('net.sf.jacob-project:jacob:1.14.3') {
+        transitive = false
+    }
+    def json = implementation('org.json:json:20231013') {
+        transitive = false
+    }
+    def sqlite = implementation('org.xerial:sqlite-jdbc:3.45.3.0') {
+        transitive = false
+    }
+    def nettyCodecHttp = implementation('io.netty:netty-codec-http:4.1.97.Final') {
+        transitive = false
+    }
+    // DiscordIPC's own runtime dependencies. It parses Discord's JSON with json-simple and opens
+    // the Discord socket through junixsocket's unix-domain transport on Linux/macOS, but both are
+    // only reachable transitively in dev — a packaged jar has to nest them explicitly or the core
+    // dies with NoClassDefFoundError the moment Discord RPC is constructed.
+    def jsonSimple = implementation('com.googlecode.json-simple:json-simple:1.1.1') {
+        transitive = false
+    }
+    def junixsocketCommon = implementation('com.kohlschutter.junixsocket:junixsocket-common:2.5.1') {
+        transitive = false
+    }
+    def junixsocketNative = implementation('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') {
+        transitive = false
+    }
+
+    // ModDevGradle puts `implementation` deps on the game classpath, which the mod's own
+    // TransformingClassLoader does not see. `additionalRuntimeClasspath` is the configuration MDG
+    // exposes for libraries the mod needs at dev runtime.
+    additionalRuntimeClasspath discordIpc
+    additionalRuntimeClasspath jacob
+    additionalRuntimeClasspath json
+    additionalRuntimeClasspath sqlite
+    additionalRuntimeClasspath nettyCodecHttp
+    additionalRuntimeClasspath jsonSimple
+    additionalRuntimeClasspath junixsocketCommon
+    additionalRuntimeClasspath junixsocketNative
+
+    jarJar(discordIpc)
+    jarJar(jacob) { version { strictly '[1.14.3]' } }
+    jarJar(json) { version { strictly '[20231013]' } }
+    jarJar(sqlite) { version { strictly '[3.45.3.0]' } }
+    jarJar(nettyCodecHttp) { version { strictly '[4.1.97.Final]' } }
+    jarJar(jsonSimple) { version { strictly '[1.1.1]' } }
+    jarJar(junixsocketCommon) { version { strictly '[2.5.1]' } }
+    jarJar(junixsocketNative) { version { strictly '[2.5.1]' } }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+                    new File(repoRoot, 'core').path,
+                    new File(repoRoot, 'common').path,
+                    new File(repoRoot, 'api').path,
+                    // Rooted one level below the package root on purpose: the excludes below are
+                    // relative to each source directory, and rooting this one at 'eu' keeps the
+                    // two 1.21.4 replacements (same package paths as the core files they replace)
+                    // out of them. Same trick as versions/1.21.1-fabric.
+                    new File(repoRoot, 'platform/1.21.4/eu').path,
+                    new File(repoRoot, 'loader/neoforge-1.21.4/java').path
+            ]
+            exclude 'eu/the5zig/mod/installer/**'
+            // authlib 6 (1.21.x) removed the legacy Yggdrasil user authentication these two core
+            // classes are written against; the platform provides 1.21.4 copies instead of editing core.
+            exclude 'eu/the5zig/mod/account/AccountManager.java'
+            exclude 'eu/the5zig/mod/chat/network/packets/PacketEncryption.java'
+            // The platform's payload bridge is written against the Fabric API. This build replaces
+            // it with a NeoForge implementation of the same class (see loader/neoforge-1.21.4).
+            exclude 'the5zig/mod/platform/PluginMessages.java'
+        }
+        resources {
+            srcDirs = [
+                    new File(projectDir, 'src/main/resources').path,
+                    new File(repoRoot, 'core/resources').path,
+                    new File(repoRoot, 'loader/resources').path
+            ]
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand 'version': project.version
+    }
+}
+
+// eu.the5zig.mod.Version reads these three attributes from the first META-INF/MANIFEST.MF that
+// advertises "5zig-Version"; without them the HUD and the version string fall back to "bDEV".
+def jarManifestAttributes = [
+        '5zig-Version'         : project.version,
+        'Minecraft-Version'    : '1.21.4',
+        '5zig-Build'           : 'alpha',
+        // The mixin config is declared as [[mixins]] in META-INF/neoforge.mods.toml: FML 4 does
+        // not read the legacy 'MixinConfigs' manifest attribute, and listing it twice would
+        // register the same config on two paths.
+        'Specification-Title'  : 'the5zigmod',
+        'Specification-Version': project.version,
+]
+
+// Applies to both the plain jar and MDG's jar-in-jar jar, so the attributes survive packaging.
+tasks.withType(Jar).configureEach {
+    manifest { attributes(jarManifestAttributes) }
+}

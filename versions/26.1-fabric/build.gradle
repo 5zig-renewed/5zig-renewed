@@ -1,0 +1,302 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.fabricmc.net/' }
+    maven { url = 'https://jitpack.io' }
+}
+
+dependencies {
+    // 26.x ships unobfuscated jars, so there is no `mappings` line at all: the platform
+    // layer links against the real names that are in the jar.
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // 5zig's own deps, not provided by Minecraft
+    implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    implementation 'net.sf.jacob-project:jacob:1.14.3'
+    include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    include('org.apache.httpcomponents:httpclient:4.5.14') { transitive = false }
+    implementation 'org.json:json:20231013'
+    include('org.json:json:20231013') { transitive = false }
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    include('com.googlecode.json-simple:json-simple:1.1.1') { transitive = false }
+    implementation 'com.kohlschutter.junixsocket:junixsocket-core:2.5.1'
+    include('com.kohlschutter.junixsocket:junixsocket-core:2.5.1') { transitive = false }
+    include('com.kohlschutter.junixsocket:junixsocket-common:2.5.1') { transitive = false }
+    include('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') { transitive = false }
+    implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
+    implementation 'io.netty:netty-codec-http:4.1.97.Final'
+    include('io.netty:netty-codec-http:4.1.97.Final') { transitive = false }
+
+    // Mixin annotation processor: 26.x has no mappings, so Loom cannot start its own AP
+    // (see the refmap section below). These are the same artifacts Loom puts on the
+    // annotation processor path, pinned explicitly.
+    annotationProcessor 'net.fabricmc:fabric-mixin-compile-extensions:0.6.0'
+    annotationProcessor 'net.fabricmc:sponge-mixin:0.17.5+mixin.0.8.7'
+    annotationProcessor 'net.fabricmc:mapping-io:0.8.0'
+    annotationProcessor 'org.ow2.asm:asm:9.10.1'
+    annotationProcessor 'org.ow2.asm:asm-tree:9.10.1'
+    annotationProcessor 'org.ow2.asm:asm-analysis:9.10.1'
+    annotationProcessor 'org.ow2.asm:asm-commons:9.10.1'
+}
+
+sourceSets {
+    main {
+        java {
+            // `build/core-compat` is the core with the authlib-7 / commons-lang3-3.19 overlay files
+            // filtered out (see coreCompatTree below); `compat-src` holds the 26.x versions of those
+            // files. core/ itself is never modified.
+            srcDirs = ['build/core-compat', 'compat-src', '../../common', '../../api',
+                       '../../platform/26.1', '../../loader/fabric-26.1/java']
+            exclude 'eu/the5zig/mod/installer/**'
+            // Dead on 26.x: only core/resources/mixins.json (the 1.20.1 Forge config) lists it, and its
+            // @Inject target `clickMouse` no longer exists (26.x renamed it `startAttack`). It is not in
+            // this build's mixin config, so the class was never applied - and now that the mixin
+            // annotation processor runs it rejects the stale target, so drop it from the compile.
+            exclude 'eu/the5zig/mod/mixin/MixinCommonMinecraft.java'
+        }
+        resources {
+            srcDirs = ['../../core/resources', '../../loader/fabric-26.1/resources', '../../loader/resources']
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Core overlay
+//
+// The core was written against authlib 4 (GameProfile#getId/#getName, UserAuthentication,
+// YggdrasilAuthenticationService). Minecraft 26.1.x ships authlib 7, where GameProfile is a record
+// with id()/name() and the legacy Yggdrasil password client is gone, and commons-lang3 3.19 added
+// org.apache.commons.lang3.Strings which collides with Guava's Strings in two files.
+//
+// Rather than editing core/ (shared with the verified 1.20.1 build), the affected files live in
+// compat-src/ and the rest of the core is copied into the build directory with those files excluded.
+// ---------------------------------------------------------------------------------------------
+def coreOverlay = [
+        'eu/the5zig/mod/account/AccountManager.java',
+        'eu/the5zig/mod/chat/network/NetworkManager.java',
+        'eu/the5zig/mod/chat/network/packets/PacketEncryption.java',
+        'eu/the5zig/mod/gui/GuiHypixelStats.java',
+        'eu/the5zig/mod/gui/GuiNameHistory.java',
+        'eu/the5zig/mod/manager/ChatFilterManager.java',
+        'eu/the5zig/mod/manager/DataManager.java',
+        'eu/the5zig/mod/modules/items/server/ServerPing.java',
+        'eu/the5zig/mod/server/octc/OCCListener.java',
+        'eu/the5zig/mod/util/ChatHighlighting.java',
+        'eu/the5zig/teamspeak/impl/ServerTabImpl.java',
+        'eu/the5zig/teamspeak/util/ImageManager.java',
+]
+
+tasks.register('coreCompatTree', Sync) {
+    from('../../core') {
+        exclude coreOverlay
+    }
+    into 'build/core-compat'
+}
+
+tasks.named('compileJava').configure {
+    dependsOn 'coreCompatTree'
+}
+
+// ---------------------------------------------------------------------------------------------
+// Mixin refmap
+//
+// 26.x ships unobfuscated jars: no `mappings` line, no client_mappings from Mojang and no
+// intermediary for the version. Loom's Mixin annotation processor bootstrap needs the
+// `mappingsFinal` configuration, which only exists when mappings are configured, so
+// `useLegacyMixinAp = true` dies with "Configuration with name 'mappingsFinal' not found"
+// and no refmap was ever emitted (the jar shipped none, and the mixin config had no
+// "refmap" entry).
+//
+// For an unobfuscated game the correct refmap is the identity map - every named reference
+// resolves to itself - so we hand the stock Mixin annotation processor an identity
+// named->intermediary mapping generated from the game jar for the classes the mixins
+// touch. The processor then writes <archivesName>-refmap.json exactly as it would for an
+// obfuscated version, and processResources adds the "refmap" entry to the mixin config
+// (this project has no remapJar, so Loom cannot do that part for us).
+// ---------------------------------------------------------------------------------------------
+def refmapName = "${project.archives_base_name}-refmap.json"
+def identityMappings = layout.buildDirectory.file('mixin/identity-mappings.tiny')
+def refmapOutput = layout.buildDirectory.file("classes/java/main/${refmapName}")
+
+tasks.register('mixinIdentityMappings') {
+    description = 'Writes an identity named->intermediary mapping for the classes the mixins target (26.x is unobfuscated)'
+    group = 'build'
+
+    def sourceDirs = sourceSets.main.java.srcDirs
+    def outputFile = identityMappings.get().asFile
+    dependsOn 'coreCompatTree'
+    inputs.files(sourceDirs)
+    outputs.file(outputFile)
+
+    doLast {
+        def minecraftJar = sourceSets.main.compileClasspath.files.find { candidate ->
+            candidate.name.endsWith('.jar') && new java.util.zip.ZipFile(candidate).withCloseable { zip ->
+                zip.getEntry('net/minecraft/client/Minecraft.class') != null
+            }
+        }
+        if (minecraftJar == null) {
+            throw new GradleException('mixinIdentityMappings: no Minecraft jar on the compile classpath')
+        }
+        def javap = new File(System.getProperty('java.home'), 'bin/javap')
+        if (!javap.canExecute()) {
+            throw new GradleException("mixinIdentityMappings: javap not found at ${javap}")
+        }
+
+        // Everything the mixins reference: @Mixin targets (resolved through the file's
+        // net.minecraft imports), fully qualified references and Lnet/minecraft/...; descriptors.
+        def classes = new TreeSet<String>()
+        def simpleMixin = ~/@Mixin\(\s*(?:value\s*=\s*)?([A-Za-z_$][\w$]*)\s*\.class\s*\)/
+        def qualified = ~/net\.minecraft\.[A-Za-z0-9_.$]+/
+        def descriptor = ~/Lnet\/minecraft\/[A-Za-z0-9_\/$]+;/
+        sourceDirs.each { dir ->
+            if (!dir.isDirectory()) return
+            dir.eachFileRecurse { file ->
+                if (!file.name.endsWith('.java')) return
+                def text = file.getText('UTF-8')
+                if (!text.contains('@Mixin(')) return
+                def imports = (text =~ /(?m)^import\s+(net\.minecraft\.[\w.$]+);/).collect { it[1] } as Set
+                simpleMixin.matcher(text).each { match ->
+                    def resolved = imports.find { it == match[1] || it.endsWith('.' + match[1]) }
+                    if (resolved != null) classes << resolved
+                }
+                qualified.matcher(text).each { classes << it }
+                descriptor.matcher(text).each { classes << it.substring(1, it.length() - 1).replace('/', '.') }
+            }
+        }
+
+        def tiny = new StringBuilder('tiny\t2\t0\tnamed\tintermediary\n')
+        def written = 0
+        classes.each { fqn ->
+            def process = new ProcessBuilder(javap.absolutePath, '-s', '-p', '-cp', minecraftJar.absolutePath, fqn)
+                    .redirectErrorStream(true).start()
+            def lines = []
+            process.inputStream.withReader('UTF-8') { reader -> reader.eachLine { lines << it } }
+            if (process.waitFor() != 0) {
+                logger.info("mixinIdentityMappings: skipping ${fqn} (not in the game jar)")
+                return
+            }
+            def internal = fqn.replace('.', '/')
+            def members = []
+            String previous = null
+            lines.each { line ->
+                if (line.startsWith('    descriptor: ')) {
+                    def memberDescriptor = line.substring('    descriptor: '.length()).trim()
+                    if (previous != null) {
+                        def declaration = previous.trim()
+                        if (declaration.endsWith(';')) {
+                            declaration = declaration.substring(0, declaration.length() - 1)
+                        }
+                        def paren = declaration.indexOf('(')
+                        def head = paren >= 0 ? declaration.substring(0, paren) : declaration
+                        def name = head.tokenize(' \t').last()
+                        if (name && !name.contains('<') && !name.contains('>')) {
+                            members << "\t${paren >= 0 ? 'm' : 'f'}\t${memberDescriptor}\t${name}\t${name}".toString()
+                        }
+                    }
+                }
+                previous = line
+            }
+            if (members.isEmpty()) return
+            tiny << "c\t${internal}\t${internal}\n"
+            members.each { tiny << it << '\n' }
+            written++
+        }
+
+        outputFile.parentFile.mkdirs()
+        outputFile.text = tiny.toString()
+        logger.lifecycle("mixinIdentityMappings: ${written} classes from ${minecraftJar.name} -> ${outputFile}")
+    }
+}
+
+tasks.named('compileJava').configure {
+    dependsOn 'mixinIdentityMappings'
+    options.compilerArgs += [
+            "-AoutRefMapFile=${refmapOutput.get().asFile.absolutePath}",
+            "-AinMapFileNamedIntermediary=${identityMappings.get().asFile.absolutePath}",
+            '-AdefaultObfuscationEnv=named:intermediary',
+            '-Aquiet=true',
+    ]
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 25
+    options.compilerArgs << '-Xmaxerrs' << '2000'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+    // Nothing remaps this project (26.x ships unobfuscated jars), so Loom never runs its
+    // remapJar refmap service here - point the mixin config at the generated refmap ourselves.
+    doLast {
+        def configFile = new File(destinationDir, 'mixins.the5zigmod.json')
+        if (configFile.isFile()) {
+            def text = configFile.getText('UTF-8')
+            if (!text.contains('"refmap"')) {
+                // Append the key before the closing brace without reformatting the file.
+                def closing = text.lastIndexOf('}')
+                def body = text.substring(0, closing).stripTrailing()
+                def patched = body + ',\n  "refmap": "' + refmapName + '"\n}\n'
+                new groovy.json.JsonSlurper().parseText(patched) // fail the build on a bad edit
+                configFile.setText(patched, 'UTF-8')
+            }
+        }
+    }
+}
+
+// eu.the5zig.mod.Version reads these three attributes from the first META-INF/MANIFEST.MF
+// that advertises "5zig-Version"; without them the HUD and the version string fall back
+// to "bDEV". Same trio as the 1.20.1 root and forge builds.
+def jarManifestAttributes = [
+        '5zig-Version'     : project.version,
+        'Minecraft-Version': project.minecraft_version,
+        '5zig-Build'       : 'alpha',
+]
+
+tasks.named('jar') {
+    manifest { attributes(jarManifestAttributes) }
+}
+
+loom {
+    // No `useLegacyMixinAp = true` here: Loom's AP bootstrap needs the `mappingsFinal`
+    // configuration, which a mapping-less (unobfuscated) 26.x project never creates. The
+    // refmap is produced by the annotation processor wired up in the refmap section above.
+    runs {
+        client {
+            client()
+            ideConfigGenerated = true
+            // headless verification hook: boot straight into the test world
+            programArgs '--quickPlaySingleplayer', 'New World'
+        }
+    }
+}
+
+tasks.register('printCompileClasspath') {
+    doLast {
+        def f = file('compile-classpath.txt')
+        f.text = sourceSets.main.compileClasspath.asPath
+        println "classpath entries: " + sourceSets.main.compileClasspath.files.size()
+    }
+}
