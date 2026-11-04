@@ -509,3 +509,17 @@ and 1.21.9+ had their `getTexture` fixed with D8; the six platforms still castin
 Both targets crashed before D10 with `ClassCastException … platform.ResourceLocation cannot be cast to
 net.minecraft.resources.ResourceLocation`; after the fix both reach the settings GUI and the coordinates
 dialog with no crash report.
+
+---
+
+## 22–25. 1.21.4 and 1.21.3 — both loaders (pass)
+
+| target | menu | coords | crashes |
+|---|---|---|---|
+| NeoForge 1.21.4 | ok 33.4% | ok 32.4% · X=364/Z=-253 | 0 |
+| Fabric 1.21.4 | ok 33.5% | ok 32.4% | 0 |
+| NeoForge 1.21.3 | ok 33.4% | ok 32.2% | 0 |
+| Fabric 1.21.3 | ok 33.6% | ok 32.5% | 0 |
+
+All four carry D9 + D10 and pass with no crash report. Toolchain for this era is **Gradle 8.10.2 + JDK 21**
+(8.14.3 only becomes correct at 1.21.5 — using it here fails at plugin-apply and reads like a code error).
