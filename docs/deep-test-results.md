@@ -199,3 +199,27 @@ No new defects.
 older 26.x builds, where a 26.1.2-era world only produces the *"Downgrading a world is not supported"*
 dialog. The manual route used for the first fixture also works but needs the Allow Commands *switch*
 (right edge of the row) rather than the row itself.
+
+---
+
+## 7. Fabric 26.1 — pass
+
+Date: 2026-11-04 · log `/tmp/mk261.log` · fixture rebuilt on this version
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined, `check-client-log.sh` clean | log |
+| T1 HUD | ✅ | — |
+| T2 settings GUI | ✅ Right Shift, all labels | `/tmp/f261-m-c.png` |
+| T3 ESC | ✅ | — |
+| T4 SPACE | ✅ X=8, Z=-10 | `/tmp/f261-c-c.png` |
+| T5 DELETE | ✅ | `/tmp/f261-d-c.png` |
+
+No new defects.
+
+### Fixture, final form
+
+The shared 26.x fixture is now created **on the oldest 26.x build (26.1)** and copied forward, so every
+target upgrades it instead of hitting *"Downgrading a world is not supported"*. It lives at
+`~/work/test-worlds/26x-creative` (Creative; commands were left off on this screen because the toggle is
+not clickable there, which does not matter for the GUI battery — Creative is invulnerable).
