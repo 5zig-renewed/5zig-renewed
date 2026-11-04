@@ -98,15 +98,18 @@ public final class Keybinds {
 		bind("the5zigmod.key.toggle_mod", GLFW.GLFW_KEY_M);
 		bind("the5zigmod.key.toggle_chat", GLFW.GLFW_KEY_F4);
 		bind("the5zigmod.key.coordinates_clipboard", GLFW.GLFW_KEY_F12);
-		bind("the5zigmod.key.raid_calculator", GLFW.GLFW_KEY_UNKNOWN);
-		bind("the5zigmod.key.hypixel_stats", GLFW.GLFW_KEY_UNKNOWN);
+		// 26.3: a GLFW_KEY_UNKNOWN (-1) default code makes KeyMapping.setAll call
+		// InputConstants.isKeyDown(-1), which indexes a native buffer and throws
+		// IndexOutOfBoundsException. Bind to a real, unused key instead.
+		bind("the5zigmod.key.raid_calculator", GLFW.GLFW_KEY_PAUSE);
+		bind("the5zigmod.key.hypixel_stats", GLFW.GLFW_KEY_SCROLL_LOCK);
 		bind("the5zigmod.key.zoom", GLFW.GLFW_KEY_Z);
 		bind("the5zigmod.key.timer.start", GLFW.GLFW_KEY_KP_0);
 		bind("the5zigmod.key.timer.reset", GLFW.GLFW_KEY_KP_DECIMAL);
 		bind("the5zigmod.key.teamspeak", GLFW.GLFW_KEY_F9);
-		bind("the5zigmod.key.username_history", GLFW.GLFW_KEY_UNKNOWN);
-		bind("the5zigmod.key.toggle_chat_filter", GLFW.GLFW_KEY_UNKNOWN);
-		bind("the5zigmod.key.change_account", GLFW.GLFW_KEY_UNKNOWN);
+		bind("the5zigmod.key.username_history", GLFW.GLFW_KEY_PAUSE);
+		bind("the5zigmod.key.toggle_chat_filter", GLFW.GLFW_KEY_SCROLL_LOCK);
+		bind("the5zigmod.key.change_account", GLFW.GLFW_KEY_INSERT);
 	}
 
 	/**
@@ -142,7 +145,11 @@ public final class Keybinds {
 	}
 
 	private static FiveZigKeybinding bind(String description, int keyCode, String category) {
-		int code = keyCode == 0 ? GLFW.GLFW_KEY_UNKNOWN : keyCode;
+		// 26.3 regression: GLFW_KEY_UNKNOWN (-1) is passed straight to
+		// InputConstants.isKeyDown by KeyMapping.setAll, which indexes a native buffer and
+		// throws IndexOutOfBoundsException on any client that has an unbound 5zig key.
+		// Use a real (rarely used) key as the "unbound" placeholder instead.
+		int code = keyCode == 0 ? GLFW.GLFW_KEY_PAUSE : keyCode;
 		// 26.3 renamed InputConstants.Type.KEYSYM to KEYBOARD (the mouse type is unchanged).
 		KeyMapping mapping = new KeyMapping(description, InputConstants.Type.KEYBOARD, code, Keybinding.categoryOf(category));
 		register(mapping);

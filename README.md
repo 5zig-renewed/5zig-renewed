@@ -60,7 +60,7 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.21.1 NeoForge** | green, ModDevGradle 2.0.148 | **HUD** |
 | **26.1 Fabric** | green, self-contained | **HUD** |
 | **26.1.1 Fabric** | green, self-contained | **HUD** |
-| 26.3 Fabric | **does not build** — 26.3 pulls LWJGL/authlib classes the project's dependency set lacks | — |
+| **26.3 Fabric** | green, self-contained | **HUD** (needs the keybind fix below) |
 | **1.20 Fabric** | green, self-contained | **HUD** |
 | **1.20.2 Fabric** | green, self-contained | **HUD** |
 | **1.19.4 Fabric** | green, self-contained | **HUD** |
@@ -86,6 +86,9 @@ byte-identical for the 1.20.1 builds.
 
 ### Known gaps
 
+- **26.3 crashes on unbound keybindings.** `KeyMapping.setAll` feeds every key code to
+  `InputConstants.isKeyDown`, which indexes a native buffer; a `GLFW_KEY_UNKNOWN` (-1) code throws
+  `IndexOutOfBoundsException` during mouse grab. Always give 5zig keybinds a real default code.
 - **Packaged-jar testing is not optional.** Dev-classpath runs hide missing nested libraries: `json-simple`,
   `junixsocket` and `httpcore` were each fatal only in the shipped jar, and the last one disabled the whole
   mod (`NoClassDefFoundError: org/apache/http/HttpRequest` during core init). Test with a source-less Loom
