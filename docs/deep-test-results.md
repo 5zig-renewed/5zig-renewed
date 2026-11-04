@@ -313,3 +313,20 @@ No defects specific to this target — D7 (blur) and D8 (`ResourceLocation` fina
 
 Read the HUD's own coordinates in the same run and compare: HUD `X:1.5 / Z:-5.5` → fields after SPACE
 `X:1 / Z:-6`. That verifies the value is the *player's real position*, not a leftover from the saved list.
+
+---
+
+## 10. NeoForge 1.21.10 — pass
+
+Date: 2026-11-04 · log `/tmp/dt-nf12110.log` · 1.21 Creative fixture
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined, no crash report, log clean | log |
+| T1 HUD | ✅ | — |
+| T2 settings GUI | ✅ 34.5% of frame changed, all labels | `/tmp/nf12110-menu-c.png` |
+| T3 ESC | ✅ | — |
+| T4 SPACE | ✅ X=264, Z=-253 | `/tmp/nf12110-coords-c.png` |
+| T5 DELETE | ✅ | `/tmp/dt-nf12110-deleted.png` |
+
+No new defects. First target that ran clean on the corrected battery (frame assertion at 10% / 6%).
