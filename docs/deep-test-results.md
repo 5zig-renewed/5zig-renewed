@@ -17,7 +17,7 @@ Date: 2026-11-04 · log `/tmp/dt2-f263.log` · screenshots `/tmp/dt2-*.png`
 | T2b other GUIs | ✅ Coordinates Clipboard opens (`F12`) | `/tmp/dt2-f12c.png` |
 | T3 GUI crash | 🔧 **fixed** — opening any 5zig screen crashed the client | defect D2 |
 | T2c mouse input | ✅ clicking a button toggles its value and persists to `config.json` | `showMod` False→True→False |
-| T3 GUI keyboard | ⏳ waiting on the key-code fix (D3) | defect D3 |
+| T3 GUI keyboard | 🔧 partial — 40 platforms now deliver key codes; **26.x still swallows characters** (see D3b) | — |
 | T2d sub-screens | ✅ "Customize Display" opens: module list (stats…timer), Add/Remove, Settings, Disable, Move Up/Down, live HUD preview (AFK/FPS/X/Y/Z/facing/IP) | `/tmp/dt5-customize-c.png` |
 | T2e closing a GUI | ⚠️ only via the `Done` button; `Escape` is inert until D3 lands | — |
 | T4 chat (`F4`) | ⏸ blocked — F4 is swallowed while a GUI is open (vanilla blocks hotkeys in menus); retest after D3 | — |
