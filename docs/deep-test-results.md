@@ -523,3 +523,16 @@ dialog with no crash report.
 
 All four carry D9 + D10 and pass with no crash report. Toolchain for this era is **Gradle 8.10.2 + JDK 21**
 (8.14.3 only becomes correct at 1.21.5 — using it here fails at plugin-apply and reads like a code error).
+
+---
+
+## 26–29. 1.21.2 and 1.21.1 — both loaders (pass)
+
+| target | menu | coords | crashes |
+|---|---|---|---|
+| NeoForge 1.21.2 | ok 33.4% | ok 32.2% · X=364/Z=-253 | 0 |
+| Fabric 1.21.2 | ok 33.6% | ok 32.4% | 0 |
+| NeoForge 1.21.1 | ok 33.5% | ok 32.1% | 0 |
+| Fabric 1.21.1 | ok 33.6% | ok 32.4% | 0 |
+
+No crash reports. D9 + D10 both hold; these are the versions where D10 was an outright crash before the fix.
