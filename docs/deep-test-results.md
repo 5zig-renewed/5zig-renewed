@@ -253,3 +253,15 @@ registration is fine, but pressing Right Shift opens nothing (the coords binding
 same client). Needs a debug pass: check whether the core's `callIsPressed()` for the new binding is
 reached on the 1.21.x `Keybinding` implementation, and whether `Keybinds.wrap()` hands the core the same
 mapping the user rebinds in options.
+
+### Battery now asserts the GUI opened
+
+`scripts/deep-test-target.sh` previously passed a target when a world loaded and the log was clean — which
+it did for 1.21.11 while the "menu" screenshot was actually the **vanilla pause menu** (D8). It now takes a
+frame before each hotkey and uses `scripts/shot-diff.py` to require that ≥10% of the frame changed:
+
+| pair | result |
+|---|---|
+| same frame | FAIL (0.0%) |
+| pause menu → pause menu (the D8 trap) | FAIL (0.1%) |
+| gameplay → real 5zig settings menu | pass (30.6%) |

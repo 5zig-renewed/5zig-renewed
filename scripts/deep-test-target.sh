@@ -44,19 +44,24 @@ if [ "$joined" -ne 1 ]; then
 fi
 sleep 12   # let the first frames settle
 
-# T2 settings GUI
-DISPLAY="$DISP" xdotool key --clearmodifiers Shift_R; sleep 5
+# T2 settings GUI — assert the screen really opened, not just that a key was sent
+DISPLAY="$DISP" import -window root "${SHOT}-before.png" 2>/dev/null
+DISPLAY="$DISP" xdotool keydown Shift_R; sleep 0.4; DISPLAY="$DISP" xdotool keyup Shift_R
+sleep 5
 DISPLAY="$DISP" import -window root "${SHOT}-menu.png" 2>/dev/null
 say "captured ${SHOT}-menu.png"
+python3 "$(dirname "$0")/shot-diff.py" "${SHOT}-before.png" "${SHOT}-menu.png" 0.10 "settings GUI opened" || fail=1
 
 # T3 ESC back to game
 DISPLAY="$DISP" xdotool key --clearmodifiers Escape; sleep 3
+DISPLAY="$DISP" import -window root "${SHOT}-back.png" 2>/dev/null
 
 # T4 coordinates clipboard + SPACE
 DISPLAY="$DISP" xdotool key --clearmodifiers F12; sleep 4
 DISPLAY="$DISP" xdotool key --clearmodifiers space; sleep 3
 DISPLAY="$DISP" import -window root "${SHOT}-coords.png" 2>/dev/null
 say "captured ${SHOT}-coords.png"
+python3 "$(dirname "$0")/shot-diff.py" "${SHOT}-back.png" "${SHOT}-coords.png" 0.10 "coordinates GUI opened" || fail=1
 
 # T5 DELETE
 DISPLAY="$DISP" xdotool key --clearmodifiers Delete; sleep 2
