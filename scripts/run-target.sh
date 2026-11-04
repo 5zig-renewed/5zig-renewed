@@ -11,8 +11,10 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 LOG="/tmp/dt-${LABEL}.log"
 OUT="/tmp/dt-${LABEL}-battery.txt"
 
-printf 'onboardAccessibility:false\nguiScale:2\n' > "$PROJ/run/options.txt" 2>/dev/null
-rm -f "$PROJ"/run/crash-reports/*.txt 2>/dev/null
+if [ -d "$PROJ/run" ]; then GDIR="$PROJ/run"; else GDIR="$PROJ/runs/client"; fi
+mkdir -p "$GDIR"
+printf 'onboardAccessibility:false\nguiScale:2\n' > "$GDIR/options.txt"
+rm -f "$GDIR"/crash-reports/*.txt 2>/dev/null
 
 ( cd "$PROJ" && JAVA_HOME="$JAVA" "$GRADLE" build --no-daemon -x test ) > "/tmp/b-${LABEL}.log" 2>&1
 BUILD=$?
@@ -37,8 +39,9 @@ def diff(a, b, thresh):
     return round(frac, 4), ("ok" if frac >= thresh else "FAIL")
 menu, menu_s = diff("before", "menu", 0.10)
 coords, coords_s = diff("back", "coords", 0.06)
-crashes = len([f for f in os.listdir(f"{proj}/run/crash-reports") if f.endswith(".txt")]) \
-    if os.path.isdir(f"{proj}/run/crash-reports") else 0
+gdir = f"{proj}/run" if os.path.isdir(f"{proj}/run") else f"{proj}/runs/client"
+crashes = len([f for f in os.listdir(f"{gdir}/crash-reports") if f.endswith(".txt")]) \
+    if os.path.isdir(f"{gdir}/crash-reports") else 0
 txt = open(log, errors="ignore").read() if os.path.exists(log) else ""
 rec = {
     "target": label, "project": os.path.basename(proj),

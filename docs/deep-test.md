@@ -78,3 +78,18 @@ and copied forward — never the other way round (that only yields "Downgrading 
 
 Both are **Creative**, because a survival fixture kills the player mid-battery and the death screen then
 swallows every key press — which reads exactly like "the hotkey is dead".
+
+### The game dir is not always `run/`
+
+NeoGradle-based 1.20.x projects put the client's working directory in **`runs/client`** (the `runs { }`
+block in `build.gradle`), not `run/`. Hardcoding `run/` produced three separate false signals before it was
+noticed:
+
+| symptom | real cause |
+|---|---|
+| "no world within 420s", client sat on the title screen | `run/options.txt` never existed, so `onboardAccessibility:false` was never applied and the **Welcome to Minecraft** dialog blocked quickplay |
+| the fixture "disappeared" (Singleplayer opened *Create New World*) | `run/saves` did not exist; the world was in `runs/client/saves` |
+| crash count always 0 for those targets | `run/crash-reports` did not exist — **a zero from a missing directory is not evidence of no crash** |
+
+Both scripts now resolve `GDIR` (`run/` if present, else `runs/client/`) and create it before seeding.
+Any crash count taken before this fix on a 1.20.x target is unverified and must be re-run.

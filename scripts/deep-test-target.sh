@@ -18,13 +18,17 @@ say() { printf '  %s\n' "$*"; }
 fail=0
 
 [ -d "$PROJ" ] || { echo "no project dir $PROJ" >&2; exit 2; }
+# The game dir is not always run/: NeoGradle projects on 1.20.x use runs/client.
+if [ -d "$PROJ/run" ]; then GDIR="$PROJ/run"
+elif [ -d "$PROJ/runs/client" ]; then GDIR="$PROJ/runs/client"
+else GDIR="$PROJ/run"; fi
 DISPLAY="$DISP" xdotool getdisplaygeometry >/dev/null 2>&1 || { echo "display $DISP is down" >&2; exit 2; }
 
 pkill -f 'Knot[C]lient' 2>/dev/null
 pkill -f 'net.minecraftforge.*launc[h]' 2>/dev/null
 sleep 3
-rm -f "$PROJ"/run/saves/*/session.lock 2>/dev/null
-rm -f "$PROJ"/run/crash-reports/*.txt 2>/dev/null
+rm -f "$GDIR"/saves/*/session.lock 2>/dev/null
+rm -f "$GDIR"/crash-reports/*.txt 2>/dev/null
 
 say "launching $MC on $DISP"
 ( cd "$PROJ" && DISPLAY="$DISP" ALSOFT_DRIVERS=null LIBGL_ALWAYS_SOFTWARE=1 MESA_GL_VERSION_OVERRIDE=4.5 \
