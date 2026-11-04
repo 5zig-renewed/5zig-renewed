@@ -137,6 +137,19 @@ three separate defects in this tree were invisible to "the HUD renders".
 NeoForge's ModDevGradle path is proven across 1.20.1 → 26.1.2). Fabric remains the primary target for
 every version, NeoForge is the second loader from 1.20.2 onward.
 
+### Packaging trap: nested mod versions must be semver
+
+Fabric Loader 0.17+ (Minecraft 26.3) parses every nested jar-in-jar mod's `version` with the extended
+semver scheme and **refuses to load the whole mod** for a non-semver value:
+
+    Mod com_github_5zig-reborn_discordipc uses the version master-SNAPSHOT
+    which isn't compatible with Loader's extended version parsing scheme
+
+Loom copies the Maven version verbatim into the generated nested `fabric.mod.json`, so JitPack
+`master-SNAPSHOT`, `json:20231013` and `sqlite-jdbc:3.45.3.0` all poison the artifact. Dev runs and
+every pre-26.3 build are unaffected, which is exactly why only a packaged-jar test catches it.
+`tools/fix_nested_versions.py` rewrites those to `1.0.0` and is wired into the 26.3 `jar` task.
+
 ### Known gaps
 
 - **5zig's own chat/party features are not functional.** The core keeps conversations in an HSQLDB file

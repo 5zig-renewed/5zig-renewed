@@ -332,3 +332,19 @@ tasks.register('printCompileClasspath') {
         println "classpath entries: " + sourceSets.main.compileClasspath.files.size()
     }
 }
+
+// Fabric Loader 0.17+ (26.3) parses nested mod versions with the extended semver scheme and
+// refuses to load the whole jar for a non-semver version (JitPack `master-SNAPSHOT`, json
+// `20231013`, sqlite `3.45.3.0`). Loom copies the Maven version into the generated nested
+// fabric.mod.json, so rewrite those to a semver placeholder after remapping.
+tasks.withType(Jar).configureEach {
+    if (name == 'remapJar' || name == 'jar') {
+    doLast {
+        def fixer = rootProject.file('../tools/fix_nested_versions.py')
+        if (!fixer.exists()) { fixer = file('../../tools/fix_nested_versions.py') }
+        // Gradle 9 removed Project.exec() from task actions; run it directly.
+        def proc = ['python3', fixer.absolutePath, archiveFile.get().asFile.absolutePath].execute()
+        proc.waitForProcessOutput(System.out, System.err)
+    }
+    }
+}
