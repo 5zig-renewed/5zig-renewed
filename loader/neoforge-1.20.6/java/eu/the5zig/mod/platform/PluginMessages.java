@@ -94,6 +94,13 @@ public final class PluginMessages {
 	/**
 	 * Mod-bus hook: declares every 5zig channel in both directions.
 	 * <p>
+	 * On NeoForge 20.6 the single argument of
+	 * {@link RegisterPayloadHandlersEvent#registrar(String)} is the payload <em>version</em>
+	 * ({@code PayloadRegistrar(String version)}), not a namespace — the namespace comes from each
+	 * payload's {@code Type} id, which is {@code the5zigmod} for all three 5zig channels. Do not
+	 * "fix" this argument to {@code the5zigmod}: on the 20.4 line that same call site means
+	 * namespace, but here it would merely become the negotiated version string.
+	 * <p>
 	 * {@code optional()} keeps the channels out of the mandatory handshake, so joining a server
 	 * (or a single-player world) that does not know them is still possible.
 	 */

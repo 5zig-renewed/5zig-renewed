@@ -44,10 +44,13 @@ import java.util.function.Consumer;
  * <p>
  * 1.20.2 is the first version whose {@code CustomPacketPayload} carries a {@link ResourceLocation}
  * and a buffer, and the client decodes a payload <em>before</em> the packet listener runs: a
- * channel nobody declared becomes a body-less {@code DiscardedPayload}. NeoForge 20.2 has no
- * payload registrar yet — the equivalent is {@link NetworkRegistry#newEventChannel(ResourceLocation,
+ * channel nobody declared becomes a body-less {@code DiscardedPayload}. NeoForge 20.2.93 has no
+ * payload registrar at all — {@code net.neoforged.neoforge.network.registration} does not exist in
+ * that jar — so the namespace check that {@code IPayloadRegistrar} performs on the 20.4 line
+ * cannot apply here. The equivalent is {@link NetworkRegistry#newEventChannel(ResourceLocation,
  * java.util.function.Supplier, java.util.function.Predicate, java.util.function.Predicate)}, whose
- * channel reads the remaining bytes and fires {@link NetworkEvent.ClientCustomPayloadEvent}.
+ * channel reads the remaining bytes and fires {@link NetworkEvent.ClientCustomPayloadEvent};
+ * {@link NetworkRegistry#acceptMissingOr(String)} supplies the "optional" semantics.
  * Channels must be created while the network registry is still unlocked, i.e. during mod
  * construction.
  * <p>

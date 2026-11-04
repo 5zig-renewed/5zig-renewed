@@ -6,7 +6,12 @@
   "fabapi": "0.92.12+1.20.1",
   "neo": "1.20.1-47.1.106",
   "forge": "1.20.1-47.4.28",
-  "era": "E5 1.20\u20131.20.1"
+  "era": "E5 1.20–1.20.1",
+  "fabric_jar": "5zig-renewed-1.20.1-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-1.20.1-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": "5zig-renewed-1.20.1-forge-4.0.0-alpha.1.jar",
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 2,
@@ -15,7 +20,12 @@
   "fabapi": "0.116.17+1.21.1",
   "neo": "21.1.265",
   "forge": "1.21.1-52.1.21",
-  "era": "E7 1.21\u20131.21.1"
+  "era": "E7 1.21–1.21.1",
+  "fabric_jar": "5zig-renewed-1.21.1-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-1.21.1-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": true
  },
  {
   "rank": 3,
@@ -24,7 +34,12 @@
   "fabapi": "0.141.6+1.21.11",
   "neo": "21.11.48",
   "forge": "1.21.11-61.2.5",
-  "era": "E9 1.21.5\u20131.21.11"
+  "era": "E9 1.21.5–1.21.11",
+  "fabric_jar": "5zig-renewed-1.21.11-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-1.21.11-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 4,
@@ -33,7 +48,12 @@
   "fabapi": "0.119.4+1.21.4",
   "neo": "21.4.161",
   "forge": "1.21.4-54.1.22",
-  "era": "E8 1.21.2\u20131.21.4"
+  "era": "E8 1.21.2–1.21.4",
+  "fabric_jar": "5zig-renewed-1.21.4-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-1.21.4-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": true
  },
  {
   "rank": 5,
@@ -42,7 +62,12 @@
   "fabapi": "0.136.1+1.21.8",
   "neo": "21.8.57",
   "forge": "1.21.8-58.1.26",
-  "era": "E9 1.21.5\u20131.21.11"
+  "era": "E9 1.21.5–1.21.11",
+  "fabric_jar": "5zig-renewed-1.21.8-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-1.21.8-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 6,
@@ -51,7 +76,12 @@
   "fabapi": "0.155.3+26.1.2",
   "neo": "26.1.2.126",
   "forge": "26.1.2-64.1.6",
-  "era": "E10 26.x"
+  "era": "E10 26.x",
+  "fabric_jar": "5zig-renewed-26.1.2-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-26.1.2-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": true
  },
  {
   "rank": 7,
@@ -60,7 +90,12 @@
   "fabapi": "0.102.0+1.21",
   "neo": "21.0.167",
   "forge": "1.21-51.0.33",
-  "era": "E7 1.21\u20131.21.1"
+  "era": "E7 1.21–1.21.1",
+  "fabric_jar": "5zig-renewed-1.21-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-1.21-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": true
  },
  {
   "rank": 8,
@@ -69,7 +104,12 @@
   "fabapi": "0.138.4+1.21.10",
   "neo": "21.10.64",
   "forge": "1.21.10-60.1.18",
-  "era": "E9 1.21.5\u20131.21.11"
+  "era": "E9 1.21.5–1.21.11",
+  "fabric_jar": "5zig-renewed-1.21.10-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-1.21.10-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": true
  },
  {
   "rank": 9,
@@ -78,7 +118,12 @@
   "fabapi": "0.128.2+1.21.5",
   "neo": "21.5.101",
   "forge": "1.21.5-55.1.18",
-  "era": "E9 1.21.5\u20131.21.11"
+  "era": "E9 1.21.5–1.21.11",
+  "fabric_jar": "5zig-renewed-1.21.5-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-1.21.5-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": true
  },
  {
   "rank": 10,
@@ -87,7 +132,12 @@
   "fabapi": "0.161.0+26.2",
   "neo": "26.2.0.93",
   "forge": "26.2-65.1.6",
-  "era": "E10 26.x"
+  "era": "E10 26.x",
+  "fabric_jar": "5zig-renewed-26.2-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 11,
@@ -96,7 +146,12 @@
   "fabapi": "0.97.3+1.20.4",
   "neo": "20.4.253",
   "forge": "1.20.4-49.2.13",
-  "era": "E6 1.20.2\u20131.20.6"
+  "era": "E6 1.20.2–1.20.6",
+  "fabric_jar": "5zig-renewed-1.20.4-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-1.20.4-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 12,
@@ -105,7 +160,12 @@
   "fabapi": "0.129.0+1.21.7",
   "neo": "21.7.25-beta",
   "forge": "1.21.7-57.0.3",
-  "era": "E9 1.21.5\u20131.21.11"
+  "era": "E9 1.21.5–1.21.11",
+  "fabric_jar": "5zig-renewed-1.21.7-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 13,
@@ -114,7 +174,12 @@
   "fabapi": "0.128.2+1.21.6",
   "neo": "21.6.20-beta",
   "forge": "1.21.6-56.0.9",
-  "era": "E9 1.21.5\u20131.21.11"
+  "era": "E9 1.21.5–1.21.11",
+  "fabric_jar": "5zig-renewed-1.21.6-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 14,
@@ -123,7 +188,12 @@
   "fabapi": "0.134.1+1.21.9",
   "neo": "21.9.16-beta",
   "forge": "1.21.9-59.0.5",
-  "era": "E9 1.21.5\u20131.21.11"
+  "era": "E9 1.21.5–1.21.11",
+  "fabric_jar": "5zig-renewed-1.21.9-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 15,
@@ -132,7 +202,12 @@
   "fabapi": "0.114.1+1.21.3",
   "neo": "21.3.100",
   "forge": "1.21.3-53.1.16",
-  "era": "E8 1.21.2\u20131.21.4"
+  "era": "E8 1.21.2–1.21.4",
+  "fabric_jar": "5zig-renewed-1.21.3-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 16,
@@ -141,7 +216,12 @@
   "fabapi": "0.77.0+1.19.2",
   "neo": null,
   "forge": "1.19.2-43.5.2",
-  "era": "E3 1.18\u20131.19.2"
+  "era": "E3 1.18–1.19.2",
+  "fabric_jar": "5zig-renewed-1.19.2-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 17,
@@ -150,7 +230,12 @@
   "fabapi": "0.145.1+26.1",
   "neo": "26.1.2.126",
   "forge": "26.1-62.0.9",
-  "era": "E10 26.x"
+  "era": "E10 26.x",
+  "fabric_jar": "5zig-renewed-26.1-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 18,
@@ -159,7 +244,12 @@
   "fabapi": "0.106.1+1.21.2",
   "neo": "21.2.1-beta",
   "forge": null,
-  "era": "E8 1.21.2\u20131.21.4"
+  "era": "E8 1.21.2–1.21.4",
+  "fabric_jar": "5zig-renewed-1.21.2-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 19,
@@ -168,7 +258,12 @@
   "fabapi": "0.91.6+1.20.2",
   "neo": "20.2.93",
   "forge": "1.20.2-48.1.0",
-  "era": "E6 1.20.2\u20131.20.6"
+  "era": "E6 1.20.2–1.20.6",
+  "fabric_jar": "5zig-renewed-1.20.2-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-1.20.2-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 20,
@@ -177,7 +272,12 @@
   "fabapi": "0.145.4+26.1.1",
   "neo": "26.1.1.15-beta",
   "forge": "26.1.1-63.0.2",
-  "era": "E10 26.x"
+  "era": "E10 26.x",
+  "fabric_jar": "5zig-renewed-26.1.1-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 21,
@@ -186,7 +286,12 @@
   "fabapi": "0.100.8+1.20.6",
   "neo": "20.6.144",
   "forge": "1.20.6-50.2.15",
-  "era": "E6 1.20.2\u20131.20.6"
+  "era": "E6 1.20.2–1.20.6",
+  "fabric_jar": "5zig-renewed-1.20.6-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": "5zig-renewed-1.20.6-neoforge-4.0.0-alpha.1.jar",
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 22,
@@ -195,7 +300,12 @@
   "fabapi": "0.83.0+1.20",
   "neo": null,
   "forge": "1.20-46.0.14",
-  "era": "E5 1.20\u20131.20.1"
+  "era": "E5 1.20–1.20.1",
+  "fabric_jar": "5zig-renewed-1.20-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 23,
@@ -204,7 +314,12 @@
   "fabapi": "0.91.1+1.20.3",
   "neo": "20.3.8-beta",
   "forge": "1.20.3-49.0.2",
-  "era": "E6 1.20.2\u20131.20.6"
+  "era": "E6 1.20.2–1.20.6",
+  "fabric_jar": "5zig-renewed-1.20.3-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 24,
@@ -213,7 +328,12 @@
   "fabapi": "0.165.2+26.3",
   "neo": "26.3.0.101",
   "forge": "26.3-66.1.5",
-  "era": "E10 26.x"
+  "era": "E10 26.x",
+  "fabric_jar": "5zig-renewed-26.3-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 25,
@@ -222,7 +342,12 @@
   "fabapi": "0.87.2+1.19.4",
   "neo": null,
   "forge": "1.19.4-45.4.5",
-  "era": "E4 1.19.3\u20131.19.4"
+  "era": "E4 1.19.3–1.19.4",
+  "fabric_jar": "5zig-renewed-1.19.4-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 26,
@@ -231,7 +356,12 @@
   "fabapi": "0.77.0+1.18.2",
   "neo": null,
   "forge": "1.18.2-40.3.12",
-  "era": "E3 1.18\u20131.19.2"
+  "era": "E3 1.18–1.19.2",
+  "fabric_jar": "5zig-renewed-1.18.2-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 27,
@@ -240,7 +370,12 @@
   "fabapi": "0.97.8+1.20.5",
   "neo": "20.5.21-beta",
   "forge": null,
-  "era": "E6 1.20.2\u20131.20.6"
+  "era": "E6 1.20.2–1.20.6",
+  "fabric_jar": "5zig-renewed-1.20.5-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 28,
@@ -249,7 +384,12 @@
   "fabapi": "0.76.1+1.19.3",
   "neo": null,
   "forge": "1.19.3-44.1.23",
-  "era": "E4 1.19.3\u20131.19.4"
+  "era": "E4 1.19.3–1.19.4",
+  "fabric_jar": "5zig-renewed-1.19.3-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 29,
@@ -258,7 +398,12 @@
   "fabapi": "0.58.0+1.19",
   "neo": null,
   "forge": "1.19-41.1.0",
-  "era": "E3 1.18\u20131.19.2"
+  "era": "E3 1.18–1.19.2",
+  "fabric_jar": "5zig-renewed-1.19-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 30,
@@ -267,7 +412,12 @@
   "fabapi": "0.42.0+1.16",
   "neo": null,
   "forge": "1.16.5-36.2.42",
-  "era": "E1 1.16.x"
+  "era": "E1 1.16.x",
+  "fabric_jar": "5zig-renewed-1.16.5-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 31,
@@ -276,7 +426,12 @@
   "fabapi": "0.58.5+1.19.1",
   "neo": null,
   "forge": "1.19.1-42.0.9",
-  "era": "E3 1.18\u20131.19.2"
+  "era": "E3 1.18–1.19.2",
+  "fabric_jar": "5zig-renewed-1.19.1-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 32,
@@ -285,7 +440,12 @@
   "fabapi": "0.46.6+1.18",
   "neo": null,
   "forge": "1.18.1-39.1.2",
-  "era": "E3 1.18\u20131.19.2"
+  "era": "E3 1.18–1.19.2",
+  "fabric_jar": "5zig-renewed-1.18.1-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 33,
@@ -294,7 +454,12 @@
   "fabapi": "0.46.1+1.17",
   "neo": null,
   "forge": "1.17.1-37.1.1",
-  "era": "E2 1.17.x"
+  "era": "E2 1.17.x",
+  "fabric_jar": "5zig-renewed-1.17.1-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 34,
@@ -303,7 +468,12 @@
   "fabapi": "0.46.6+1.18",
   "neo": null,
   "forge": "1.18-38.0.17",
-  "era": "E3 1.18\u20131.19.2"
+  "era": "E3 1.18–1.19.2",
+  "fabric_jar": "5zig-renewed-1.18-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 35,
@@ -312,7 +482,12 @@
   "fabapi": "0.46.1+1.17",
   "neo": null,
   "forge": null,
-  "era": "E2 1.17.x"
+  "era": "E2 1.17.x",
+  "fabric_jar": "5zig-renewed-1.17-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 36,
@@ -321,7 +496,12 @@
   "fabapi": "0.42.0+1.16",
   "neo": null,
   "forge": "1.16.4-35.1.37",
-  "era": "E1 1.16.x"
+  "era": "E1 1.16.x",
+  "fabric_jar": "5zig-renewed-1.16.4-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 37,
@@ -330,7 +510,12 @@
   "fabapi": "0.42.0+1.16",
   "neo": null,
   "forge": "1.16.3-34.1.42",
-  "era": "E1 1.16.x"
+  "era": "E1 1.16.x",
+  "fabric_jar": "5zig-renewed-1.16.3-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 38,
@@ -339,7 +524,12 @@
   "fabapi": "0.42.0+1.16",
   "neo": null,
   "forge": "1.16.2-33.0.61",
-  "era": "E1 1.16.x"
+  "era": "E1 1.16.x",
+  "fabric_jar": "5zig-renewed-1.16.2-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": true,
+  "neoforge_verified": false
  },
  {
   "rank": 39,
@@ -348,7 +538,12 @@
   "fabapi": "0.42.0+1.16",
   "neo": null,
   "forge": "1.16.1-32.0.108",
-  "era": "E1 1.16.x"
+  "era": "E1 1.16.x",
+  "fabric_jar": "5zig-renewed-1.16.1-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": false,
+  "neoforge_verified": false
  },
  {
   "rank": 40,
@@ -357,6 +552,11 @@
   "fabapi": "0.42.0+1.16",
   "neo": null,
   "forge": null,
-  "era": "E1 1.16.x"
+  "era": "E1 1.16.x",
+  "fabric_jar": "5zig-renewed-1.16-fabric-4.0.0-alpha.1.jar",
+  "neoforge_jar": null,
+  "forge_jar": null,
+  "fabric_verified": false,
+  "neoforge_verified": false
  }
 ]
