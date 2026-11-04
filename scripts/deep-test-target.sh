@@ -61,7 +61,8 @@ DISPLAY="$DISP" xdotool key --clearmodifiers F12; sleep 4
 DISPLAY="$DISP" xdotool key --clearmodifiers space; sleep 3
 DISPLAY="$DISP" import -window root "${SHOT}-coords.png" 2>/dev/null
 say "captured ${SHOT}-coords.png"
-python3 "$(dirname "$0")/shot-diff.py" "${SHOT}-back.png" "${SHOT}-coords.png" 0.10 "coordinates GUI opened" || fail=1
+# the clipboard dialog covers less of the frame than the settings menu
+python3 "$(dirname "$0")/shot-diff.py" "${SHOT}-back.png" "${SHOT}-coords.png" 0.06 "coordinates GUI opened" || fail=1
 
 # T5 DELETE
 DISPLAY="$DISP" xdotool key --clearmodifiers Delete; sleep 2

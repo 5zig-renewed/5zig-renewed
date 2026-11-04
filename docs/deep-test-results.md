@@ -282,3 +282,34 @@ frame before each hotkey and uses `scripts/shot-diff.py` to require that ≥10% 
 | same frame | FAIL (0.0%) |
 | pause menu → pause menu (the D8 trap) | FAIL (0.1%) |
 | gameplay → real 5zig settings menu | pass (30.6%) |
+
+---
+
+## 9. Fabric 1.21.11 — pass
+
+Date: 2026-11-04 · log `/tmp/dt-f12111b.log` · Creative fixture copied from the NeoForge 1.21.11 run dir
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined, no crash report, log clean | log |
+| T1 HUD | ✅ FPS / X / Y / Z / facing | `/tmp/f12111b-back-c.png` |
+| T2 settings GUI | ✅ opened (18.2% of frame changed) | `/tmp/dt-f12111b-menu.png` |
+| T3 ESC | ✅ back to gameplay with HUD | `/tmp/f12111b-back-c.png` |
+| T4 SPACE | ✅ X=1, Z=-6 | `/tmp/f12111b-coords-c.png` |
+| T5 DELETE | ✅ | `/tmp/dt-f12111b-deleted.png` |
+
+No defects specific to this target — D7 (blur) and D8 (`ResourceLocation` final / label alpha) were the
+1.21.9+ family defects and this build carries those fixes.
+
+### Two fixture traps worth recording
+
+- A project whose `run/saves` still holds an old **survival** world will show "You Died!" mid-battery and
+  every key press goes to the death screen — that reads exactly like "the hotkey does nothing". Copy the
+  Creative fixture in before testing.
+- The frame-diff threshold is screen-dependent: the settings menu changes ~18–34% of the frame, the
+  coordinates dialog ~9%. 6% for the dialog, 10% for the menu.
+
+### Strongest SPACE evidence
+
+Read the HUD's own coordinates in the same run and compare: HUD `X:1.5 / Z:-5.5` → fields after SPACE
+`X:1 / Z:-6`. That verifies the value is the *player's real position*, not a leftover from the saved list.
