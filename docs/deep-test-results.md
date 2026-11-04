@@ -223,3 +223,33 @@ The shared 26.x fixture is now created **on the oldest 26.x build (26.1)** and c
 target upgrades it instead of hitting *"Downgrading a world is not supported"*. It lives at
 `~/work/test-worlds/26x-creative` (Creative; commands were left off on this screen because the toggle is
 not clickable there, which does not matter for the GUI battery — Creative is invulnerable).
+
+---
+
+## 8. NeoForge 1.21.11 — partial
+
+Date: 2026-11-04 · logs `/tmp/mk12111.log`, `/tmp/dt-nf12111b.log`
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined on a fresh Creative world, `check-client-log.sh` clean | log |
+| T1 HUD | ✅ renders, plus the "no longer AFK" toast | `/tmp/n12111-ing-c.png` |
+| T2 settings GUI | ❌ **does not open on RSHIFT** (D8); vanilla pause menu instead | `/tmp/nb-menu-c.png` |
+| T3 ESC | ✅ opens the vanilla pause menu as expected | — |
+| T4 SPACE | ✅ X=-71, Z=-7 (before the crash) | `/tmp/n12111-cd-c.png` |
+
+### Defects
+
+**D7 — the same "Can only blur once per frame" crash on 1.21.9 / 1.21.10 / 1.21.11.** *(fixed)*
+Opening any 5zig screen crashed the client. `GuiHandle#render` called `renderBackground(...)` and then
+`super.render(...)`, which renders (and blurs) the background again on 1.21.9+. Same fix as the 26.x
+platforms: let `super.render` own the background, then draw the 5zig screen over it. Applied to all three;
+the build is green and the crash no longer appears in the log. This is a genuine crash that predates every
+"verified" claim for those three versions — the HUD renders fine, so nothing showed it.
+
+**D8 — the settings binding does not fire on 1.21.11 NeoForge.** *(open)*
+`key_the5zigmod.key.settings:key.keyboard.right.shift` **is** registered in `run/options.txt`, so
+registration is fine, but pressing Right Shift opens nothing (the coords binding, `F12`, does fire on the
+same client). Needs a debug pass: check whether the core's `callIsPressed()` for the new binding is
+reached on the 1.21.x `Keybinding` implementation, and whether `Keybinds.wrap()` hands the core the same
+mapping the user rebinds in options.
