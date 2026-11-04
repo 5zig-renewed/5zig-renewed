@@ -1450,21 +1450,27 @@ public class Variables implements IVariables {
 
 	@Override
 	public void deleteTexture(Object resourceLocation) {
-		if (resourceLocation instanceof net.minecraft.resources.ResourceLocation) {
-			getTextureManager().release((net.minecraft.resources.ResourceLocation) resourceLocation);
+		net.minecraft.resources.ResourceLocation location = toTextureLocation(resourceLocation);
+		if (location != null) {
+			getTextureManager().release(location);
 		}
 	}
 
 	@Override
 	public Object createDynamicImage(Object resourceLocation, int width, int height) {
 		DynamicTexture texture = new DynamicTexture(width, height, false);
-		getTextureManager().register((net.minecraft.resources.ResourceLocation) resourceLocation, texture);
+		net.minecraft.resources.ResourceLocation location = toTextureLocation(resourceLocation);
+		if (location == null) {
+			return texture;
+		}
+		getTextureManager().register(location, texture);
 		return texture;
 	}
 
 	@Override
 	public Object getTexture(Object resourceLocation) {
-		return getTextureManager().getTexture((net.minecraft.resources.ResourceLocation) resourceLocation);
+		net.minecraft.resources.ResourceLocation location = toTextureLocation(resourceLocation);
+		return location == null ? null : getTextureManager().getTexture(location);
 	}
 
 	@Override
@@ -1743,13 +1749,18 @@ public class Variables implements IVariables {
 				resourceName.substring(separator + 1)).toMinecraft();
 	}
 
+	/**
+	 * The single conversion point from the platform wrapper to the vanilla type. On this version the
+	 * wrapper does not extend {@code net.minecraft.resources.ResourceLocation}, so casting it threw a
+	 * {@link ClassCastException} the first time a GUI drew a texture. The wrapper's own null-safe
+	 * conversion also copes with foreign {@link IResourceLocation} implementations.
+	 */
 	private static net.minecraft.resources.ResourceLocation toTextureLocation(Object resourceLocation) {
 		if (resourceLocation instanceof net.minecraft.resources.ResourceLocation) {
 			return (net.minecraft.resources.ResourceLocation) resourceLocation;
 		}
 		if (resourceLocation instanceof IResourceLocation) {
-			IResourceLocation location = (IResourceLocation) resourceLocation;
-			return new ResourceLocation(location.callGetResourceDomain(), location.callGetResourcePath()).toMinecraft();
+			return ResourceLocation.toMinecraft((IResourceLocation) resourceLocation);
 		}
 		return null;
 	}

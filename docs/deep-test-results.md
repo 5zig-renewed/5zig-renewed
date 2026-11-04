@@ -496,3 +496,16 @@ there — those builds are fine and were left untouched) but is a **wrapper** fr
 never succeed. Within the wrapper group 1.21.6–1.21.8 already unwrap with `ResourceLocation.toMinecraft(...)`
 and 1.21.9+ had their `getTexture` fixed with D8; the six platforms still casting are **1.21, 1.21.1, 1.21.2,
 1.21.3, 1.21.4, 1.21.5**. Fix in flight (deleg_2f1061f5).
+
+---
+
+## 20–21. 1.21.5 — NeoForge and Fabric (pass, after D10)
+
+| target | menu | coords | crashes | verdict |
+|---|---|---|---|---|
+| NeoForge 1.21.5 | ok 33.5% | ok 32.2% · X=364/Z=-253 | 0 | **pass** |
+| Fabric 1.21.5 | ok 33.5% | ok 32.4% | 0 | **pass** |
+
+Both targets crashed before D10 with `ClassCastException … platform.ResourceLocation cannot be cast to
+net.minecraft.resources.ResourceLocation`; after the fix both reach the settings GUI and the coordinates
+dialog with no crash report.
