@@ -41,10 +41,10 @@ import org.joml.Matrix4f;
 import java.util.List;
 
 /**
- * 1.19.2 rendering facade.
+ * 1.19.x rendering facade.
  * <p>
  * Minecraft 1.20 introduced {@code GuiGraphics}: a {@code PoseStack} bundled with the GUI's blit
- * offset and texture binding helpers, threaded through every widget and screen. 1.19.2 still draws
+ * offset and texture binding helpers, threaded through every widget and screen. 1.19.x still draws
  * with the {@code PoseStack} directly plus the static {@code GuiComponent} helpers, which is exactly
  * the API 5zig's 1.15 platform was written against.
  * <p>
@@ -107,7 +107,8 @@ public final class GuiContext {
 		float bottomBlue = (colorBottom & 0xFF) / 255.0F;
 
 		Matrix4f matrix = poseStack.last().pose();
-		RenderSystem.disableTexture();
+		// 1.19.4 removed RenderSystem#enableTexture/disableTexture: GUI geometry is always
+		// drawn with the position-colour shader and texturing is a shader property.
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -119,7 +120,6 @@ public final class GuiContext {
 		buffer.vertex(matrix, x2, y2, z).color(bottomRed, bottomGreen, bottomBlue, bottomAlpha).endVertex();
 		BufferUploader.drawWithShader(buffer.end());
 		RenderSystem.disableBlend();
-		RenderSystem.enableTexture();
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -229,10 +229,8 @@ public final class GuiContext {
 	}
 
 	private static void bind(ResourceLocation texture) {
-		// 1.19.2's GuiComponent helpers assume the caller enabled texturing/blending (1.20's
-		// GuiGraphics did this per RenderType), and GuiComponent#fill leaves both in whatever state
-		// it used. Re-assert them so a fill followed by a blit always draws textured pixels.
-		RenderSystem.enableTexture();
+		// 1.19.4 always samples the bound texture, so only the blend state has to be re-asserted
+		// after a fill (GuiComponent#fill leaves it in whatever state it used).
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShaderTexture(0, texture);

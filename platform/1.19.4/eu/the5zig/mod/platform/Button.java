@@ -216,7 +216,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 	}
 
 	@Override
-	public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+	public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
 		GuiContext graphics = new GuiContext(poseStack);
 		graphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
 		RenderSystem.enableBlend();

@@ -22,10 +22,11 @@ package eu.the5zig.mod.platform;
 import eu.the5zig.mod.util.IServerData;
 
 /**
- * 1.19.2 view over {@link net.minecraft.client.multiplayer.ServerData}.
+ * 1.19.4 view over {@link net.minecraft.client.multiplayer.ServerData}.
  * <p>
- * 1.19.2 keeps {@code name/ip/motd/ping} on the object and stores the favicon as a base64 string;
- * the online/max player counts of later versions do not exist yet, only the sampled player list.
+ * 1.19.4 keeps {@code name/ip/motd/ping} on the object, stores the favicon as raw PNG bytes
+ * ({@code getIconBytes}) and gained the online/max counters from the ping response
+ * ({@code players}), which 1.19.3 did not have.
  */
 public class ServerData extends net.minecraft.client.multiplayer.ServerData implements IServerData {
 
@@ -45,7 +46,11 @@ public class ServerData extends net.minecraft.client.multiplayer.ServerData impl
 
 	@Override
 	public String getPopulationInfo() {
-		// 1.19.2 only carries the sampled player list, not the online/max counters.
+		// 1.19.4 exposes the ping response's online/max counters; fall back to the sampled list
+		// (what 1.19.3 could offer) when the server did not send them.
+		if (players != null) {
+			return players.online() + "/" + players.max();
+		}
 		if (playerList == null || playerList.isEmpty()) {
 			return "";
 		}
@@ -64,6 +69,9 @@ public class ServerData extends net.minecraft.client.multiplayer.ServerData impl
 
 	@Override
 	public String getServerIcon() {
-		return getIconB64();
+		// 1.19.4 stores the favicon as raw PNG bytes (getIconBytes) and no longer exposes the
+		// base64 form; the 5zig API still hands out base64, so encode on demand.
+		byte[] iconBytes = getIconBytes();
+		return iconBytes == null ? null : java.util.Base64.getEncoder().encodeToString(iconBytes);
 	}
 }

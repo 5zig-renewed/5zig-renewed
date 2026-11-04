@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Static check that every mixin target method descriptor exists in the 1.19.2 jar."""
+"""Static check that every mixin target method descriptor exists in the 1.19.4 jar."""
 import re, subprocess, sys, os, glob, json
 
-MIXIN_DIR = '/platform/1.19.2/eu/the5zig/mod/mixin'
-SRC_ROOT = 'mc-src/1.19.2/out'
-JAR = '/versions/1.19.2-fabric/.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-merged-fa35131a1a/1.19.2-loom.mappings.1_19_2.layered+hash.2198-v2/minecraft-merged-fa35131a1a-1.19.2-loom.mappings.1_19_2.layered+hash.2198-v2.jar'
+MIXIN_DIR = '/platform/1.19.4/eu/the5zig/mod/mixin'
+SRC_ROOT = 'mc-src/1.19.4/out'
+JAR = '/versions/1.19.4-fabric/.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-merged-96151393a2/1.19.4-loom.mappings.1_19_4.layered+hash.2198-v2/minecraft-merged-96151393a2-1.19.4-loom.mappings.1_19_4.layered+hash.2198-v2.jar'
 JAVAP = '/usr/lib/jvm/java-17-openjdk/bin/javap'
 
 def target_of(path):

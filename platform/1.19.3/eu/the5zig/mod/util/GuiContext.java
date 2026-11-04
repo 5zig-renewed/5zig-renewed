@@ -41,10 +41,10 @@ import org.joml.Matrix4f;
 import java.util.List;
 
 /**
- * 1.19.2 rendering facade.
+ * 1.19.x rendering facade.
  * <p>
  * Minecraft 1.20 introduced {@code GuiGraphics}: a {@code PoseStack} bundled with the GUI's blit
- * offset and texture binding helpers, threaded through every widget and screen. 1.19.2 still draws
+ * offset and texture binding helpers, threaded through every widget and screen. 1.19.x still draws
  * with the {@code PoseStack} directly plus the static {@code GuiComponent} helpers, which is exactly
  * the API 5zig's 1.15 platform was written against.
  * <p>

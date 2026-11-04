@@ -51,7 +51,7 @@ sourceSets {
                     new File(repoRoot, 'common').path,
                     new File(repoRoot, 'api').path,
                     // Rooted one level below the package root so the directory layout matches
-                    // eu.the5zig.mod.platform.* (same convention as platform/1.20.4 in its project).
+                    // eu.the5zig.mod.platform.* (same convention as the other version projects here).
                     new File(repoRoot, 'platform/1.19.4/eu').path,
                     new File(repoRoot, 'loader/fabric/java').path,
                     new File(repoRoot, 'loader/fabric-1.19.4/java').path

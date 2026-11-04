@@ -58,7 +58,7 @@ public class Slider extends Button {
 	}
 
 	@Override
-	public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+	public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
 		if (!isVisible()) {
 			return;
 		}

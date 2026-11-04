@@ -1,107 +1,99 @@
-# 1.20.4 Fabric port notes
+# 1.20.6 Fabric port notes
 
-Built with `gradle-8.10.2` / JDK 17, `--no-daemon`, target Java 17 (class file 61).
+Built with `gradle-8.10.2` / JDK 21, `--no-daemon`, target Java 21 (class file 65).
 
 | Piece | Version |
 |---|---|
-| Minecraft | 1.20.4 (Mojang official mappings) |
+| Minecraft | 1.20.6 (Mojang official mappings) |
 | Fabric Loom | 1.7.4 |
-| Fabric Loader | 0.15.11 |
-| Fabric API | 0.97.2+1.20.4 |
-| Mixin compatibility level | `JAVA_17` |
+| Fabric Loader | 0.16.10 |
+| Fabric API | 0.100.8+1.20.6 |
+| Mixin compatibility level | `JAVA_21` |
 
-Build: `cd versions/1.20.4-fabric && JAVA_HOME=/usr/lib/jvm/java-17-openjdk \
+Build: `cd versions/1.20.6-fabric && JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
   ~/work/tools/gradle-8.10.2/bin/gradle --no-daemon build`
-Jar: `build/libs/5zig-renewed-1.20.4-fabric-4.0.0-alpha.1.jar`
+Jar: `build/libs/5zig-renewed-1.20.6-fabric-4.0.0-alpha.1.jar`
 
 ## Decompiled reference
 
-`mc-src/1.20.4/out` (vineflower 1.12.0, `--only=net/minecraft`, `-dgs=1`), decompiled from
-`versions/1.20.4-fabric/.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-merged-d0b2754079/…`.
+`mc-src/1.20.6/out` (vineflower 1.12.0, `--only=net/minecraft`, `-dgs=1`), decompiled from
+`versions/1.20.6-fabric/.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-merged-7036bae68b/…`.
 
-## Why 1.20.4 is not just 1.20.1
+## The 1.20.5 item-components rewrite
 
-1.20.4 sits on the other side of the 1.20.2 "network/protocol rewrite" and also ships authlib 6, so the
-delta is bigger than the version number suggests. `platform/1.20.4` is a copy of `platform/1.20.1`
-with the following changes.
+1.20.5 replaced NBT tags on `ItemStack` with typed `DataComponents`. Everything the port touches:
 
-### authlib 6 (same treatment as 1.21.1)
+- **Food** — `Item#getFoodProperties()` is gone; food lives in `DataComponents.FOOD` and is a
+  `FoodProperties` **record**. `getHealAmount()` reads `food.nutrition()`.
+  `getSaturationModifier()` is the one non-obvious conversion: 1.20.4 stored a *modifier*, 1.20.5+
+  stores the *absolute* saturation (`nutrition * modifier * 2`). The core still computes
+  `heal * modifier * 2` for its saturation preview, so the platform divides back out:
+  `food.saturation() / (2f * food.nutrition())` (guarding `nutrition <= 0`).
+- **Tooltips** — `getTooltipLines` now takes an `Item.TooltipContext`; the platform passes
+  `Item.TooltipContext.of(minecraft.level)`, the same context `Screen#getTooltipFromItem` uses
+  (`EMPTY` when there is no level).
+- **Attribute modifiers** — `ItemStack#getAttributeModifiers(EquipmentSlot)` and the
+  `Multimap<Attribute, AttributeModifier>` are gone. Modifiers live in the `attribute_modifiers`
+  component, reachable only through `ItemStack#forEachModifier(EquipmentSlot, BiConsumer<Holder<Attribute>,
+  AttributeModifier>)`. `Attributes.ATTACK_DAMAGE`/`ARMOR` are now `Holder<Attribute>` (`.value()`), and
+  `AttributeModifier` is a record (`amount()`, `id()`). Vanilla no longer smuggles the enchantment damage
+  bonus into the base attack-damage modifier, so the overlay re-adds it the way
+  `ItemStack#addModifierTooltip` does: `EnchantmentHelper.getDamageBonus(stack, null)`, folded into the
+  entry whose id is `Item.BASE_ATTACK_DAMAGE_UUID`.
+- **Durability / names** — `getMaxDamage()` / `getDamageValue()` / `getHoverName()` still exist and now read
+  `MAX_DAMAGE` / `DAMAGE` / `CUSTOM_NAME`; the core's `ItemStackItem` HUD needs no change.
+- **Armor** — the platform never touches `ArmorItem`; armor slots go through
+  `Inventory#getArmor(int)` (`0` = boots … `3` = helmet) and the durability getters above, so the
+  component rewrite needed no change there.
+- **Mob effects** — `MobEffectInstance#getEffect()` returns `Holder<MobEffect>`, and
+  `MobEffectTextureManager#get` takes the holder; the description id/colour/beneficial flag are read from
+  `holder.value()`.
 
-Minecraft 1.20.4 ships **authlib 6.0.52**, which removed `YggdrasilAuthenticationService(Proxy, String)`,
-`Agent` and `UserAuthentication`. Two core classes cannot compile unchanged and are replaced by
-platform copies (wired in `build.gradle` by excluding the core paths and rooting the platform source
-directory at `platform/1.20.4/eu`, exactly like the 1.21.1 project):
+## Other 1.20.5 / 1.20.6 API changes
 
-- `platform/1.20.4/…/account/AccountManager.java` — identical API; offline accounts and the encrypted
-  account list work, e-mail/password login reports `AuthenticationException` (Microsoft-only).
-- `platform/1.20.4/…/chat/network/packets/PacketEncryption.java` — same wire format,
-  `MinecraftSessionService#joinServer(UUID, String, String)`.
+- `Gui#renderHotbar(float, GuiGraphics)` → **`renderHotbarAndDecorations(GuiGraphics, float)`** (private,
+  arguments swapped) — the hotbar-number mixin targets the new name.
+- `ChatComponent#render(GuiGraphics, int, int, int)` gained a trailing `boolean focused`.
+- `Screen.BACKGROUND_LOCATION` → **`Screen.MENU_BACKGROUND`** (`textures/gui/menu_background.png`, a 32×32
+  dirt tile); `Screen#renderDirtBackground` → `renderMenuBackground`. `GuiCompat.blitRepeating` still tiles
+  at 32×32, so the list/file-selector backgrounds are unchanged.
+- `ClientboundTabListPacket` is a record: `header()` / `footer()` instead of `getHeader()` / `getFooter()`.
+- `SharedConstants.filterText/isAllowedChatCharacter` → `StringUtil.filterText/isAllowedChatCharacter`.
+- `ServerStatusPinger#pingServer(ServerData, Runnable success, Runnable failure)` gained the failure callback.
+- `ConnectScreen.startConnecting(…, boolean)` gained a trailing `@Nullable TransferState`.
+- Clientbound `ClientboundPlayerPositionPacket` still exposes `getX()/getY()/getZ()`, so the teleport hook is
+  unchanged.
 
-### Typed custom payloads (1.20.2+)
+### Fabric networking (1.20.5 removed the raw channel API)
 
-`ClientboundCustomPayloadPacket`/`ServerboundCustomPayloadPacket` moved to `network.protocol.common`
-and carry a `CustomPacketPayload` (`id()` + `write`). Unknown incoming payloads are decoded into a
-body-less `DiscardedPayload`, so the 5zig API channels have to be declared:
+Fabric API 0.100.8 only offers the typed API: `PayloadTypeRegistry.playC2S()/playS2C().register(Type, StreamCodec)`
+and `ClientPlayNetworking.registerGlobalReceiver(Type<T>, …)` / `send(T)`. The old
+`registerGlobalReceiver(ResourceLocation, …)` and `send(ResourceLocation, FriendlyByteBuf)` overloads are gone.
 
-- `platform/1.20.4/…/platform/PluginMessages.java` (new) registers `the5zigmod:5zig`, `…:5zig_reg`,
-  `…:5zig_set` as global receivers through Fabric's still-raw channel API
-  (`ClientPlayNetworking.registerGlobalReceiver(ResourceLocation, …)`) and hands the bytes to
-  `EventListener#handlePluginMessage`.
-- `FiveZigFabric1204` (new entrypoint in `loader/fabric-1.20.4/java`) calls `PluginMessages.bootstrap()`
-  before the shared `FiveZigFabric` setup.
-- `Variables#sendCustomPayload` uses `PluginMessages.send` and falls back to a plain
-  `ServerboundCustomPayloadPacket(new RawCustomPayload(id, bytes))` (1.20.4 still accepts payloads for
-  unregistered channels) so arbitrary API channels keep working.
-- `MixinClientPacketListener#handleCustomPayload` now targets
-  `handleCustomPayload(CustomPacketPayload)`; only `BrandPayload` is re-encoded for the legacy
-  `minecraft:brand` hook (the 5zig channels are delivered by Fabric and no longer reach this hook).
-
-### GUI / rendering
-
-- `textures/gui/widgets.png` and `textures/gui/toasts.png` are gone (GUI sprite atlas): buttons draw
-  `widget/button{,_disabled,_highlighted}`, sliders `widget/slider` + `widget/slider_handle{,_highlighted}`,
-  the 5zig toast draws `toast/system`.
-- `GuiGraphics#blitNineSliced`/`#blitRepeating` removed → `GuiCompat` (new, copied from the 1.21 port)
-  reimplements `blitRepeating` with the plain `blit` overload; list/file-selector backgrounds use
-  `Screen.BACKGROUND_LOCATION` as before.
-- `Screen#renderBackground(GuiGraphics, int, int, float)`, `mouseScrolled(double, double, double, double)`.
-
-### Client API changes
-
-- `Minecraft#clearClientLevel(Screen)` (was `clearLevel()` + `setScreen`), `getCurrentServer().isRealm()`
-  (was `isConnectedToRealms()`).
-- `User` carries a `UUID` instead of a `GameProfile`: `getGameProfile()` rebuilds it,
-  `setSession` derives the offline UUID (`OfflinePlayer:<name>`) when the stored id is not a UUID.
-- `Options#renderDebug` → `Minecraft#getDebugOverlay().showDebugScreen()`.
-- `Scoreboard#getDisplayObjective(DisplaySlot)`, `listPlayerScores` → `PlayerScoreEntry#owner()/value()`.
-- `MobEffectUtil.formatDuration(instance, float, float)`, `MobEffect#byId/getId` →
-  `BuiltInRegistries.MOB_EFFECT.getHolder(int)` / `#getId`.
-- `EditBox#moveCursorToEnd(boolean)`.
-- `ServerData(String, String, ServerData.Type)`.
-- `AbstractClientPlayer#getCloakTextureLocation` → capes are spliced into `getSkin()`'s `PlayerSkin`
-  record; `DisconnectedScreen` no longer overrides `render`, so the auto-reconnect countdown is drawn
-  from `MixinScreen#render`.
-
-### Colours
-
-1.20.4's `Font#adjustColor` ORs `0xFF000000` into colours whose alpha byte is 0 (`Font.java:148`), so
-the core's legacy `0xRRGGBB` values render normally; no `| 0xFF000000` forcing was needed.
+Vanilla's fallback codec makes arbitrary channels impossible, not merely inconvenient: an unknown incoming
+channel decodes to a body-less `DiscardedPayload` **and the fallback encoder writes no body at all**. So
+`platform/1.20.6/…/PluginMessages` now declares `the5zigmod:5zig`, `…:5zig_reg` and `…:5zig_set` as payload
+types in both directions (a `RawPayload` record carrying the untouched bytes) and hands them back to
+`EventListener#handlePluginMessage`. `RawCustomPayload` was deleted; `Variables#sendCustomPayload` logs once
+and drops payloads on any other channel instead of pretending to send them.
 
 ## Known gaps
 
-- Plugin-channel delivery depends on Fabric's channel registration; on servers that never announce the
-  5zig channels the client still sends (raw fallback) but receives nothing.
-- `MixinKeyboardHandler` injects `keyPress(JIIII)V`; keybinds are dispatched from the shared
-  `FiveZigFabric` tick hook, as on 1.20.1.
 - No client launch was performed (per task rules), so HUD/chat pixels are verified only by API
-  compatibility, not on screen.
+  compatibility + mixin target resolution, not on screen.
+- Custom payloads on channels other than the three 5zig API channels are impossible from 1.20.5 on.
+- Plugin-channel delivery depends on the server announcing the 5zig channels; servers that never register
+  them still see the client's registration packet but no traffic.
 
 ## Verification performed
 
-- `gradle --no-daemon clean build` succeeds; jar contains the remapped classes, the mixin refmap and
-  the five nested runtime jars (DiscordIPC, jacob, json, sqlite-jdbc, netty-codec-http).
-- `tools/check_mixins.py` resolves every `@Inject` target (`name + descriptor`) against the 1.20.4 named
+- `gradle --no-daemon build` succeeds; the jar contains remapped classes, the mixin refmap and the eight
+  nested runtime jars (DiscordIPC, jacob, json, json-simple, junixsocket-common, junixsocket-native-common,
+  sqlite-jdbc, netty-codec-http).
+- `tools/check_mixins.py` resolves every `@Inject` target (`name + descriptor`) against the 1.20.6 named
   jar: **36/36 present**.
-- The single `@Shadow` (`DisconnectedScreen#parent`, `Screen`) matches the 1.20.4 field.
-- `fabric.mod.json` entrypoint, mixin list (14 classes), `~1.20.4` dependency and `Minecraft-Version`
-  manifest attribute verified inside the built jar.
+- The refmap maps all 14 mixin classes through intermediary names (e.g. `renderHotbarAndDecorations` →
+  `method_55805`), which also proves the 1.20.5 rename landed on a real method.
+- `fabric.mod.json` entrypoint (`FiveZigFabric1206`), mixin list (14 classes), `~1.20.6` / `java >=21`
+  dependencies and the `5zig-Version` / `Minecraft-Version` / `5zig-Build` manifest attributes verified
+  inside the built jar.

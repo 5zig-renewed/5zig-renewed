@@ -116,9 +116,11 @@ public class WrappedItemStack implements ItemStack {
 			return;
 		}
 		Minecraft minecraft = Minecraft.getInstance();
-		// 1.19.2 has no GuiGraphics#renderItem: the item renderer draws straight into the frame.
-		minecraft.getItemRenderer().renderAndDecorateItem(item, x, y);
-		minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, x, y);
+		// 1.19.4 made the item renderer take the pose (1.19.2/1.19.3 drew at absolute screen
+		// coordinates), so item icons now follow the HUD transform like every other draw call.
+		PoseStack poseStack = graphics.pose();
+		minecraft.getItemRenderer().renderAndDecorateItem(poseStack, item, x, y);
+		minecraft.getItemRenderer().renderGuiItemDecorations(poseStack, minecraft.font, item, x, y);
 
 		if (!withGenericAttributes) {
 			return;

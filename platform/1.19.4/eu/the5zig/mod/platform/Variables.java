@@ -1036,8 +1036,9 @@ public class Variables implements IVariables {
 		}
 		ClientLevel level = getWorld();
 		if (level != null) {
+			// 1.19.4 removed the static DamageSource constants; damage sources are per-level now.
 			int enchantmentModifierDamage = net.minecraft.world.item.enchantment.EnchantmentHelper
-					.getDamageProtection(player.getArmorSlots(), net.minecraft.world.damagesource.DamageSource.GENERIC);
+					.getDamageProtection(player.getArmorSlots(), level.damageSources().generic());
 			if (enchantmentModifierDamage > 20) {
 				enchantmentModifierDamage = 20;
 			}
@@ -1081,7 +1082,8 @@ public class Variables implements IVariables {
 	private PotionEffectImpl wrapPotionEffect(MobEffectInstance potionEffect) {
 		MobEffect effect = potionEffect.getEffect();
 		return new PotionEffectImpl(effect.getDescriptionId(), potionEffect.getDuration(),
-				MobEffectUtil.formatDuration(potionEffect, 1.0F), potionEffect.getAmplifier() + 1,
+				// 1.19.4 returns the translated duration as a Component.
+				MobEffectUtil.formatDuration(potionEffect, 1.0F).getString(), potionEffect.getAmplifier() + 1,
 				MobEffect.getId(effect), effect.isBeneficial(), potionEffect.isVisible(), effect.getColor());
 	}
 

@@ -24,7 +24,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
  * Holds the {@link GuiContext} of the frame currently being drawn.
  * <p>
  * The core of the mod was written for 1.15, where drawing was done through a globally reachable
- * {@code Tessellator}. 1.19.2 threads a {@code PoseStack} down the render call instead, so the
+ * {@code Tessellator}. 1.19.x threads a {@code PoseStack} down the render call instead, so the
  * platform layer publishes a {@link GuiContext} (a thin drawing facade over that stack) here for
  * the duration of a frame.
  */

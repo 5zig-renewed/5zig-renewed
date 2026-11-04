@@ -65,9 +65,9 @@ sourceSets {
                     new File(repoRoot, 'loader/fabric-1.20.3/java').path
             ]
             exclude 'eu/the5zig/mod/installer/**'
-            // authlib 5.0.47 (1.20.3) dropped Agent/UserAuthentication and the (Proxy, String)
-            // YggdrasilAuthenticationService constructor, exactly like authlib 6; the platform
-            // provides 1.20.3 copies instead of editing core (which still has to build for 1.20.1).
+            // authlib 6.0.52 (1.20.3) dropped Agent/UserAuthentication and the (Proxy, String)
+            // YggdrasilAuthenticationService constructor; the platform provides 1.20.3 copies
+            // instead of editing core (which still has to build for 1.20.1).
             exclude 'eu/the5zig/mod/account/AccountManager.java'
             exclude 'eu/the5zig/mod/chat/network/packets/PacketEncryption.java'
         }

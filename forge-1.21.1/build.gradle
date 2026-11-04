@@ -34,6 +34,12 @@ minecraft {
         register('client') {
             // headless verification hook: boot straight into the test world
             args '--quickPlaySingleplayer', 'New World'
+            // ForgeGradle 7 does not expose a `mods { }` block, and left to itself it registers
+            // only build/resources/main as this mod's file, so FML reports
+            // "has mods that were not found" (no @Mod class in a resources-only dir).
+            // Point FML at both the classes and the resources directory explicitly.
+            def modPath = (sourceSets.main.output.classesDirs.files + [sourceSets.main.output.resourcesDir]).join(';')
+            jvmArgs "-Dfml.modFolders=the5zigmod=${modPath}"
         }
     }
 }
@@ -190,3 +196,5 @@ processResources {
         expand 'version': project.version
     }
 }
+
+

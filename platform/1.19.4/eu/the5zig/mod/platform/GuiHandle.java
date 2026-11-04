@@ -169,7 +169,7 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		if (graphics == null) {
 			return;
 		}
-		this.renderDirtBackground(0);
+		this.renderDirtBackground(graphics.pose());
 	}
 
 	@Override

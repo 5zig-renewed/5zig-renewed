@@ -483,7 +483,7 @@ public class Textfield extends AbstractWidget implements ITextfield {
 	}
 
 	@Override
-	public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+	public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
 		if (!this.visible) {
 			return;
 		}

@@ -65,6 +65,7 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.20.2 Fabric** | green, self-contained | **HUD** |
 | **1.21.2 Fabric** | green, self-contained | **HUD** |
 | **1.21.4 NeoForge** | green, ModDevGradle | **HUD** |
+| 1.21.1 Forge | green (ForgeGradle 7, SRG refmap, 35/35 mixin targets) | **build-only** — FG7's dev run registers only `build/resources/main` as the mod file, so FML reports "has mods that were not found"; needs a packaged-jar test |
 | **26.1.2 NeoForge** | green, 26.x toolchain | **HUD** |
 
 Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation.

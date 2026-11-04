@@ -5,4 +5,4 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = '5zig-renewed-1.19.2-fabric'
+rootProject.name = '5zig-renewed-1.19.3-fabric'
