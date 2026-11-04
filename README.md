@@ -89,6 +89,19 @@ ported from it against decompiled sources (`~/work/mc-src/<mc>/out`, not from me
 those builds use a version-local `compat-src` overlay plus a filtered `core` copy — `core/` stays
 byte-identical for the 1.20.1 builds.
 
+### IVariables parity
+
+Platform completeness is measurable and roughly flat across eras — the early ports are not stub jobs:
+
+| Platform | `@Override`s | `UnsupportedOperationException` |
+|---|--:|--:|
+| 1.20.1 (reference) | 379 | 2 |
+| 1.19.2 | 388 | 2 |
+| 1.16.5 | 387 | 2 |
+
+The single live `UnsupportedOperationException` in each is the `setSession` guard (replacing the client's
+`User` field); the other occurrences are the doc comment.
+
 ### Known gaps
 
 - **26.3 crashes on unbound keybindings.** `KeyMapping.setAll` feeds every key code to
