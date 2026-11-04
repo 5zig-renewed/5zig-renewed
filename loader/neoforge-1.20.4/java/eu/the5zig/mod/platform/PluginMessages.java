@@ -107,6 +107,17 @@ public final class PluginMessages {
 	/**
 	 * Mod-bus hook: declares every 5zig channel in both directions.
 	 * <p>
+	 * On NeoForge 20.4 the single argument of
+	 * {@link RegisterPayloadHandlerEvent#registrar(String)} is the payload <em>namespace</em>, not a
+	 * version: {@code ModdedPacketRegistrar} compares it against every payload id's namespace and
+	 * throws {@code RegistrationFailedException(INVALID_NAMESPACE)} on a mismatch. It must therefore
+	 * be the mod id ({@code the5zigmod}), which is also the namespace of all three channels.
+	 * <p>
+	 * The payload version is a separate concept on this line ({@code versioned(String)}); it is left
+	 * unset on purpose. Versioning a raw byte-passthrough channel buys nothing, and because
+	 * {@code optional()} does <em>not</em> exempt a payload from version checking, setting it would
+	 * only make a NeoForge server that also runs 5zig at another version refuse the connection.
+	 * <p>
 	 * {@code optional()} keeps the channels out of the mandatory handshake, so joining a server
 	 * (or a single-player world) that does not know them is still possible.
 	 */
@@ -117,7 +128,7 @@ public final class PluginMessages {
 		bootstrap();
 		registered = true;
 
-		IPayloadRegistrar registrar = event.registrar("1").optional();
+		IPayloadRegistrar registrar = event.registrar("the5zigmod").optional();
 		for (ResourceLocation id : IDS.values()) {
 			FriendlyByteBuf.Reader<RawPayload> reader = buffer -> {
 				byte[] data = new byte[buffer.readableBytes()];
