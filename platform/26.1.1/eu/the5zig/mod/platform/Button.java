@@ -194,7 +194,11 @@ public class Button implements IButton {
 		int color = !active ? COLOR_DISABLED : (hovered ? COLOR_HOVERED : COLOR_ENABLED);
 		// Labels may carry legacy '§' codes; 26.x renders raw strings literally, so they are parsed.
 		Component label = getLabel().indexOf('\u00a7') < 0 ? message : eu.the5zig.mod.util.LegacyText.fromLegacy(getLabel());
-		graphics.centeredText(Minecraft.getInstance().font, label, x + width / 2, y + (height - 8) / 2, color);
+		// Same call shape as the HUD text that is known to render (Variables#drawCenteredString):
+		// draw it explicitly rather than through centeredText, and force an opaque alpha.
+		int opaque = (color & 0xFF000000) == 0 ? color | 0xFF000000 : color;
+		graphics.text(Minecraft.getInstance().font, label, x + width / 2 - Minecraft.getInstance().font.width(label) / 2,
+				y + (height - 8) / 2, opaque, true);
 	}
 
 	@Override

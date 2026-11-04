@@ -41,6 +41,10 @@ public class KeybindingListener {
 	public void onTick(TickEvent event) {
 		KeybindingManager keybindingManager = The5zigMod.getKeybindingManager();
 
+		if (keybindingManager.settings.callIsPressed()) {
+			// RIGHT SHIFT opens the settings GUI, including from inside a world (lastScreen = null).
+			The5zigMod.getVars().displayScreen(new eu.the5zig.mod.gui.GuiSettings(The5zigMod.getVars().getCurrentScreen(), "main"));
+		}
 		if (keybindingManager.toggleMod.callIsPressed()) {
 			The5zigMod.getConfig().get("showMod", BoolItem.class).next();
 			The5zigMod.getConfig().save();

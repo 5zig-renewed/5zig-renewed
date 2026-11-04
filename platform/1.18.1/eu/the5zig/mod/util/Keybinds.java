@@ -101,6 +101,9 @@ public final class Keybinds {
 
 		// Keep in sync with eu.the5zig.mod.manager.KeybindingManager.
 		bind("the5zigmod.key.toggle_mod", GLFW.GLFW_KEY_M);
+		// The 5zig settings GUI: nothing else in the tree opens it, so without this binding the
+		// whole configuration surface (plugins, display, capes, language) is unreachable in-game.
+		bind("the5zigmod.key.settings", GLFW.GLFW_KEY_RIGHT_SHIFT);
 		bind("the5zigmod.key.toggle_chat", GLFW.GLFW_KEY_F4);
 		bind("the5zigmod.key.coordinates_clipboard", GLFW.GLFW_KEY_F12);
 		bind("the5zigmod.key.raid_calculator", GLFW.GLFW_KEY_UNKNOWN);

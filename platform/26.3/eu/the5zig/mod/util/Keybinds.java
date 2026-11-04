@@ -103,6 +103,9 @@ public final class Keybinds {
 		// 26.3 is SDL-backed: KeyMapping codes are InputConstants values (SDL scancodes), so the
 		// GLFW_KEY_* numbers 26.2 used (M = 77, F4 = 62) would bind entirely different keys.
 		bind("the5zigmod.key.toggle_mod", InputConstants.KEY_M);
+		// The 5zig settings GUI: nothing else in the tree opens it, so without this binding the
+		// whole configuration surface (plugins, display, capes, language) is unreachable in-game.
+		bind("the5zigmod.key.settings", InputConstants.KEY_RSHIFT);
 		bind("the5zigmod.key.toggle_chat", InputConstants.KEY_F4);
 		bind("the5zigmod.key.coordinates_clipboard", InputConstants.KEY_F12);
 		// 26.3: KeyMapping.setAll polls every binding through InputConstants.isKeyDown, which

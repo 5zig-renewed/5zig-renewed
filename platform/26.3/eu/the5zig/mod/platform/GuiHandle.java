@@ -23,6 +23,7 @@ import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.IGuiHandle;
 import eu.the5zig.mod.util.BoundTexture;
+import eu.the5zig.mod.util.Keyboard;
 import eu.the5zig.mod.util.LegacyText;
 import eu.the5zig.mod.util.RenderContext;
 import net.minecraft.client.Minecraft;
@@ -96,7 +97,8 @@ public class GuiHandle extends Screen implements IGuiHandle {
 	@Override
 	public boolean charTyped(CharacterEvent event) {
 		boolean result = super.charTyped(event);
-		child.keyTyped0((char) event.codepoint(), 0);
+		char character = (char) event.codepoint();
+		child.keyTyped0(character, keyCodeFor(character));
 		return result;
 	}
 
@@ -106,6 +108,7 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		// 26.3 renamed KeyEvent#scancode() to keycode(). Both key fields changed meaning with the
 		// SDL move: key() is the InputConstants value (SDL scancode, what KeyMapping and
 		// Keyboard.KEY_* now use) and keycode() is the platform keycode (SDLK_*).
+		deliverKeyType(event.key());
 		child.keyPressed0(event.key(), event.keycode(), event.modifiers());
 		return result;
 	}
@@ -261,5 +264,65 @@ public class GuiHandle extends Screen implements IGuiHandle {
 
 	public Gui getChild() {
 		return child;
+	}
+
+	/**
+	 * Maps a character from a {@code charTyped} callback to the platform key code that the core's
+	 * {@link Gui#keyTyped0(char, int)} compares against. A char event carries no key code, but the
+	 * core compares one for the printable keys it handles: Space (insert player position) and,
+	 * where the platform reports a char while Ctrl is held, letters (the Ctrl+D / Ctrl+F
+	 * shortcuts). Text fields only use the character itself, so everything unmapped returns 0.
+	 */
+	private static int keyCodeFor(char character) {
+		if (character == ' ') {
+			return Keyboard.KEY_SPACE;
+		}
+		// GLFW, LWJGL2 and SDL all number A-Z alphabetically and consecutively.
+		if (character >= 'a' && character <= 'z') {
+			return Keyboard.KEY_A + (character - 'a');
+		}
+		if (character >= 'A' && character <= 'Z') {
+			return Keyboard.KEY_A + (character - 'A');
+		}
+		// Digits are only consecutive under GLFW, so they are mapped one by one.
+		switch (character) {
+			case '0':
+				return Keyboard.KEY_0;
+			case '1':
+				return Keyboard.KEY_1;
+			case '2':
+				return Keyboard.KEY_2;
+			case '3':
+				return Keyboard.KEY_3;
+			case '4':
+				return Keyboard.KEY_4;
+			case '5':
+				return Keyboard.KEY_5;
+			case '6':
+				return Keyboard.KEY_6;
+			case '7':
+				return Keyboard.KEY_7;
+			case '8':
+				return Keyboard.KEY_8;
+			case '9':
+				return Keyboard.KEY_9;
+			default:
+				return 0;
+		}
+	}
+
+	/**
+	 * Delivers the keys that never produce a character to {@link Gui#keyTyped0(char, int)}.
+	 * <p>
+	 * The core handles Escape, Return, Tab, Delete and Backspace there, but a platform
+	 * {@code keyPressed} callback is the only place those keys arrive, so they are forwarded with an
+	 * empty character. Space is deliberately not listed: it also produces a char event, and
+	 * handling it in both callbacks would insert the player position twice.
+	 */
+	private void deliverKeyType(int keyCode) {
+		if (keyCode == Keyboard.KEY_ESCAPE || keyCode == Keyboard.KEY_RETURN || keyCode == Keyboard.KEY_NUMPADENTER
+				|| keyCode == Keyboard.KEY_TAB || keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
+			child.keyTyped0('\0', keyCode);
+		}
 	}
 }

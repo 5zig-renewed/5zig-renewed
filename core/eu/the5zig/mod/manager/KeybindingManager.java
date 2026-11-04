@@ -42,6 +42,11 @@ import java.util.Map;
 public class KeybindingManager {
 
 	public final IKeybinding toggleMod;
+	/**
+	 * Opens the 5zig settings GUI. Upstream reached it through a button on the pause menu; every port
+	 * dropped that button, so without this binding the entire configuration surface is unreachable.
+	 */
+	public final IKeybinding settings;
 	public final IKeybinding toggleChat;
 	public final IKeybinding saveCoords;
 	public final IKeybinding raidTracker;
@@ -62,6 +67,7 @@ public class KeybindingManager {
 		The5zigMod.getListener().registerListener(this);
 
 		toggleMod = registerKeybinding("the5zigmod.key.toggle_mod", Keyboard.KEY_M);
+		settings = registerKeybinding("the5zigmod.key.settings", Keyboard.KEY_RSHIFT);
 		toggleChat = registerKeybinding("the5zigmod.key.toggle_chat", Keyboard.KEY_F4, GuiFriends.class, GuiConversations.class, GuiParty.class);
 		saveCoords = registerKeybinding("the5zigmod.key.coordinates_clipboard", Keyboard.KEY_F12);
 		raidTracker = registerKeybinding("the5zigmod.key.raid_calculator", Keyboard.KEY_NONE);
