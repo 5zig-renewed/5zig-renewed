@@ -152,6 +152,13 @@ every pre-26.3 build are unaffected, which is exactly why only a packaged-jar te
 
 ### Known gaps
 
+- **NeoForge 1.20.2 is build-only.** NeoForge published only betas for that line (`21.2`-era aside: `20.2.0`–`20.2.93`),
+  and NeoGradle 7's dev runtime keeps the `jarJar`-nested libraries off the module path FML's
+  `TransformingClassLoader` reads, so `runClient` dies with `NoClassDefFoundError:
+  com/jagrosh/discordipc/...` before the HUD. The packaged jar nests all 10 libraries and builds clean;
+  it has not been exercised from a real install. `minecraftLibrary` — the fix that works for ForgeGradle 6
+  on 1.20.1 — does not exist in NeoGradle 7.
+
 - **5zig's own chat/party features are not functional.** The core keeps conversations in an HSQLDB file
   database. The driver was never bundled, so `Class.forName("org.hsqldb.jdbc.JDBCDriver")` threw and the
   whole conversation stack ran against a `null` connection (visible as `NullPointerException … because

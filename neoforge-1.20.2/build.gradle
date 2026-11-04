@@ -37,6 +37,12 @@ dependencies {
     // 5zig's own libraries. NeoGradle's userdev dev-runtime is a flat legacy classpath, so
     // `implementation` is enough there; `jarJar` nests the same artifacts into the shipped jar
     // (META-INF/jarjar/ + metadata.json) exactly like the 1.20.1 and 1.21.1 builds.
+    // NOTE: `implementation` puts these on the compile classpath and `jarJar` nests them into the
+    // release jar, but NeoGradle's dev runtime for this Forge-format line keeps them off the module
+    // path FML's TransformingClassLoader reads, so `runClient` dies with
+    // NoClassDefFoundError: com/jagrosh/discordipc/... The packaged jar is fine; only dev runs are
+    // affected. `minecraftLibrary` does not exist on NeoGradle 7 (it is a ForgeGradle 6 config, used
+    // by the 1.20.1 build). Tracked as "build-only" until tested from a real install.
     implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') {
         exclude group: 'com.google.code.gson'
     }
@@ -49,10 +55,14 @@ dependencies {
     implementation 'com.kohlschutter.junixsocket:junixsocket-common:2.5.1'
     implementation 'com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1'
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    implementation 'org.hsqldb:hsqldb:2.7.4'
     implementation 'io.netty:netty-codec-http:4.1.97.Final'
 
     jarJar('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') {
         jarJar.ranged(it, '[master-SNAPSHOT,)')
+    }
+    jarJar('org.hsqldb:hsqldb:2.7.4') {
+        jarJar.ranged(it, '[2.7.4]')
     }
     jarJar('net.sf.jacob-project:jacob:1.14.3') {
         jarJar.pin(it, '1.14.3')
