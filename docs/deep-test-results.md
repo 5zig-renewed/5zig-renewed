@@ -243,8 +243,8 @@ Date: 2026-11-04 · logs `/tmp/mk12111.log`, `/tmp/dt-nf12111b.log`
 **D7 — the same "Can only blur once per frame" crash on 1.21.9 / 1.21.10 / 1.21.11.** *(fixed)*
 Opening any 5zig screen crashed the client. `GuiHandle#render` called `renderBackground(...)` and then
 `super.render(...)`, which renders (and blurs) the background again on 1.21.9+. Same fix as the 26.x
-platforms: let `super.render` own the background, then draw the 5zig screen over it. Applied to all three;
-the build is green and the crash no longer appears in the log. This is a genuine crash that predates every
+platforms: let `super.render` own the background, then draw the 5zig screen over it. Applied to all three (Fabric and NeoForge projects both rebuilt green) and the crash no longer appears in
+the NeoForge client log. This is a genuine crash that predates every
 "verified" claim for those three versions — the HUD renders fine, so nothing showed it.
 
 **D8 — the settings binding does not fire on 1.21.11 NeoForge.** *(open)*
