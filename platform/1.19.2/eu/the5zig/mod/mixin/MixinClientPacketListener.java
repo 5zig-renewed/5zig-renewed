@@ -37,30 +37,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Port of 1.15's {@code MixinNetHandlerPlayClient}: everything the core needs from the play
  * connection.
  * <p>
- * Chat itself is handled in {@code MixinChatComponent}, because 1.20.1 builds player chat
- * components inside {@code ChatListener} and no longer hands the finished component to
- * {@code ClientPacketListener}.
+ * Chat is handled in {@code MixinChatComponent}, and the outgoing-chat hook lives in
+ * {@code MixinLocalPlayer} because 1.19.2 signs and sends chat there.
  */
 @Mixin(ClientPacketListener.class)
 public abstract class MixinClientPacketListener {
-
-	/**
-	 * 1.15 hooked {@code ClientPlayerEntity#sendChatMessage}; 1.20.1 sends chat through
-	 * {@code ClientPacketListener#sendChat}.
-	 */
-	@Inject(method = "sendChat(Ljava/lang/String;)V", at = @At("HEAD"), cancellable = true)
-	private void the5zig$sendChat(String message, CallbackInfo callbackInfo) {
-		if (!CoreState.isReady() || message == null) {
-			return;
-		}
-		try {
-			if (The5zigMod.getListener().onSendChatMessage(message)) {
-				callbackInfo.cancel();
-			}
-		} catch (Throwable ignored) {
-			// Send the message unmodified if a listener fails.
-		}
-	}
 
 	/**
 	 * Plugin messages ("MC|Brand", the 5zig server API channel, ...).

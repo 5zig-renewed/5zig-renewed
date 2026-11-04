@@ -33,7 +33,6 @@ import net.minecraft.client.Minecraft;
 import eu.the5zig.mod.util.GuiContext;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -223,8 +222,8 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 		int maxScroll = getMaxScroll();
 		if (drawDefaultBackground || Minecraft.getInstance().player == null || maxScroll > 0) {
 			// Top and bottom fade ("Schatten" in the 1.15 code).
-			graphics.fillGradient(RenderType.guiOverlay(), this.x0, this.y0, this.x1, this.y0 + 4, 0xFF000000, 0x00000000, 0);
-			graphics.fillGradient(RenderType.guiOverlay(), this.x0, this.y1 - 4, this.x1, this.y1, 0x00000000, 0xFF000000, 0);
+			graphics.fillGradient(this.x0, this.y0, this.x1, this.y0 + 4, 0xFF000000, 0x00000000, 0);
+			graphics.fillGradient(this.x0, this.y1 - 4, this.x1, this.y1, 0x00000000, 0xFF000000, 0);
 		}
 
 		if (maxScroll > 0) {

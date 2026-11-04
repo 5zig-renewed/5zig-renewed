@@ -19,6 +19,7 @@
 
 package eu.the5zig.mod.platform;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.IGuiHandle;

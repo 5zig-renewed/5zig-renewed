@@ -146,6 +146,15 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 		this.isHovered = hovered;
 	}
 
+	/**
+	 * 1.19.2's {@code AbstractWidget} only exposes {@code isHoveredOrFocused()}; the 5zig core wants
+	 * the plain hover flag.
+	 */
+	@Override
+	public boolean isHovered() {
+		return this.isHovered;
+	}
+
 	@Override
 	public void draw(int mouseX, int mouseY) {
 		GuiContext graphics = RenderContext.get();

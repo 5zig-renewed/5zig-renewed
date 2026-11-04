@@ -35,16 +35,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 1.20.4 build of the account manager.
+ * 1.20.2 build of the account manager.
  * <p>
  * The 1.20.1 implementation logged in through {@code YggdrasilAuthenticationService#createUserAuthentication}
- * plus {@code UserAuthentication} (email/password against the legacy Yggdrasil endpoint). authlib 6,
- * which Minecraft 1.20.4 ships, removed both types: authentication is Microsoft-only and is owned by
- * the launcher, and the client can no longer mint a session for another account. The account list,
- * its encryption-at-rest and the "log in as this offline name" path are kept unchanged; the legacy
- * password login reports {@link AuthenticationException} instead of silently doing nothing.
+ * plus {@code UserAuthentication} (email/password against the legacy Yggdrasil endpoint). authlib
+ * 5.0.47, which Minecraft 1.20.2 ships, already removed both types together with the
+ * {@code (Proxy, String)} constructor (the same removals that authlib 6 is known for): authentication
+ * is Microsoft-only and is owned by the launcher, and the client can no longer mint a session for
+ * another account. The account list, its encryption-at-rest and the "log in as this offline name"
+ * path are kept unchanged; the legacy password login reports {@link AuthenticationException} instead
+ * of silently doing nothing.
  * <p>
- * This class lives in the 1.20.4 platform because the core copy cannot compile against authlib 6 and
+ * This class lives in the 1.20.2 platform because the core copy cannot compile against authlib 5 and
  * must not be edited for a single version (it still has to build for 1.20.1).
  */
 public class AccountManager {
@@ -84,10 +86,10 @@ public class AccountManager {
     }
 
     /**
-     * @throws AuthenticationException always: Minecraft 1.20.4 (authlib 6) has no email/password login.
+     * @throws AuthenticationException always: Minecraft 1.20.2 (authlib 5) has no email/password login.
      */
     public void addAccount(String email, String password) throws AuthenticationException {
-        throw new AuthenticationException("Minecraft 1.20.4 only supports Microsoft accounts; "
+        throw new AuthenticationException("Minecraft 1.20.2 only supports Microsoft accounts; "
                 + "add the account in the launcher instead of in the 5zig account manager");
     }
 
@@ -110,7 +112,7 @@ public class AccountManager {
         if ("legacy".equals(account.getAccountType())) {
             The5zigMod.getVars().setSession(account.getName(), account.getName(), "0", "legacy");
         } else {
-            throw new AuthenticationException("Minecraft 1.20.4 only supports Microsoft accounts; "
+            throw new AuthenticationException("Minecraft 1.20.2 only supports Microsoft accounts; "
                     + "the session is managed by the launcher");
         }
         account.setSelected(true);

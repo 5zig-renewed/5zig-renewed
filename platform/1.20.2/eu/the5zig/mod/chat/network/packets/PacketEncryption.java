@@ -38,7 +38,7 @@ import java.security.PublicKey;
 /**
  * Encryption handshake of the 5zig chat connection.
  * <p>
- * 1.20.4 ships authlib 6, where {@code YggdrasilAuthenticationService} lost its {@code (Proxy, String)}
+ * 1.20.2 ships authlib 5.0.47, where {@code YggdrasilAuthenticationService} lost its {@code (Proxy, String)}
  * constructor and {@code MinecraftSessionService#joinServer} takes the profile <em>id</em> instead of
  * a {@link GameProfile}. This is the version-local copy of the core packet with those two calls
  * adapted; the wire format is unchanged.

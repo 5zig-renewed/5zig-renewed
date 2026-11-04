@@ -28,7 +28,6 @@ import eu.the5zig.util.Callback;
 import net.minecraft.client.Minecraft;
 import eu.the5zig.mod.util.GuiContext;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
 import org.apache.commons.io.FilenameUtils;
 
@@ -192,8 +191,8 @@ public class FileSelector implements IFileSelector {
 		overlayBackground(graphics, bottom, height, 255, 255);
 
 		// Schatten
-		graphics.fillGradient(RenderType.guiOverlay(), left, top, right, top + 4, 0xFF000000, 0x00000000, 0);
-		graphics.fillGradient(RenderType.guiOverlay(), left, bottom - 4, right, bottom, 0x00000000, 0xFF000000, 0);
+		graphics.fillGradient(left, top, right, top + 4, 0xFF000000, 0x00000000, 0);
+		graphics.fillGradient(left, bottom - 4, right, bottom, 0x00000000, 0xFF000000, 0);
 
 		int maxScroll = getMaxScroll();
 		if (maxScroll > 0) {
@@ -268,7 +267,7 @@ public class FileSelector implements IFileSelector {
 
 	protected void overlayBackground(GuiContext graphics, int y0, int y1, int alphaTop, int alphaBottom) {
 		int base = 0x404040;
-		graphics.fillGradient(RenderType.guiOverlay(), left, y0, right, y1,
+		graphics.fillGradient(left, y0, right, y1,
 				(alphaTop << 24) | base, (alphaBottom << 24) | base, 0);
 	}
 

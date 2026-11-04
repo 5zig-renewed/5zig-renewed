@@ -24,7 +24,7 @@ import eu.the5zig.mod.util.IServerData;
 import java.util.Base64;
 
 /**
- * 1.20.4 view over {@link net.minecraft.client.multiplayer.ServerData}.
+ * 1.20.2 view over {@link net.minecraft.client.multiplayer.ServerData}.
  * <p>
  * The fields the core reads were renamed/split when the server list was reworked:
  * {@code serverName/serverIP/populationInfo/serverMOTD/pingToServer/base64 icon} became

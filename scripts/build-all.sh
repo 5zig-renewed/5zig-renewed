@@ -51,9 +51,25 @@ for proj in "$ROOT"/versions/*/; do
     [ -d "$proj" ] || continue
     name="$(basename "$proj")"
     case "$name" in
-        26.*)   run_project "$proj" "$G98"  "$JDK25" "$name" ;;
-        1.21.11*) run_project "$proj" "$G814" "$JDK21" "$name" ;;
-        *)      run_project "$proj" "$G810" "$JDK21" "$name" ;;
+        # 26.x: Loom 1.19.3 + Gradle 9.8 + JDK 25, unobfuscated game jars
+        26.*)      run_project "$proj" "$G98"  "$JDK25" "$name" ;;
+        # E9 second half (1.21.5-1.21.11): Loom 1.13.4 needs Gradle 8.14
+        1.21.5*|1.21.6*|1.21.7*|1.21.8*|1.21.9*|1.21.10*|1.21.11*)
+                   run_project "$proj" "$G814" "$JDK21" "$name" ;;
+        # E5 tail (1.20.2-1.20.4): Java 17 era
+        1.20.2*|1.20.4*)
+                   run_project "$proj" "$G810" "$JDK17" "$name" ;;
+        *)         run_project "$proj" "$G810" "$JDK21" "$name" ;;
+    esac
+done
+
+# standalone NeoForge projects (MDG): 1.21.x -> Gradle 8.14/JDK 21, 26.x -> 9.8/JDK 25
+for proj in "$ROOT"/neoforge-*/; do
+    [ -d "$proj" ] || continue
+    name="$(basename "$proj")"
+    case "$name" in
+        26.*)  run_project "$proj" "$G98"  "$JDK25" "$name" ;;
+        *)     run_project "$proj" "$G814" "$JDK21" "$name" ;;
     esac
 done
 
@@ -62,7 +78,7 @@ echo "================ jars ================"
 collect "$ROOT" "1.20.1-fabric"
 collect "$ROOT/forge" "1.20.1-forge"
 collect "$ROOT/neoforge" "1.20.1-neoforge"
-for proj in "$ROOT"/versions/*/; do
+for proj in "$ROOT"/versions/*/ "$ROOT"/neoforge-*/; do
     [ -d "$proj" ] || continue
     collect "$proj" "$(basename "$proj")"
 done

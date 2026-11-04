@@ -26,7 +26,7 @@ import eu.the5zig.mod.util.RenderContext;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import eu.the5zig.mod.util.GuiContext;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobType;
@@ -116,8 +116,9 @@ public class WrappedItemStack implements ItemStack {
 			return;
 		}
 		Minecraft minecraft = Minecraft.getInstance();
-		graphics.renderItem(item, x, y);
-		graphics.renderItemDecorations(minecraft.font, item, x, y);
+		// 1.19.2 has no GuiGraphics#renderItem: the item renderer draws straight into the frame.
+		minecraft.getItemRenderer().renderAndDecorateItem(item, x, y);
+		minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, x, y);
 
 		if (!withGenericAttributes) {
 			return;
@@ -146,6 +147,6 @@ public class WrappedItemStack implements ItemStack {
 
 	public static String getResourceKey(net.minecraft.world.item.ItemStack item) {
 		Item value = item.getItem();
-		return BuiltInRegistries.ITEM.getKey(value).toString();
+		return Registry.ITEM.getKey(value).toString();
 	}
 }

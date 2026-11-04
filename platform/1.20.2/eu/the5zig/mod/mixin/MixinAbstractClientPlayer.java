@@ -70,7 +70,7 @@ public abstract class MixinAbstractClientPlayer {
 		}
 		try {
 			Object cape = The5zigMod.getVars().getResourceManager().getCapeLocation((Object) this);
-			// The platform's ResourceLocation still extends the vanilla type in 1.20.4.
+			// The platform's ResourceLocation still extends the vanilla type in 1.20.2.
 			if (!(cape instanceof ResourceLocation)) {
 				return;
 			}

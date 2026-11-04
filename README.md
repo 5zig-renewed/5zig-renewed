@@ -58,6 +58,9 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.21.9 Fabric** | green, self-contained | **HUD** |
 | **1.21.1 NeoForge** | green, ModDevGradle 2.0.148 | **HUD** |
 | **26.1 Fabric** | green, self-contained | **HUD** |
+| **1.20.2 Fabric** | green, self-contained | built |
+| **1.21.2 Fabric** | green, self-contained | built |
+| **1.21.4 NeoForge** | green, ModDevGradle | **HUD** |
 
 Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation.
 

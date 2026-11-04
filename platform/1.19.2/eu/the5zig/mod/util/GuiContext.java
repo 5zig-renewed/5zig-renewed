@@ -306,6 +306,27 @@ public final class GuiContext {
 	}
 
 	/**
+	 * Draws the tooltip of a chat style's {@code SHOW_TEXT} hover event.
+	 * <p>
+	 * 1.20's {@code GuiGraphics} owns this method; in 1.19.2 it lives on {@code Screen} as a
+	 * protected method, so the {@code SHOW_TEXT} case (the only one chat components use) is
+	 * re-implemented here through the public tooltip API.
+	 */
+	public void renderComponentHoverEffect(Font font, net.minecraft.network.chat.Style style, int x, int y) {
+		if (style == null) {
+			return;
+		}
+		net.minecraft.network.chat.HoverEvent hover = style.getHoverEvent();
+		if (hover == null || hover.getAction() != net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT) {
+			return;
+		}
+		net.minecraft.network.chat.Component text = hover.getValue(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT);
+		if (text != null) {
+			renderComponentTooltip(font, java.util.Collections.singletonList(text), x, y);
+		}
+	}
+
+	/**
 	 * @return the unformatted text of the wrapped lines, for callers that need the layout only.
 	 */
 	public static List<FormattedCharSequence> wrap(Font font, FormattedText text, int width) {

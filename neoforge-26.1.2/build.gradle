@@ -85,6 +85,16 @@ dependencies {
     def junixsocketNative = implementation('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') {
         transitive = false
     }
+    // Minecraft 26.x no longer ships Apache HttpClient, which the core uses for Spotify and the
+    // "open URL" helper. 1.21.4 still had it through the game libraries; the 26.1.2 Fabric build
+    // adds it explicitly for the same reason. httpcore is nested as well: without it the Spotify
+    // path dies with NoClassDefFoundError inside a packaged install.
+    def httpclient = implementation('org.apache.httpcomponents:httpclient:4.5.14') {
+        transitive = false
+    }
+    def httpcore = implementation('org.apache.httpcomponents:httpcore:4.4.16') {
+        transitive = false
+    }
 
     // 26.1.2 needs no `additionalRuntimeClasspath`: MDG reports "there is no additional classpath
     // anymore for Minecraft 26.1.2" because FML 11's mod-locator rework makes the mod's own class
@@ -100,6 +110,8 @@ dependencies {
     jarJar(jsonSimple) { version { strictly '[1.1.1]' } }
     jarJar(junixsocketCommon) { version { strictly '[2.5.1]' } }
     jarJar(junixsocketNative) { version { strictly '[2.5.1]' } }
+    jarJar(httpclient) { version { strictly '[4.5.14]' } }
+    jarJar(httpcore) { version { strictly '[4.4.16]' } }
 }
 
 // ---------------------------------------------------------------------------------------------

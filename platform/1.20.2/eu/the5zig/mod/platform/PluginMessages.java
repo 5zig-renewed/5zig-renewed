@@ -26,7 +26,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Bridges the core's raw plugin-channel API onto 1.20.4's typed payload system.
+ * Bridges the core's raw plugin-channel API onto 1.20.2's typed payload system.
  * <p>
  * 1.20.1 delivered {@code (channel, byte[])} packets straight to the packet listener. Since 1.20.2 the
  * wire format is a typed {@link net.minecraft.network.protocol.common.custom.CustomPacketPayload}:
@@ -36,7 +36,7 @@ import net.minecraft.resources.ResourceLocation;
  * FriendlyByteBuf)}), which installs a codec for the channel so the bytes survive decoding again.
  * <p>
  * {@link #bootstrap()} must run during client initialisation, before a server connection is opened,
- * which is why it is called from the 1.20.4 entrypoint rather than lazily.
+ * which is why it is called from the 1.20.2 entrypoint rather than lazily.
  */
 public final class PluginMessages {
 
@@ -89,7 +89,7 @@ public final class PluginMessages {
 	 *
 	 * @return {@code false} if {@code channel} is not one of the registered ones, or the server did
 	 * not announce support for it. Callers fall back to a plain {@code ServerboundCustomPayloadPacket},
-	 * which 1.20.4 still accepts for any channel.
+	 * which 1.20.2 still accepts for any channel.
 	 */
 	public static boolean send(String channel, byte[] data) {
 		if (!isRegistered(channel)) {

@@ -19,6 +19,7 @@
 
 package eu.the5zig.mod.platform;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.gui.IOverlay;
 import eu.the5zig.util.minecraft.ChatColor;
@@ -117,11 +118,12 @@ public class Overlay implements IOverlay {
 		}
 
 		@Override
-		public Visibility render(GuiContext graphics, ToastComponent toastComponent, long timeSinceLastVisible) {
+		public Visibility render(PoseStack poseStack, ToastComponent toastComponent, long timeSinceLastVisible) {
 			if (updateTime) {
 				startedTime = timeSinceLastVisible;
 				updateTime = false;
 			}
+			GuiContext graphics = new GuiContext(poseStack);
 
 			graphics.blit(TEXTURE, 0, 0, 0, TOAST_BACKGROUND_V, TOAST_WIDTH, TOAST_HEIGHT);
 			Font font = toastComponent.getMinecraft().font;

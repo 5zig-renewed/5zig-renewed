@@ -19,6 +19,7 @@
 
 package eu.the5zig.mod.platform;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import eu.the5zig.mod.util.SliderCallback;
 import net.minecraft.client.Minecraft;
 import eu.the5zig.mod.util.GuiContext;
@@ -57,10 +58,11 @@ public class Slider extends Button {
 	}
 
 	@Override
-	protected void renderWidget(GuiContext graphics, int mouseX, int mouseY, float partialTick) {
+	public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
 		if (!isVisible()) {
 			return;
 		}
+		GuiContext graphics = new GuiContext(poseStack);
 		if (this.dragging) {
 			updateValueFromMouse(mouseX);
 		}

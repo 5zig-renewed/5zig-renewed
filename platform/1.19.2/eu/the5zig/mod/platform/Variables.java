@@ -60,7 +60,7 @@ import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.AbstractSignEditScreen;
+import net.minecraft.client.gui.screens.inventory.SignEditScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -75,7 +75,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -497,7 +497,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public boolean isSignGUIOpened() {
-		return getMinecraft().screen instanceof AbstractSignEditScreen;
+		return getMinecraft().screen instanceof SignEditScreen;
 	}
 
 	@Override
@@ -532,7 +532,7 @@ public class Variables implements IVariables {
 	@Override
 	public void playSound(String domain, String sound, float pitch) {
 		try {
-			SoundEvent event = SoundEvent.createVariableRangeEvent(new ResourceLocation(domain, sound));
+			SoundEvent event = new SoundEvent(new ResourceLocation(domain, sound));
 			getMinecraft().getSoundManager().play(SimpleSoundInstance.forUI(event, pitch));
 		} catch (Exception e) {
 			// A missing/unknown sound resource must never take the HUD or chat down.
@@ -628,7 +628,7 @@ public class Variables implements IVariables {
 		Minecraft minecraft = getMinecraft();
 		MinecraftFactory.getClassProxyCallback().resetServer();
 		ServerData serverData = new ServerData(host, host + ":" + port, false);
-		ConnectScreen.startConnecting(minecraft.screen, minecraft, new ServerAddress(host, port), serverData, false);
+		ConnectScreen.startConnecting(minecraft.screen, minecraft, new ServerAddress(host, port), serverData);
 	}
 
 	@Override
@@ -639,7 +639,7 @@ public class Variables implements IVariables {
 		Minecraft minecraft = getMinecraft();
 		ServerData data = (ServerData) serverData;
 		MinecraftFactory.getClassProxyCallback().resetServer();
-		ConnectScreen.startConnecting((Screen) parentScreen, minecraft, ServerAddress.parseString(data.ip), data, false);
+		ConnectScreen.startConnecting((Screen) parentScreen, minecraft, ServerAddress.parseString(data.ip), data);
 	}
 
 	@Override
@@ -759,7 +759,14 @@ public class Variables implements IVariables {
 
 	@Override
 	public String getFPS() {
-		return Integer.toString(getMinecraft().getFps());
+		// 1.19.2 has no Minecraft#getFps(); the counter only exists as the leading field of the
+		// debug overlay string ("120 fps T: ...").
+		String fpsString = getMinecraft().fpsString;
+		if (fpsString == null || fpsString.isEmpty()) {
+			return "0";
+		}
+		int end = fpsString.indexOf(' ');
+		return end < 0 ? fpsString : fpsString.substring(0, end);
 	}
 
 	@Override
@@ -807,7 +814,7 @@ public class Variables implements IVariables {
 	}
 
 	private BlockPos playerBlockPos() {
-		return BlockPos.containing(getPlayerPosX(), getPlayerPosY(), getPlayerPosZ());
+		return new BlockPos((int) Math.floor(getPlayerPosX()), (int) Math.floor(getPlayerPosY()), (int) Math.floor(getPlayerPosZ()));
 	}
 
 	@Override
@@ -878,7 +885,7 @@ public class Variables implements IVariables {
 			return null;
 		}
 		BlockPos pos = ((BlockHitResult) getMinecraft().hitResult).getBlockPos();
-		net.minecraft.resources.ResourceLocation key = BuiltInRegistries.BLOCK.getKey(getWorld().getBlockState(pos).getBlock());
+		net.minecraft.resources.ResourceLocation key = Registry.BLOCK.getKey(getWorld().getBlockState(pos).getBlock());
 		return new ResourceLocation(key.getNamespace(), key.getPath());
 	}
 
@@ -1028,7 +1035,7 @@ public class Variables implements IVariables {
 		ClientLevel level = getWorld();
 		if (level != null) {
 			int enchantmentModifierDamage = net.minecraft.world.item.enchantment.EnchantmentHelper
-					.getDamageProtection(player.getArmorSlots(), level.damageSources().generic());
+					.getDamageProtection(player.getArmorSlots(), net.minecraft.world.damagesource.DamageSource.GENERIC);
 			if (enchantmentModifierDamage > 20) {
 				enchantmentModifierDamage = 20;
 			}
@@ -1072,7 +1079,7 @@ public class Variables implements IVariables {
 	private PotionEffectImpl wrapPotionEffect(MobEffectInstance potionEffect) {
 		MobEffect effect = potionEffect.getEffect();
 		return new PotionEffectImpl(effect.getDescriptionId(), potionEffect.getDuration(),
-				MobEffectUtil.formatDuration(potionEffect, 1.0F).getString(), potionEffect.getAmplifier() + 1,
+				MobEffectUtil.formatDuration(potionEffect, 1.0F), potionEffect.getAmplifier() + 1,
 				MobEffect.getId(effect), effect.isBeneficial(), potionEffect.isVisible(), effect.getColor());
 	}
 
@@ -1145,7 +1152,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public ItemStack getItemByName(String resourceName, int amount) {
-		net.minecraft.world.item.Item item = BuiltInRegistries.ITEM.get(toResourceLocation(resourceName));
+		net.minecraft.world.item.Item item = Registry.ITEM.get(toResourceLocation(resourceName));
 		return new WrappedItemStack(new net.minecraft.world.item.ItemStack(item, amount));
 	}
 
@@ -1160,7 +1167,7 @@ public class Variables implements IVariables {
 			if (itemStack.isEmpty()) {
 				continue;
 			}
-			if (key.equals(BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString())) {
+			if (key.equals(Registry.ITEM.getKey(itemStack.getItem()).toString())) {
 				count += itemStack.getCount();
 			}
 		}
@@ -1349,10 +1356,11 @@ public class Variables implements IVariables {
 
 	@Override
 	public void sendMessage(String message) {
-		ClientPacketListener connection = getMinecraft().getConnection();
-		if (connection != null) {
-			// 1.20.1 signs chat messages client side; sending the raw packet would be rejected.
-			connection.sendChat(message);
+		LocalPlayer player = getPlayer();
+		if (player != null) {
+			// 1.19.2 signs chat messages client side inside LocalPlayer; there is no
+			// ClientPacketListener#sendChat yet (that arrives in 1.19.3).
+			player.chatSigned(message, null);
 		}
 	}
 

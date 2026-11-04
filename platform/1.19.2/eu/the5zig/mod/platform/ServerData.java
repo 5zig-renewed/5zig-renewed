@@ -21,14 +21,11 @@ package eu.the5zig.mod.platform;
 
 import eu.the5zig.mod.util.IServerData;
 
-import java.util.Base64;
-
 /**
- * 1.20.1 view over {@link net.minecraft.client.multiplayer.ServerData}.
+ * 1.19.2 view over {@link net.minecraft.client.multiplayer.ServerData}.
  * <p>
- * The fields the core reads were renamed/split when the server list was reworked:
- * {@code serverName/serverIP/populationInfo/serverMOTD/pingToServer/base64 icon} became
- * {@code name/ip/players/motd/ping/iconBytes}.
+ * 1.19.2 keeps {@code name/ip/motd/ping} on the object and stores the favicon as a base64 string;
+ * the online/max player counts of later versions do not exist yet, only the sampled player list.
  */
 public class ServerData extends net.minecraft.client.multiplayer.ServerData implements IServerData {
 
@@ -48,10 +45,11 @@ public class ServerData extends net.minecraft.client.multiplayer.ServerData impl
 
 	@Override
 	public String getPopulationInfo() {
-		if (players == null) {
+		// 1.19.2 only carries the sampled player list, not the online/max counters.
+		if (playerList == null || playerList.isEmpty()) {
 			return "";
 		}
-		return players.online() + "/" + players.max();
+		return Integer.toString(playerList.size());
 	}
 
 	@Override
@@ -66,7 +64,6 @@ public class ServerData extends net.minecraft.client.multiplayer.ServerData impl
 
 	@Override
 	public String getServerIcon() {
-		byte[] icon = getIconBytes();
-		return icon == null ? null : Base64.getEncoder().encodeToString(icon);
+		return getIconB64();
 	}
 }

@@ -48,8 +48,8 @@ public abstract class MixinChatComponent {
 	@Unique
 	private static boolean the5zig$processingChat;
 
-	@Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;III)V", at = @At("HEAD"))
-	private void the5zig$drawSecondChat(PoseStack poseStack, int ticks, int mouseX, int mouseY, CallbackInfo callbackInfo) {
+	@Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;I)V", at = @At("HEAD"))
+	private void the5zig$drawSecondChat(PoseStack poseStack, int ticks, CallbackInfo callbackInfo) {
 		if (!CoreState.isReady()) {
 			return;
 		}

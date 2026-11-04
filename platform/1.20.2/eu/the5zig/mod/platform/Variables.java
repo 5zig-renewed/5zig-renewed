@@ -1372,14 +1372,14 @@ public class Variables implements IVariables {
 			return;
 		}
 		if (payload.readableBytes() > PluginMessages.MAX_PAYLOAD_SIZE) {
-			The5zigMod.logger.warn("Refusing to send {} bytes on plugin channel {}: 1.20.4 servers reject payloads larger than {} bytes",
+			The5zigMod.logger.warn("Refusing to send {} bytes on plugin channel {}: servers reject payloads larger than {} bytes",
 					payload.readableBytes(), channel, PluginMessages.MAX_PAYLOAD_SIZE);
 			return;
 		}
 		byte[] data = new byte[payload.readableBytes()];
 		payload.readBytes(data);
 		// The 5zig API channels are registered with Fabric so that incoming payloads keep their body;
-		// if Fabric will not take the send (channel not announced), 1.20.4 still accepts the raw packet.
+		// if Fabric will not take the send (channel not announced), 1.20.2 still accepts the raw packet.
 		if (!PluginMessages.send(channel, data)) {
 			connection.send(new ServerboundCustomPayloadPacket(
 					new RawCustomPayload(new ResourceLocation(channel), data)));
