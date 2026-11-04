@@ -15,8 +15,16 @@ fail=0
 report() { printf '  FAIL  %-28s %s\n' "$1" "$2"; fail=1; }
 
 # 1. Runtime classpath holes — a nested jar is missing from the built artifact.
+#    Ignore the loader's own pre-launch log4j context-selector miss: log4j loads before FML's
+#    class loader exists, so `net.neoforged.*` / `net.minecraftforge.*` lookups fail benignly
+#    at startup on every dev run.
 if grep -aq 'NoClassDefFoundError\|ClassNotFoundException' "$LOG"; then
-    report "missing class" "$(grep -ao 'NoClassDefFoundError: [^ ]*\|ClassNotFoundException: [^ ]*' "$LOG" | sort -u | head -3 | tr '\n' ' ')"
+    missing=$(grep -a 'NoClassDefFoundError\|ClassNotFoundException' "$LOG" \
+        | grep -avE 'net\.neoforged\.|net\.minecraftforge\.|org\.apache\.logging\.log4j' \
+        | grep -ao 'NoClassDefFoundError: [^ ]*\|ClassNotFoundException: [^ ]*' | sort -u | head -3 | tr '\n' ' ')
+    # filter again after extract: the class name itself may be a loader class
+    missing=$(printf '%s' "$missing" | tr ' ' '\n' | grep -avE 'net\.neoforged\.|net\.minecraftforge\.' | tr '\n' ' ' | sed 's/  */ /g')
+    [ -n "${missing// /}" ] && report "missing class" "$missing"
 fi
 
 # 2. Mixin that compiled and "resolved" statically but cannot bind at runtime.
