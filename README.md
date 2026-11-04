@@ -35,65 +35,65 @@ version×loader artifacts into 10 platform implementations + 3 loader adapters.
 Eras and the per-version matrix: [`docs/version-matrix.md`](docs/version-matrix.md).
 Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port-spec.md).
 
-## Status
+## Status & downloads
 
-| Target | Build | Client-verified |
-|---|---|---|
-| **1.20.1 Fabric** | green, self-contained jar (17.8 MB, 5 libs nested) | **HUD + M menu + translations** |
-| **1.20.1 Forge** | green, jarJar'd (17.7 MB) | **HUD** |
-| **1.20.1 NeoForge** | green, jarJar'd (17.7 MB) | **HUD** |
-| **1.21.1 Fabric** | green, self-contained jar (17.8 MB) | **HUD** |
-| **1.21.11 Fabric** | green | **HUD** (strict-ARGB colour fix) |
-| **26.1.2 Fabric** | green (Java 25, unobfuscated) | **HUD** (`GuiGraphicsExtractor#text` + strict-ARGB fix) |
-| **1.21.4 Fabric** | green | **HUD** |
-| **1.21.8 Fabric** | green, refmap + `useLegacyMixinAp` | **HUD** |
-| **1.21.5 Fabric** | green, refmap, plugin channels restored | **HUD** |
-| **1.21 Fabric** | green, self-contained (17.8 MB) | **HUD** |
-| **1.21.10 Fabric** | green, refmap, every colour call opaque-guarded | **HUD** |
-| **26.2 Fabric** | green; `Hud` split handled by its own mixin | **HUD** |
-| **1.20.4 Fabric** | green, self-contained | **HUD** |
-| **1.19.2 Fabric** | green, self-contained (first pre-1.20 port) | **HUD** |
-| **1.21.7 Fabric** | green, self-contained | **HUD** |
-| **1.21.3 Fabric** | green, self-contained | **HUD** |
-| **1.21.6 Fabric** | green, self-contained | **HUD** |
-| **1.21.9 Fabric** | green, self-contained | **HUD** |
-| **1.21.1 NeoForge** | green, ModDevGradle 2.0.148 | **HUD** |
-| **26.1 Fabric** | green, self-contained | **HUD** |
-| **26.1.1 Fabric** | green, self-contained | **HUD** |
-| **26.3 Fabric** | green, self-contained | **HUD** (needs the keybind fix below) |
-| **1.20 Fabric** | green, self-contained | **HUD** |
-| **1.20.2 Fabric** | green, self-contained | **HUD** |
-| **1.18 Fabric** | green, self-contained | **HUD** |
-| **1.18.1 Fabric** | green, self-contained | **HUD** |
-| **1.16.5 Fabric** | green, self-contained | **HUD** |
-| **1.16.4 Fabric** | green, self-contained | **HUD** |
-| **1.16.3 Fabric** | green, self-contained | **HUD** |
-| **1.16.2 Fabric** | green, self-contained | **HUD** |
-| **1.16.1 Fabric** | green, self-contained; no `FormattedCharSequence` (text is `FormattedText`); Fabric API 0.34.7 | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
-| **1.16 Fabric** | green, self-contained; byte-identical platform to 1.16.1 (version bump only) | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
-| **1.18.2 Fabric** | green, self-contained | **HUD** |
-| **1.17.1 Fabric** | green, self-contained | **HUD** |
-| **1.17 Fabric** | green, self-contained | **HUD** |
-| **1.19.1 Fabric** | green, self-contained | **HUD** |
-| **1.19 Fabric** | green, self-contained | **HUD** |
-| **1.20.5 Fabric** | green, self-contained | **HUD** |
-| **1.19.4 Fabric** | green, self-contained | **HUD** |
-| **1.19.3 Fabric** | green, self-contained | **HUD** |
-| **1.20.6 Fabric** | green, self-contained | **HUD** |
-| **1.20.3 Fabric** | green, self-contained | **HUD** |
-| **1.21.2 Fabric** | green, self-contained | **HUD** |
-| **1.21 NeoForge** | green, ModDevGradle | **HUD** |
-| **1.21.5 NeoForge** | green, ModDevGradle | **HUD** |
-| **1.21.10 NeoForge** | green, ModDevGradle | **HUD** |
-| **1.21.4 NeoForge** | green, ModDevGradle | **HUD** |
+Every row is a **download link** — click the size to get that jar. Status is per loader.
 
-| **26.1.2 NeoForge** | green, 26.x toolchain | **HUD** |
-| **26.1 NeoForge** | green, ModDevGradle 2.0.148, NeoForge 26.1.0.8-beta (no stable 26.1 exists) | build-only — no client run (task rule); 29/29 mixin targets |
-| **26.1.1 NeoForge** | green, NeoForge 26.1.1.8-beta (no stable 26.1.1 exists) | build-only — no client run (task rule); 29/29 mixin targets |
-| **26.2 NeoForge** | green, NeoForge 26.2.0.93; `Gui`/`Hud` split via loader `MixinHud` | build-only — no client run (task rule); 29/29 mixin targets |
+| Legend | Meaning |
+|---|---|
+| ✅ | booted in a real headless client: world loaded, HUD rendered, `scripts/check-client-log.sh` clean |
+| 🟡 | builds, is packaged correctly, but has never been booted (reason in [Known gaps](#known-gaps)) |
+| ⛔ | cannot load, for a reason outside this project (see footnote ¹) |
+| ➖ | this loader does not target that version |
 
-Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation —
-except the rows explicitly marked build-only.
+**58 downloads are client-verified, 1 is build-only, 2 are blocked upstream** — 60 release assets total.
+
+| # | Minecraft | Java | Fabric | NeoForge | Forge |
+|---:|:---|:---:|:---|:---|:---|
+| 1 | **1.20.1** | 17 | ✅ [17.9 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1/5zig-renewed-1.20.1-fabric-4.0.0-alpha.1.jar) | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1201/5zig-renewed-1.20.1-neoforge-4.0.0-alpha.1.jar) | ✅ [17.9 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-forge/5zig-renewed-1.20.1-forge-4.0.0-alpha.1.jar) |
+| 2 | **1.21.1** | 21 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1211/5zig-renewed-1.21.1-fabric-4.0.0-alpha.1.jar) | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1211/5zig-renewed-1.21.1-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 3 | **1.21.11** | 21 | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-12111/5zig-renewed-1.21.11-fabric-4.0.0-alpha.1.jar) | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf12111/5zig-renewed-1.21.11-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 4 | **1.21.4** | 21 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1214/5zig-renewed-1.21.4-fabric-4.0.0-alpha.1.jar) | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1214/5zig-renewed-1.21.4-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 5 | **1.21.8** | 21 | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1218/5zig-renewed-1.21.8-fabric-4.0.0-alpha.1.jar) | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1218/5zig-renewed-1.21.8-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 6 | **26.1.2** | 25 | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-2612/5zig-renewed-26.1.2-fabric-4.0.0-alpha.1.jar) | ✅ [20.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf2612/5zig-renewed-26.1.2-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 7 | **1.21** | 21 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-121/5zig-renewed-1.21-fabric-4.0.0-alpha.1.jar) | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf121/5zig-renewed-1.21-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 8 | **1.21.10** | 21 | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-12110/5zig-renewed-1.21.10-fabric-4.0.0-alpha.1.jar) | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf12110/5zig-renewed-1.21.10-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 9 | **1.21.5** | 21 | ✅ [20.8 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1215/5zig-renewed-1.21.5-fabric-4.0.0-alpha.1.jar) | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1215/5zig-renewed-1.21.5-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 10 | **26.2** | 25 | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-262/5zig-renewed-26.2-fabric-4.0.0-alpha.1.jar) | ✅ [20.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf262/5zig-renewed-26.2-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 11 | **1.20.4** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1204/5zig-renewed-1.20.4-fabric-4.0.0-alpha.1.jar) | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1204/5zig-renewed-1.20.4-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 12 | **1.21.7** | 21 | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1217/5zig-renewed-1.21.7-fabric-4.0.0-alpha.1.jar) | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1217/5zig-renewed-1.21.7-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 13 | **1.21.6** | 21 | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1216/5zig-renewed-1.21.6-fabric-4.0.0-alpha.1.jar) | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/untagged-728c7237e87e7ec79554/5zig-renewed-1.21.6-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 14 | **1.21.9** | 21 | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1219/5zig-renewed-1.21.9-fabric-4.0.0-alpha.1.jar) | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1219/5zig-renewed-1.21.9-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 15 | **1.21.3** | 21 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1213/5zig-renewed-1.21.3-fabric-4.0.0-alpha.1.jar) | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1213/5zig-renewed-1.21.3-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 16 | **1.19.2** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1192/5zig-renewed-1.19.2-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 17 | **26.1** | 25 | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-261/5zig-renewed-26.1-fabric-4.0.0-alpha.1.jar) | ✅ [20.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf261/5zig-renewed-26.1-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 18 | **1.21.2** | 21 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1212/5zig-renewed-1.21.2-fabric-4.0.0-alpha.1.jar) | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1212/5zig-renewed-1.21.2-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 19 | **1.20.2** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1202/5zig-renewed-1.20.2-fabric-4.0.0-alpha.1.jar) | 🟡 [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1202/5zig-renewed-1.20.2-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 20 | **26.1.1** | 25 | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-2611/5zig-renewed-26.1.1-fabric-4.0.0-alpha.1.jar) | ✅ [20.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf2611/5zig-renewed-26.1.1-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 21 | **1.20.6** | 21 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1206/5zig-renewed-1.20.6-fabric-4.0.0-alpha.1.jar) | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-nf1206/5zig-renewed-1.20.6-neoforge-4.0.0-alpha.1.jar) | ➖ |
+| 22 | **1.20** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-120/5zig-renewed-1.20-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 23 | **1.20.3** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1203/5zig-renewed-1.20.3-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 24 | **26.3** | 25 | ✅ [20.7 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-263/5zig-renewed-26.3-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 25 | **1.19.4** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1194/5zig-renewed-1.19.4-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 26 | **1.18.2** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1182/5zig-renewed-1.18.2-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 27 | **1.20.5** | 21 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1205/5zig-renewed-1.20.5-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 28 | **1.19.3** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1193/5zig-renewed-1.19.3-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 29 | **1.19** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-119/5zig-renewed-1.19-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 30 | **1.16.5** | 8 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1165/5zig-renewed-1.16.5-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 31 | **1.19.1** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1191/5zig-renewed-1.19.1-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 32 | **1.18.1** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1181/5zig-renewed-1.18.1-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 33 | **1.17.1** | 16 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1171/5zig-renewed-1.17.1-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 34 | **1.18** | 17 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-118/5zig-renewed-1.18-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 35 | **1.17** | 16 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-117/5zig-renewed-1.17-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 36 | **1.16.4** | 8 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1164/5zig-renewed-1.16.4-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 37 | **1.16.3** | 8 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1163/5zig-renewed-1.16.3-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 38 | **1.16.2** | 8 | ✅ [19.4 MB](https://github.com/5zig-renewed/5zig-renewed/releases/download/v4.0.0-alpha.1-1162/5zig-renewed-1.16.2-fabric-4.0.0-alpha.1.jar) | ➖ | ➖ |
+| 39 | **1.16.1** | 8 | ⛔ | ➖ | ➖ |
+| 40 | **1.16** | 8 | ⛔ | ➖ | ➖ |
+
+¹ Minecraft 1.16.0 / 1.16.1: Fabric API for the `1.16` line declares `minecraft: ~1.16.2-alpha.20.28.a`, so
+Fabric refuses to load the **API itself** on those two patches. Our jars build and are downloadable, but no
+build of this mod can run there. 1.16.2 onward is fine.
 
 ### Platform layout
 
@@ -202,6 +202,8 @@ every pre-26.3 build are unaffected, which is exactly why only a packaged-jar te
 - plugin channels, capes, 2nd chat and server ping are degraded/stubbed in the 1.21+ platforms (typed
   payloads, `getCloakTextureLocation` removal); see each `versions/*/PORT-NOTES.md`.
 - translations cover the 1.20.1 builds; 1.21+ ships the same bundle but newer labels were not audited.
+
+
 
 ## Building 1.20.1 Fabric
 
