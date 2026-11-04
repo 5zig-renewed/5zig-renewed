@@ -25,7 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * A custom payload that carries raw bytes for an arbitrary plugin channel.
  * <p>
- * 1.20.4 still lets the client send a payload it has not registered: the packet writes
+ * 1.20.3 still lets the client send a payload it has not registered: the packet writes
  * {@link #id()} followed by {@link #write(FriendlyByteBuf)}, and a server without a handler for the
  * channel simply discards it. The 5zig API channels go through {@link PluginMessages} instead, because
  * <em>incoming</em> unregistered payloads lose their body when the client decodes them.

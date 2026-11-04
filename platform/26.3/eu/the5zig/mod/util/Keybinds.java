@@ -143,7 +143,8 @@ public final class Keybinds {
 
 	private static FiveZigKeybinding bind(String description, int keyCode, String category) {
 		int code = keyCode == 0 ? GLFW.GLFW_KEY_UNKNOWN : keyCode;
-		KeyMapping mapping = new KeyMapping(description, InputConstants.Type.KEYSYM, code, Keybinding.categoryOf(category));
+		// 26.3 renamed InputConstants.Type.KEYSYM to KEYBOARD (the mouse type is unchanged).
+		KeyMapping mapping = new KeyMapping(description, InputConstants.Type.KEYBOARD, code, Keybinding.categoryOf(category));
 		register(mapping);
 		FiveZigKeybinding binding = new FiveZigKeybinding(mapping);
 		BINDINGS.put(description, binding);

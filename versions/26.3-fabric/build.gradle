@@ -20,6 +20,17 @@ dependencies {
     // so add them explicitly for runClient (runtime only, never shipped in the mod jar).
     runtimeOnly 'org.lwjgl:lwjgl-shaderc:3.4.1'
     runtimeOnly 'org.lwjgl:lwjgl-shaderc:3.4.1:natives-linux'
+
+    // 26.3 swapped the window/input backend from GLFW to SDL: its launcher metadata lists
+    // org.lwjgl:lwjgl-sdl:3.4.3 and no longer contains org.lwjgl:lwjgl-glfw at all (26.2 had
+    // lwjgl-glfw:3.4.1), so Loom puts no org.lwjgl.glfw on the compile classpath. platform/26.3
+    // is a copy of platform/26.2 and still imports GLFW (Keybinds, Textfield, Variables and the
+    // core's manager/SearchEntry), so the API has to be supplied explicitly or the compile dies
+    // with "package org.lwjgl.glfw does not exist". Pinned to 3.4.3, the LWJGL core 26.3 ships -
+    // LWJGL modules refuse to mix versions. Keybinds/Textfield only use static final int GLFW
+    // constants (javac inlines them); the runtime follow-up for the real calls in Variables is
+    // documented under "Remaining gaps" in PORT-NOTES.md.
+    implementation 'org.lwjgl:lwjgl-glfw:3.4.3'
     // 26.x ships unobfuscated jars, so there is no `mappings` line at all: the platform
     // layer links against the real names that are in the jar.
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -28,6 +39,7 @@ dependencies {
 
     // 5zig's own deps, not provided by Minecraft
     implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    include('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { transitive = false }
     implementation 'net.sf.jacob-project:jacob:1.14.3'
     include('net.sf.jacob-project:jacob:1.14.3') { transitive = false }
     implementation 'org.apache.httpcomponents:httpclient:4.5.14'

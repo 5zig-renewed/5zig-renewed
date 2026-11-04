@@ -57,7 +57,7 @@ public class Slider extends Button {
 	}
 
 	@Override
-	protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		if (!isVisible()) {
 			return;
 		}

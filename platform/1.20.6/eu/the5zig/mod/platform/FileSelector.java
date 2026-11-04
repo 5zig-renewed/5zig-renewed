@@ -176,7 +176,7 @@ public class FileSelector implements IFileSelector {
 
 		// background
 		graphics.setColor(0.125F, 0.125F, 0.125F, 1.0F);
-		GuiCompat.blitRepeating(graphics, Screen.BACKGROUND_LOCATION, left, top, right - left, bottom - top,
+		GuiCompat.blitRepeating(graphics, Screen.MENU_BACKGROUND, left, top, right - left, bottom - top,
 				0, (int) amountScrolled, 32, 32);
 		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 

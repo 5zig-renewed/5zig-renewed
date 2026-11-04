@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "the5zigmod",
+  "version": "${version}",
+  "name": "5zig Renewed",
+  "description": "All-in-one HUD, chat and utility mod for modern Minecraft. Continuation of The 5zig Mod.",
+  "authors": ["5zig Reborn contributors", "5zig Renewed contributors"],
+  "license": "GPL-3.0",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["eu.the5zig.mod.fabric.FiveZigFabric"]
+  },
+  "mixins": ["mixins.the5zigmod.json"],
+  "accessWidener": "5zig.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.14.0",
+    "minecraft": "~1.19.4",
+    "java": ">=17",
+    "fabric-api": "*"
+  }
+}

@@ -629,7 +629,7 @@ public class Variables implements IVariables {
 		Minecraft minecraft = getMinecraft();
 		MinecraftFactory.getClassProxyCallback().resetServer();
 		ServerData serverData = new ServerData(host, host + ":" + port, net.minecraft.client.multiplayer.ServerData.Type.OTHER);
-		ConnectScreen.startConnecting(minecraft.screen, minecraft, new ServerAddress(host, port), serverData, false);
+		ConnectScreen.startConnecting(minecraft.screen, minecraft, new ServerAddress(host, port), serverData, false, null);
 	}
 
 	@Override
@@ -640,7 +640,7 @@ public class Variables implements IVariables {
 		Minecraft minecraft = getMinecraft();
 		ServerData data = (ServerData) serverData;
 		MinecraftFactory.getClassProxyCallback().resetServer();
-		ConnectScreen.startConnecting((Screen) parentScreen, minecraft, ServerAddress.parseString(data.ip), data, false);
+		ConnectScreen.startConnecting((Screen) parentScreen, minecraft, ServerAddress.parseString(data.ip), data, false, null);
 	}
 
 	@Override
@@ -1073,7 +1073,8 @@ public class Variables implements IVariables {
 	}
 
 	private PotionEffectImpl wrapPotionEffect(MobEffectInstance potionEffect) {
-		MobEffect effect = potionEffect.getEffect();
+		// 1.20.5+ stores the effect as a Holder; the description id and colour live on the value.
+		MobEffect effect = potionEffect.getEffect().value();
 		return new PotionEffectImpl(effect.getDescriptionId(), potionEffect.getDuration(),
 				MobEffectUtil.formatDuration(potionEffect, 1.0F, 20.0F).getString(), potionEffect.getAmplifier() + 1,
 				BuiltInRegistries.MOB_EFFECT.getId(effect), effect.isBeneficial(), potionEffect.isVisible(), effect.getColor());
@@ -1378,12 +1379,9 @@ public class Variables implements IVariables {
 		}
 		byte[] data = new byte[payload.readableBytes()];
 		payload.readBytes(data);
-		// The 5zig API channels are registered with Fabric so that incoming payloads keep their body;
-		// if Fabric will not take the send (channel not announced), 1.20.4 still accepts the raw packet.
-		if (!PluginMessages.send(channel, data)) {
-			connection.send(new ServerboundCustomPayloadPacket(
-					new RawCustomPayload(new ResourceLocation(channel), data)));
-		}
+		// Since 1.20.5 only registered payload types survive the codec; PluginMessages owns the
+		// 5zig API channels, everything else is dropped with a one-time warning.
+		PluginMessages.send(channel, data);
 	}
 
 	@Override
@@ -1492,8 +1490,9 @@ public class Variables implements IVariables {
 
 	@Override
 	public void renderPotionIcon(int index) {
-		// Registry#byId is gone in 1.20.2; the numeric id maps back through getHolder.
-		MobEffect effect = BuiltInRegistries.MOB_EFFECT.getHolder(index).map(Holder::value).orElse(null);
+		// Registry#byId is gone in 1.20.2; the numeric id maps back through getHolder(1.20.5+ takes
+		// the holder itself for the sprite lookup).
+		Holder<MobEffect> effect = BuiltInRegistries.MOB_EFFECT.getHolder(index).orElse(null);
 		if (effect == null) {
 			return;
 		}
@@ -1512,7 +1511,7 @@ public class Variables implements IVariables {
 			return;
 		}
 		RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
-		graphics.blit(Screen.BACKGROUND_LOCATION, x1, y1, (float) x1, (float) y1, x2, y2, 32, 32);
+		graphics.blit(Screen.MENU_BACKGROUND, x1, y1, (float) x1, (float) y1, x2, y2, 32, 32);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 

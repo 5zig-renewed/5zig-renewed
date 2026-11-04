@@ -53,7 +53,9 @@ public class ServerPinger implements IServerPinger {
 		}
 		net.minecraft.client.multiplayer.ServerData data = (net.minecraft.client.multiplayer.ServerData) serverData;
 		try {
+			// 1.20.6 reports success and failure through two callbacks.
 			this.handle.pingServer(data, () -> {
+			}, () -> {
 			});
 		} catch (UnknownHostException e) {
 			data.ping = -1L;

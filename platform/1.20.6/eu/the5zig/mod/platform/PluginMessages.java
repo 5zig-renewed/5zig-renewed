@@ -22,21 +22,31 @@ import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.util.CoreState;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Bridges the core's raw plugin-channel API onto 1.20.4's typed payload system.
+ * Bridges the core's raw plugin-channel API onto 1.20.6's typed payload system.
  * <p>
  * 1.20.1 delivered {@code (channel, byte[])} packets straight to the packet listener. Since 1.20.2 the
- * wire format is a typed {@link net.minecraft.network.protocol.common.custom.CustomPacketPayload}:
- * the client decodes the payload <em>before</em> the listener runs and turns every channel it does not
- * know into a {@code DiscardedPayload} without the body. Fabric API still exposes the pre-1.20.5 raw
- * channel API ({@code registerGlobalReceiver(ResourceLocation, …)} / {@code send(ResourceLocation,
- * FriendlyByteBuf)}), which installs a codec for the channel so the bytes survive decoding again.
+ * wire format is a typed {@link CustomPacketPayload}; 1.20.5 also removed Fabric API's raw channel
+ * overloads ({@code registerGlobalReceiver(ResourceLocation, …)} / {@code send(ResourceLocation,
+ * FriendlyByteBuf)}), so every channel has to be declared as a payload type before it can be received
+ * <em>or</em> sent. Payloads on channels the codec does not know are decoded into a body-less
+ * {@code DiscardedPayload}, and the fallback encoder writes no body at all — arbitrary plugin channels
+ * are therefore impossible from 1.20.5 on.
+ * <p>
+ * The 5zig server API channels are declared here in both directions, and the receiver hands the bytes
+ * back to {@code EventListener#handlePluginMessage}.
  * <p>
  * {@link #bootstrap()} must run during client initialisation, before a server connection is opened,
- * which is why it is called from the 1.20.4 entrypoint rather than lazily.
+ * which is why it is called from the 1.20.6 entrypoint rather than lazily.
  */
 public final class PluginMessages {
 
@@ -52,9 +62,17 @@ public final class PluginMessages {
 			"the5zigmod:5zig_set"
 	};
 
+	private static final Map<String, CustomPacketPayload.Type<RawPayload>> TYPES = new HashMap<>();
 	private static boolean bootstrapped;
+	private static boolean unsupportedChannelLogged;
 
 	private PluginMessages() {
+	}
+
+	/**
+	 * A payload type that carries the channel's raw bytes untouched.
+	 */
+	public record RawPayload(CustomPacketPayload.Type<RawPayload> type, byte[] data) implements CustomPacketPayload {
 	}
 
 	public static synchronized void bootstrap() {
@@ -63,12 +81,25 @@ public final class PluginMessages {
 		}
 		bootstrapped = true;
 		for (String channel : CHANNELS) {
-			ResourceLocation id = new ResourceLocation(channel);
-			ClientPlayNetworking.registerGlobalReceiver(id, (client, handler, buffer, responseSender) -> {
-				byte[] data = new byte[buffer.readableBytes()];
-				buffer.readBytes(data);
-				client.execute(() -> deliver(channel, data));
-			});
+			CustomPacketPayload.Type<RawPayload> type = new CustomPacketPayload.Type<>(new ResourceLocation(channel));
+			TYPES.put(channel, type);
+			StreamCodec<FriendlyByteBuf, RawPayload> codec = new StreamCodec<>() {
+				@Override
+				public RawPayload decode(FriendlyByteBuf buffer) {
+					byte[] data = new byte[buffer.readableBytes()];
+					buffer.readBytes(data);
+					return new RawPayload(type, data);
+				}
+
+				@Override
+				public void encode(FriendlyByteBuf buffer, RawPayload payload) {
+					buffer.writeBytes(payload.data());
+				}
+			};
+			PayloadTypeRegistry.playC2S().register(type, codec);
+			PayloadTypeRegistry.playS2C().register(type, codec);
+			ClientPlayNetworking.registerGlobalReceiver(type, (payload, context) ->
+					context.client().execute(() -> deliver(type.id().toString(), payload.data())));
 		}
 	}
 
@@ -76,30 +107,31 @@ public final class PluginMessages {
 	 * @return true if {@code channel} is one of the channels registered with Fabric.
 	 */
 	public static boolean isRegistered(String channel) {
-		for (String registered : CHANNELS) {
-			if (registered.equals(channel)) {
-				return true;
-			}
-		}
-		return false;
+		return TYPES.containsKey(channel);
 	}
 
 	/**
 	 * Sends raw bytes on one of the 5zig API channels.
 	 *
 	 * @return {@code false} if {@code channel} is not one of the registered ones, or the server did
-	 * not announce support for it. Callers fall back to a plain {@code ServerboundCustomPayloadPacket},
-	 * which 1.20.4 still accepts for any channel.
+	 * not announce support for it. Callers must not fall back to a plain
+	 * {@code ServerboundCustomPayloadPacket}: since 1.20.5 its codec drops the body of any payload
+	 * type it does not know.
 	 */
 	public static boolean send(String channel, byte[] data) {
-		if (!isRegistered(channel)) {
+		CustomPacketPayload.Type<RawPayload> type = TYPES.get(channel);
+		if (type == null) {
+			if (!unsupportedChannelLogged) {
+				unsupportedChannelLogged = true;
+				The5zigMod.logger.warn("[5zig Renewed] Plugin channel {} is not registered on 1.20.6; "
+						+ "custom payloads on arbitrary channels are no longer possible", channel);
+			}
 			return false;
 		}
-		ResourceLocation id = new ResourceLocation(channel);
-		if (!ClientPlayNetworking.canSend(id)) {
+		if (!ClientPlayNetworking.canSend(type)) {
 			return false;
 		}
-		ClientPlayNetworking.send(id, new FriendlyByteBuf(Unpooled.wrappedBuffer(data)));
+		ClientPlayNetworking.send(new RawPayload(type, data));
 		return true;
 	}
 

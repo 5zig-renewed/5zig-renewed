@@ -462,7 +462,7 @@ public class Textfield extends AbstractWidget implements ITextfield {
 	}
 
 	@Override
-	protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		if (!this.visible) {
 			return;
 		}

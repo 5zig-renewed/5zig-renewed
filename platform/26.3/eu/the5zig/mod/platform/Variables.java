@@ -97,6 +97,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.AABB;
@@ -1253,7 +1254,9 @@ public class Variables implements IVariables {
 		if (hitResult instanceof BlockHitResult) {
 			InteractionResult result = minecraft.gameMode.useItemOn(player, hand, (BlockHitResult) hitResult);
 			if (result.consumesAction()) {
-				player.swing(hand);
+				// 26.3: swing() now takes the animation component and a "send to self too" flag;
+				// DEFAULT is the vanilla arm swing (the flag is a no-op client-side, no ServerLevel).
+				player.swing(hand, SwingAnimation.DEFAULT, true);
 				return;
 			}
 			if (result == InteractionResult.FAIL) {
@@ -1264,14 +1267,14 @@ public class Variables implements IVariables {
 			// 26.x merged interactAt into interact(Player, Entity, EntityHitResult, InteractionHand).
 			InteractionResult result = minecraft.gameMode.interact(player, entityHit.getEntity(), entityHit, hand);
 			if (result.consumesAction()) {
-				player.swing(hand);
+				player.swing(hand, SwingAnimation.DEFAULT, true);
 				return;
 			}
 		}
 		if (!player.getMainHandItem().isEmpty()) {
 			InteractionResult result = minecraft.gameMode.useItem(player, hand);
 			if (result.consumesAction()) {
-				player.swing(hand);
+				player.swing(hand, SwingAnimation.DEFAULT, true);
 			}
 		}
 	}
@@ -1365,7 +1368,8 @@ public class Variables implements IVariables {
 			if (name != null) {
 				return name.toUpperCase(Locale.ROOT);
 			}
-			return InputConstants.Type.KEYSYM.getOrCreate(key).getDisplayName().getString();
+			// 26.3 renamed InputConstants.Type.KEYSYM to KEYBOARD.
+			return InputConstants.Type.KEYBOARD.getOrCreate(key).getDisplayName().getString();
 		}
 		return String.valueOf((char) (key - 256)).toUpperCase(Locale.ROOT);
 	}

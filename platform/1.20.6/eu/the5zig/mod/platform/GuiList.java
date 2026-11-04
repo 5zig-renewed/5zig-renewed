@@ -259,7 +259,7 @@ public class GuiList<E extends Row> implements IGuiList<E> {
 					this.backgroundWidth, this.backgroundHeight);
 		} else if (drawDefaultBackground || Minecraft.getInstance().player == null) {
 			graphics.setColor(0.125F, 0.125F, 0.125F, 1.0F);
-			GuiCompat.blitRepeating(graphics, Screen.BACKGROUND_LOCATION, getLeft(), getTop(), listWidth, listHeight,
+			GuiCompat.blitRepeating(graphics, Screen.MENU_BACKGROUND, getLeft(), getTop(), listWidth, listHeight,
 					0, (int) getScroll(), 32, 32);
 			graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}

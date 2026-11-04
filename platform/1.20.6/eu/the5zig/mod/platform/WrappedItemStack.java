@@ -19,17 +19,16 @@
 
 package eu.the5zig.mod.platform;
 
-import com.google.common.collect.Multimap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.util.RenderContext;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -38,10 +37,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Wraps a {@link net.minecraft.world.item.ItemStack} for the mod's own {@link ItemStack} abstraction
@@ -52,8 +51,6 @@ import java.util.UUID;
  * drawn here with an explicit {@link PoseStack} instead of the old GL matrix stack.
  */
 public class WrappedItemStack implements ItemStack {
-
-	protected static final UUID nameDisplayModifier = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
 
 	private final net.minecraft.world.item.ItemStack item;
 
@@ -89,7 +86,9 @@ public class WrappedItemStack implements ItemStack {
 	@Override
 	public List<String> getLore() {
 		Minecraft minecraft = Minecraft.getInstance();
-		List<Component> components = item.getTooltipLines(minecraft.player, TooltipFlag.Default.NORMAL);
+		// 1.20.5+: tooltips take an Item.TooltipContext (the level lookup used to come from the
+		// item's own registry access); the client level is the correct scope here.
+		List<Component> components = item.getTooltipLines(Item.TooltipContext.of(minecraft.level), minecraft.player, TooltipFlag.Default.NORMAL);
 		List<String> lines = new ArrayList<>(components.size());
 		for (Component component : components) {
 			lines.add(component.getString());
@@ -99,14 +98,21 @@ public class WrappedItemStack implements ItemStack {
 
 	@Override
 	public int getHealAmount() {
-		FoodProperties food = item.getItem().getFoodProperties();
-		return food != null ? food.getNutrition() : 0;
+		// 1.20.5 moved food data from Item to the minecraft:food data component.
+		FoodProperties food = item.get(DataComponents.FOOD);
+		return food != null ? food.nutrition() : 0;
 	}
 
 	@Override
 	public float getSaturationModifier() {
-		FoodProperties food = item.getItem().getFoodProperties();
-		return food != null ? food.getSaturationModifier() : 0;
+		FoodProperties food = item.get(DataComponents.FOOD);
+		if (food == null || food.nutrition() <= 0) {
+			return 0;
+		}
+		// 1.20.4's FoodProperties#getSaturationModifier was a multiplier, the 1.20.5 record stores
+		// the final saturation value (nutrition * modifier * 2); invert that so the core's
+		// "heal * modifier * 2" saturation preview keeps producing the same number.
+		return food.saturation() / (2f * food.nutrition());
 	}
 
 	@Override
@@ -122,16 +128,25 @@ public class WrappedItemStack implements ItemStack {
 		if (!withGenericAttributes) {
 			return;
 		}
-		Multimap<Attribute, AttributeModifier> modifiers = item.getAttributeModifiers(EquipmentSlot.MAINHAND);
-		for (Map.Entry<Attribute, AttributeModifier> entry : modifiers.entries()) {
+		// 1.20.5 moved the attribute modifiers into the minecraft:attribute_modifiers data
+		// component. ItemStack only exposes them as a slot-aware callback, and both the attribute
+		// (Holder) and the modifier (record) changed shape, so collect them first.
+		List<Map.Entry<Attribute, AttributeModifier>> modifiers = new ArrayList<>();
+		item.forEachModifier(EquipmentSlot.MAINHAND,
+				(attribute, modifier) -> modifiers.add(new AbstractMap.SimpleImmutableEntry<>(attribute.value(), modifier)));
+		// The component no longer carries the synthetic "item modifier" that used to smuggle the
+		// enchantment damage bonus into getAttributeModifiers, so add it back explicitly.
+		float enchantmentDamage = EnchantmentHelper.getDamageBonus(item, null);
+		for (Map.Entry<Attribute, AttributeModifier> entry : modifiers) {
 			AttributeModifier modifier = entry.getValue();
-			double value = modifier.getAmount();
-			if (nameDisplayModifier.equals(modifier.getId())) {
-				value += EnchantmentHelper.getDamageBonus(item, MobType.UNDEFINED);
-			}
-			if (entry.getKey() != Attributes.ATTACK_DAMAGE && entry.getKey() != Attributes.ARMOR) {
+			boolean attackDamage = entry.getKey() == Attributes.ATTACK_DAMAGE.value();
+			if (!attackDamage && entry.getKey() != Attributes.ARMOR.value()) {
 				continue;
 			}
+			// Vanilla's tooltip only folds the enchantment bonus into the base attack-damage
+			// modifier, not into every attack-damage entry.
+			double value = modifier.amount()
+					+ (attackDamage && modifier.id().equals(Item.BASE_ATTACK_DAMAGE_UUID) ? enchantmentDamage : 0);
 			PoseStack pose = graphics.pose();
 			pose.pushPose();
 			try {

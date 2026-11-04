@@ -48,8 +48,8 @@ public abstract class MixinChatComponent {
 	@Unique
 	private static boolean the5zig$processingChat;
 
-	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;III)V", at = @At("HEAD"))
-	private void the5zig$drawSecondChat(GuiGraphics graphics, int ticks, int mouseX, int mouseY, CallbackInfo callbackInfo) {
+	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;IIIZ)V", at = @At("HEAD"))
+	private void the5zig$drawSecondChat(GuiGraphics graphics, int ticks, int mouseX, int mouseY, boolean focused, CallbackInfo callbackInfo) {
 		if (!CoreState.isReady()) {
 			return;
 		}

@@ -17,22 +17,25 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// 26.x core overlay: this file mirrors core/eu/the5zig/mod/chat/network/packets/PacketEncryption.java
-// and only adapts it to authlib 7 (GameProfile#id()/#name()) and commons-lang3 3.19
-// (org.apache.commons.lang3.Strings collides with Guava's Strings). core/ is untouched.
+// 26.3 core overlay: this file mirrors core/eu/the5zig/mod/chat/network/packets/PacketEncryption.java
+// and adapts it to authlib 10 (GameProfile#id()/#name()), authlib 10 having deleted the whole
+// com.mojang.authlib.yggdrasil package (MinecraftSessionService is now
+// com.mojang.authlib.minecraft.SessionService and there is no YggdrasilAuthenticationService),
+// plus commons-lang3 3.19 (org.apache.commons.lang3.Strings collides with Guava's Strings).
+// core/ is untouched.
 
 
 package eu.the5zig.mod.chat.network.packets;
 
 import com.mojang.authlib.exceptions.AuthenticationException;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.authlib.minecraft.SessionService;
 import eu.the5zig.mod.I18n;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.chat.network.CryptManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import net.minecraft.client.Minecraft;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
@@ -72,10 +75,13 @@ public class PacketEncryption implements Packet {
 	public void handle() {
 		final SecretKey secretKey = CryptManager.createNewSharedKey();
 		String hash = (new BigInteger(CryptManager.getServerIdHash("", publicKey, secretKey))).toString(16);
-		MinecraftSessionService yggdrasil = new YggdrasilAuthenticationService(The5zigMod.getVars().getProxy()).createMinecraftSessionService();
+		// authlib 10 dropped YggdrasilAuthenticationService and renamed MinecraftSessionService to
+		// SessionService. Minecraft already owns a configured instance (Services#sessionService),
+		// so borrow that instead of building a private client; joinServer's signature is unchanged.
+		SessionService sessionService = Minecraft.getInstance().services().sessionService();
 		try {
-			// authlib 7: joinServer takes the profile id, not the GameProfile.
-			yggdrasil.joinServer(The5zigMod.getVars().getGameProfile().id(), The5zigMod.getDataManager().getSession(), hash);
+			// authlib 7+: joinServer takes the profile id, not the GameProfile.
+			sessionService.joinServer(The5zigMod.getVars().getGameProfile().id(), The5zigMod.getDataManager().getSession(), hash);
 		} catch (AuthenticationException e) {
 			The5zigMod.getNetworkManager().disconnect(I18n.translate("connection.bad_login"));
 			throw new RuntimeException(e);

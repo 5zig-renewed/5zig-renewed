@@ -41,7 +41,8 @@ public class Keybinding extends KeyMapping implements IKeybinding {
 	private int keyCode;
 
 	public Keybinding(String description, int keyCode, String category) {
-		super(description, InputConstants.Type.KEYSYM, keyCode, categoryOf(category));
+		// 26.3 renamed InputConstants.Type.KEYSYM to KEYBOARD.
+		super(description, InputConstants.Type.KEYBOARD, keyCode, categoryOf(category));
 		this.keyCode = keyCode;
 	}
 

@@ -98,8 +98,8 @@ public abstract class MixinClientPacketListener {
 		}
 		try {
 			TabList tabList = new TabList(
-					LegacyText.toLegacy(packet.getHeader().getVisualOrderText()),
-					LegacyText.toLegacy(packet.getFooter().getVisualOrderText()));
+					LegacyText.toLegacy(packet.header().getVisualOrderText()),
+					LegacyText.toLegacy(packet.footer().getVisualOrderText()));
 			The5zigMod.getListener().onPlayerListHeaderFooter(tabList);
 		} catch (Throwable ignored) {
 			// Tab list decoration is optional.

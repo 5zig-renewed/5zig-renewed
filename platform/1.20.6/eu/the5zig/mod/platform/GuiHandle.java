@@ -168,7 +168,7 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		if (graphics == null) {
 			return;
 		}
-		this.renderDirtBackground(graphics);
+		this.renderMenuBackground(graphics);
 	}
 
 	@Override

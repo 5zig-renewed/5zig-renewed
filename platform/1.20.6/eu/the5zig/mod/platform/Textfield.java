@@ -21,7 +21,6 @@ package eu.the5zig.mod.platform;
 
 import eu.the5zig.mod.gui.elements.ITextfield;
 import eu.the5zig.mod.util.RenderContext;
-import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -32,6 +31,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.util.StringUtil;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -219,7 +219,7 @@ public class Textfield extends AbstractWidget implements ITextfield {
 		if (!canConsumeInput()) {
 			return false;
 		}
-		if (SharedConstants.isAllowedChatCharacter(character)) {
+		if (StringUtil.isAllowedChatCharacter(character)) {
 			insertText(Character.toString(character));
 			return true;
 		}
@@ -292,7 +292,7 @@ public class Textfield extends AbstractWidget implements ITextfield {
 		int start = Math.min(this.cursorPosition, this.selectionPos);
 		int end = Math.max(this.cursorPosition, this.selectionPos);
 		int allowed = this.maxStringLength - this.text.length() - (start - end);
-		String filtered = SharedConstants.filterText(input);
+		String filtered = StringUtil.filterText(input);
 		int length = filtered.length();
 		if (allowed < length) {
 			filtered = filtered.substring(0, allowed);

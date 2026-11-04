@@ -102,7 +102,8 @@ public class GuiHandle extends Screen implements IGuiHandle {
 	@Override
 	public boolean keyPressed(KeyEvent event) {
 		boolean result = super.keyPressed(event);
-		child.keyPressed0(event.key(), event.scancode(), event.modifiers());
+		// 26.3 renamed KeyEvent#scancode() to keycode() (key() is still the GLFW key, modifiers() the mods).
+		child.keyPressed0(event.key(), event.keycode(), event.modifiers());
 		return result;
 	}
 

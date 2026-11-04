@@ -53,10 +53,12 @@ public abstract class MixinGui {
 	}
 
 	/**
-	 * The 5zig hotbar numbers are drawn on top of the vanilla hotbar.
+	 * The 5zig hotbar numbers are drawn on top of the vanilla hotbar. 1.20.5 renamed
+	 * {@code Gui#renderHotbar(float, GuiGraphics)} to {@code renderHotbarAndDecorations(GuiGraphics, float)},
+	 * i.e. it also swapped the argument order.
 	 */
-	@Inject(method = "renderHotbar(FLnet/minecraft/client/gui/GuiGraphics;)V", at = @At("TAIL"))
-	private void the5zig$afterHotbar(float partialTick, GuiGraphics graphics, CallbackInfo callbackInfo) {
+	@Inject(method = "renderHotbarAndDecorations(Lnet/minecraft/client/gui/GuiGraphics;F)V", at = @At("TAIL"))
+	private void the5zig$afterHotbar(GuiGraphics graphics, float partialTick, CallbackInfo callbackInfo) {
 		HudFrame.afterHotbar(graphics);
 	}
 
