@@ -63,6 +63,11 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **26.3 Fabric** | green, self-contained | **HUD** (needs the keybind fix below) |
 | **1.20 Fabric** | green, self-contained | **HUD** |
 | **1.20.2 Fabric** | green, self-contained | **HUD** |
+| **1.16.5 Fabric** | green, self-contained | **HUD** |
+| **1.18.2 Fabric** | green, self-contained | **HUD** |
+| **1.19.1 Fabric** | green, self-contained | **HUD** |
+| **1.19 Fabric** | green, self-contained | **HUD** |
+| **1.20.5 Fabric** | green, self-contained | **HUD** |
 | **1.19.4 Fabric** | green, self-contained | **HUD** |
 | **1.19.3 Fabric** | green, self-contained | **HUD** |
 | **1.20.6 Fabric** | green, self-contained | **HUD** |
