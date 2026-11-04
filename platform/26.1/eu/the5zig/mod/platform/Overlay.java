@@ -133,10 +133,10 @@ public class Overlay implements IOverlay {
 			graphics.fill(0, 0, TOAST_WIDTH, TOAST_HEIGHT, 0xC010131A);
 			graphics.outline(0, 0, TOAST_WIDTH, TOAST_HEIGHT, 0x33FFFFFF);
 			if (subTitle == null) {
-				graphics.text(font, title, TEXT_X, (TOAST_HEIGHT - font.lineHeight) / 2, 0xFFFFFF, false);
+				graphics.text(font, title, TEXT_X, (TOAST_HEIGHT - font.lineHeight) / 2, 0xFFFFFFFF, false);
 			} else {
-				graphics.text(font, title, TEXT_X, 7, 0xFFFFFF, false);
-				graphics.text(font, subTitle, TEXT_X, 18, 0xFFFFFF, false);
+				graphics.text(font, title, TEXT_X, 7, 0xFFFFFFFF, false);
+				graphics.text(font, subTitle, TEXT_X, 18, 0xFFFFFFFF, false);
 			}
 		}
 

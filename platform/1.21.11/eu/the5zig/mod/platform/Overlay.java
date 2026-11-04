@@ -138,10 +138,10 @@ public class Overlay implements IOverlay {
 		public void render(GuiGraphics graphics, Font font, long timeSinceLastVisible) {
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TOAST_BACKGROUND_SPRITE, 0, 0, TOAST_WIDTH, TOAST_HEIGHT);
 			if (subTitle == null) {
-				graphics.drawString(font, title, TEXT_X, (TOAST_HEIGHT - font.lineHeight) / 2, 0xFFFFFF, false);
+				graphics.drawString(font, title, TEXT_X, (TOAST_HEIGHT - font.lineHeight) / 2, 0xFFFFFFFF, false);
 			} else {
-				graphics.drawString(font, title, TEXT_X, 7, 0xFFFFFF, false);
-				graphics.drawString(font, subTitle, TEXT_X, 18, 0xFFFFFF, false);
+				graphics.drawString(font, title, TEXT_X, 7, 0xFFFFFFFF, false);
+				graphics.drawString(font, subTitle, TEXT_X, 18, 0xFFFFFFFF, false);
 			}
 		}
 

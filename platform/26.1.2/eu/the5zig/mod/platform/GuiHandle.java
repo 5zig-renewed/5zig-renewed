@@ -105,17 +105,13 @@ public class GuiHandle extends Screen implements IGuiHandle {
 	@Override
 	public boolean keyPressed(KeyEvent event) {
 		boolean result = super.keyPressed(event);
+		// Keys that never produce a character (Escape, Return, Tab, Delete, Backspace) only arrive
+		// here; characters arrive through the window's character callback, i.e. Screen#charTyped ->
+		// GuiHandle#charTyped, which is live on this version. Verified in-client on 26.1.2: SPACE delivers
+		// key=32/scancode=65 plus a char event for 32, 'a' delivers key=65/scancode=38 plus a char
+		// event for 97 - so KeyEvent#scancode() is the keyboard scan code, not a character, and must
+		// not be fed to the core.
 		deliverKeyType(event.key());
-		// This era has no Screen#charTyped at all: the typed character rides along on KeyEvent#input(),
-		// so text entry and the core's character-based shortcuts must be fed from here or every 5zig
-		// text field and SPACE/DELETE action silently does nothing.
-		// Verified in-client: on 26.x `KeyEvent#input()` returns the *key code* (space = 44, same as
-		// key()), while the SDLK value in `event.scancode()` is the character itself (space = 32, 'a' = 97).
-		// So the character has to come from the keycode field, not from input().
-		int character = event.scancode();
-		if (character >= 32 && character < 127) {
-			child.keyTyped0((char) character, event.key());
-		}
 		child.keyPressed0(event.key(), event.scancode(), event.modifiers());
 		return result;
 	}

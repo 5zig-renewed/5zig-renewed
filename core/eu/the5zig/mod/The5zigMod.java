@@ -49,6 +49,7 @@ import eu.the5zig.teamspeak.TeamSpeak;
 import eu.the5zig.teamspeak.util.Utils;
 import eu.the5zig.util.AsyncExecutor;
 import eu.the5zig.util.db.Database;
+import eu.the5zig.util.db.DummyDatabase;
 import eu.the5zig.util.db.FileDatabaseConfiguration;
 import eu.the5zig.util.db.exceptions.NoConnectionException;
 import eu.the5zig.util.io.FileUtils;
@@ -484,7 +485,28 @@ public class The5zigMod {
 		try {
 			database = new Database(configuration);
 		} catch (NoConnectionException e) {
-			e.printStackTrace();
+			// A hard crash or a killed client leaves HSQLDB's .lck behind. The database then refuses to
+			// open, `database` stayed null and every caller (NetworkStats, ConversationManager) threw
+			// NullPointerException on the netty thread — chat stayed dead until the file was deleted by
+			// hand. Clear a stale lock, retry once, and fall back to the in-memory database so the mod
+			// keeps working instead of NPE-ing.
+			File lockFile = new File(file.getAbsolutePath() + ".lck");
+			logger.warn("Could not open the conversation database ({}). Clearing a stale lock and retrying.",
+					e.getMessage());
+			boolean cleared = lockFile.exists() ? lockFile.delete() : true;
+			if (cleared) {
+				try {
+					database = new Database(configuration);
+				} catch (NoConnectionException retry) {
+					logger.warn("Conversation database is still unavailable - chat history will not be stored.", retry);
+				}
+			}
+			if (database == null) {
+				try {
+					database = new DummyDatabase();
+				} catch (NoConnectionException ignored) {
+				}
+			}
 		}
 		/*
 		try {

@@ -109,12 +109,12 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		// SDL move: key() is the InputConstants value (SDL scancode, what KeyMapping and
 		// Keyboard.KEY_* now use) and keycode() is the platform keycode (SDLK_*).
 		deliverKeyType(event.key());
-		// This era has no Screen#charTyped at all: the typed character rides along on KeyEvent#input(),
-		// so text entry and the core's character-based shortcuts must be fed from here or every 5zig
-		// text field and SPACE/DELETE action silently does nothing.
-		// Verified in-client: on 26.x `KeyEvent#input()` returns the *key code* (space = 44, same as
-		// key()), while the SDLK value in `event.keycode()` is the character itself (space = 32, 'a' = 97).
-		// So the character has to come from the keycode field, not from input().
+		// Characters have to be delivered from here on 26.3: Screen does not declare charTyped and
+		// the window's character callback never reaches this screen (verified in-client - typing 'a'
+		// inserts exactly one 'a', so GuiHandle#charTyped above is not also firing). The character
+		// rides along in the SDLK field: `KeyEvent#input()` just duplicates key() (space = 44 = key()),
+		// while keycode() carries the typed character itself (space = 32, 'a' = 97). Feed that to the
+		// core so text fields and the core's character/US-layout shortcuts (SPACE, Ctrl+D) work.
 		int character = event.keycode();
 		if (character >= 32 && character < 127) {
 			child.keyTyped0((char) character, event.key());

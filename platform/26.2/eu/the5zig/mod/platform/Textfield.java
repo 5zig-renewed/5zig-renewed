@@ -50,8 +50,11 @@ public class Textfield implements ITextfield {
 	private static final int BACKGROUND_COLOR = 0xFF000000;
 	private static final int CURSOR_COLOR = 0xFFD0D0D0;
 	private static final int HIGHLIGHT_COLOR = 0xFF0000FF;
-	private static final int TEXT_COLOR = 14737632;
-	private static final int TEXT_COLOR_DISABLED = 7368816;
+	// 1.21.9+ (and therefore every 26.x) treats text colours as strict ARGB, so the core's legacy
+	// 0xRRGGBB shades carry alpha 0 and draw nothing at all. Same two shades as 1.15, with the
+	// alpha the old renderer implied.
+	private static final int TEXT_COLOR = 0xFFE0E0E0;
+	private static final int TEXT_COLOR_DISABLED = 0xFF707070;
 
 	private final Font font;
 	private final int id;

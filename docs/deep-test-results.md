@@ -74,3 +74,29 @@ Options, Discord Presence, Coordinates Clipboard, Reset Configuration, Done, Cha
 one-off warning. A plugin that sends anything would therefore crash the game on 26.x. Changed to the same
 warn-once-and-drop behaviour on all three. The proper fix — registering a raw-payload type per 5zig
 channel so the API actually works on 26.x — is queued.
+
+---
+
+## 2. NeoForge 26.2 — in progress
+
+Date: 2026-11-04 · log `/tmp/dt-lock-nf262.log`, `/tmp/dt-nf262.log`
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ world loaded, core init | `joined:1` |
+| T1 HUD | ✅ renders in the corner after Escape | `/tmp/nf262-esc-s.png` |
+| T2 settings GUI | ✅ Right Shift opens it, **all labels render** (Plugins (0), Show Mod: On, Mod Scale, Display Options…, Cape Settings…, Language…, Done, Chat…) | `/tmp/dt-nf262-menu-c.png` |
+| T3 ESC | ✅ closes back to live gameplay | `/tmp/nf262-esc-s.png` |
+| T4 character input | ✅ SPACE filled X=233 / Z=21 in the Coordinates Clipboard | `/tmp/nf262-coords-c.png` |
+| T5 core services | 🔧 **fixed** stale-lock recovery (D6) | `Clearing a stale lock and retrying`, no NPE |
+
+### Defects found on this target
+
+**D6 — a hard crash left the conversation database permanently unopenable.** *(fixed)*
+`The5zigMod.newConversationDatabase` caught `NoConnectionException`, printed the stack trace and left
+`database` null, so `NetworkStats.init` / `ConversationManager.init` threw
+`NullPointerException … because "sql" is null` on the netty thread, and chat stayed dead until the user
+manually deleted `run/the5zigmod/sql/chatlogs/<uuid>.lck`. Reproduced with a `.lck` left by a killed
+client. Fix: clear a stale lock, retry once, and fall back to `DummyDatabase` so callers never see null.
+**Verified**: the same stale lock now logs *"Could not open the conversation database … Clearing a stale
+lock and retrying"*, the retry succeeds and `check-client-log.sh` is clean.
