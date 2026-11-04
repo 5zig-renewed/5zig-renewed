@@ -123,6 +123,13 @@ Platform completeness is measurable and roughly flat across eras — the early p
 The single live `UnsupportedOperationException` in each is the `setSession` guard (replacing the client's
 `User` field); the other occurrences are the doc comment.
 
+### Verifying a build
+
+`scripts/check-client-log.sh <client.log>` fails a run on the defect classes that a world + HUD cannot
+catch: missing runtime classes, mixins that bind only at runtime, payload-registration errors, core
+service threads dying after init, and a loader refusing the mod. Run it after every client verification —
+three separate defects in this tree were invisible to "the HUD renders".
+
 ### Loader policy
 
 **Forge is supported for Minecraft 1.20.1 only**; every version above 1.20.1 uses **NeoForge** instead
