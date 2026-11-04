@@ -347,3 +347,20 @@ Date: 2026-11-04 · log `/tmp/dt-f12110.log`
 | T5 DELETE | ✅ | `/tmp/dt-f12110-deleted.png` |
 
 No new defects.
+
+---
+
+## 12. NeoForge 1.21.9 — pass
+
+Date: 2026-11-04 · log `/tmp/dt-nf1219.log`
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined, no crash report, log clean | log |
+| T1 HUD | ✅ | — |
+| T2 settings GUI | ✅ 34.4% of frame changed | `/tmp/dt-nf1219-menu.png` |
+| T3 ESC | ✅ | — |
+| T4 SPACE | ✅ X=264, Z=-253 | `/tmp/nf1219-coords-c.png` |
+| T5 DELETE | ✅ | `/tmp/dt-nf1219-deleted.png` |
+
+No new defects — the D7 (blur) and D8 (`ResourceLocation` final) fixes hold on this patch.
