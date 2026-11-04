@@ -67,6 +67,9 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.16.5 Fabric** | green, self-contained | **HUD** |
 | **1.16.4 Fabric** | green, self-contained; byte-identical platform to 1.16.5 (only version bump) | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
 | **1.16.3 Fabric** | green, self-contained; `GL11` scissor (no `RenderSystem.enableScissor` before 1.16.4) | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
+| **1.16.2 Fabric** | green, self-contained; `GL11` scissor; `doRenderEffects` already public | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
+| **1.16.1 Fabric** | green, self-contained; no `FormattedCharSequence` (text is `FormattedText`); Fabric API 0.34.7 | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
+| **1.16 Fabric** | green, self-contained; byte-identical platform to 1.16.1 (version bump only) | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
 | **1.18.2 Fabric** | green, self-contained | **HUD** |
 | **1.17.1 Fabric** | green, self-contained (Java 16 bytecode; Fabric API mod id `fabric`) | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
 | **1.17 Fabric** | green, self-contained; byte-identical platform to 1.17.1 (version bump only); Fabric API pinned to 0.36.0+1.17, the last build that still admits 1.17.0 | build-only — no client run (task rule); 37/37 mixin targets, 0 unresolved refs |
@@ -79,7 +82,7 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.20.3 Fabric** | green, self-contained | **HUD** |
 | **1.21.2 Fabric** | green, self-contained | **HUD** |
 | **1.21.4 NeoForge** | green, ModDevGradle | **HUD** |
-| 1.21.1 Forge | green (ForgeGradle 7, SRG refmap, 35/35 mixin targets) | **build-only** — FG7's dev run registers only `build/resources/main` as the mod file, so FML reports "has mods that were not found"; needs a packaged-jar test |
+
 | **26.1.2 NeoForge** | green, 26.x toolchain | **HUD** |
 
 Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation.
@@ -111,6 +114,13 @@ Platform completeness is measurable and roughly flat across eras — the early p
 
 The single live `UnsupportedOperationException` in each is the `setSession` guard (replacing the client's
 `User` field); the other occurrences are the doc comment.
+
+### Loader policy
+
+**Forge is supported for Minecraft 1.20.1 only**; every version above 1.20.1 uses **NeoForge** instead
+(decision recorded 2026-11-04: ForgeGradle 7's Slime Launcher could not load the mod in a dev run, and
+NeoForge's ModDevGradle path is proven across 1.20.1 → 26.1.2). Fabric remains the primary target for
+every version, NeoForge is the second loader from 1.20.2 onward.
 
 ### Known gaps
 

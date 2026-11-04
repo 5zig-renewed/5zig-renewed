@@ -49,7 +49,10 @@ is used by this mod.**
 | `Connection` | `setEncryptionKey(Cipher, Cipher)` → `setEncryptionKey(SecretKey)` | no |
 
 So the *only* mandatory source change for 1.16.2 is rendering state that `javac` cannot see through
-`net.minecraft.*` imports:
+`net.minecraft.*` imports. Measured over the 55-file platform: `platform/1.16.2` differs from
+`platform/1.16.5` in exactly **two** files — `GuiContext` (the scissor reimplementation below) and
+`Variables` (a comment about `doRenderEffects`); every other file changes only in the "1.16.5" →
+"1.16.2" wording of its comments.
 
 ### Scissor: `RenderSystem.enableScissor` is 1.16.4+
 
