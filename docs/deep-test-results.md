@@ -126,3 +126,26 @@ as well as NeoForge.
   and retries; nothing in the mode can be exercised beyond the failure path.
 - **T6 plugin API** has no plugin artifact to load, and on 26.x raw plugin channels are intentionally
   degraded to a warning (D5). Testing it properly needs a small test plugin project.
+
+---
+
+## 4. NeoForge 26.1.2 — pass
+
+Date: 2026-11-04 · log `/tmp/dt-nf2612.log`
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined, log clean | log |
+| T1 HUD | ✅ renders (also visible on the death screen) | `/tmp/nf2612-menu-c.png` |
+| T2 settings GUI | ✅ Right Shift, all labels | `/tmp/nf2612-menu3-c.png` |
+| T3 ESC | ✅ closes | — |
+| T4 SPACE | ✅ X=26, Z=6 | `/tmp/nf2612-coords-c.png` |
+
+No new defects.
+
+### Testing note
+
+The stock test world is lethal (zombies kill the idle player within a few minutes), and `/difficulty` is
+not a working command on 26.x — the client answers `Unknown or incomplete command` for
+`difficulty peaceful`. Test order therefore matters: respawn, then run the GUI checks immediately. A
+future improvement is a bespoke flat/peaceful test world per target.
