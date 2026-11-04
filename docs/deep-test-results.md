@@ -174,3 +174,28 @@ Date: 2026-11-04 · log `/tmp/mkworld.log`
 | T6 commands | ✅ `/time set day` → *Set minecraft:overworld to time marker minecraft:day* | `/tmp/t5-cmd2-c.png` |
 
 No new defects.
+
+---
+
+## 6. NeoForge 26.1.1 — pass
+
+Date: 2026-11-04 · log `/tmp/dt-nf2611b.log`
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined, `check-client-log.sh` clean | log |
+| T1 HUD | ✅ | — |
+| T2 settings GUI | ✅ Right Shift, all labels | `/tmp/nf2611-m-c.png` |
+| T3 ESC | ✅ | — |
+| T4 SPACE | ✅ X=-71, Z=-7 | `/tmp/nf2611-c-c.png` |
+| T5 DELETE | ✅ | `/tmp/nf2611-d-c.png` |
+
+No new defects.
+
+### Fixture note — vanilla "Create Test World" (26.1+)
+
+26.1 has a title-screen **Create Test World** button (next to *Mods*) that opens the create-world dialog
+**pre-set to Creative with Allow Commands ON**. That is the clean way to make a per-version fixture on the
+older 26.x builds, where a 26.1.2-era world only produces the *"Downgrading a world is not supported"*
+dialog. The manual route used for the first fixture also works but needs the Allow Commands *switch*
+(right edge of the row) rather than the row itself.
