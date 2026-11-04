@@ -46,6 +46,7 @@ dependencies {
     minecraftLibrary 'com.kohlschutter.junixsocket:junixsocket-common:2.5.1'
     minecraftLibrary 'com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1'
     minecraftLibrary 'org.xerial:sqlite-jdbc:3.45.3.0'
+    minecraftLibrary 'org.hsqldb:hsqldb:2.7.4'
     minecraftLibrary 'io.netty:netty-codec-http:4.1.97.Final'
 }
 
@@ -78,6 +79,7 @@ def jarJarModules = [
         ['com.kohlschutter.junixsocket', 'junixsocket-common', '2.5.1', '[2.5.1]'],
         ['com.kohlschutter.junixsocket', 'junixsocket-native-common', '2.5.1', '[2.5.1]'],
         ['org.xerial', 'sqlite-jdbc', '3.45.3.0', '[3.45.3.0]'],
+        ['org.hsqldb', 'hsqldb', '2.7.4', '[2.7.4]'],
         ['io.netty', 'netty-codec-http', '4.1.97.Final', '[4.1.97.Final]'],
 ]
 

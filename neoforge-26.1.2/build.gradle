@@ -72,7 +72,6 @@ dependencies {
     def hsqldb = implementation('org.hsqldb:hsqldb:2.7.4') {
         transitive = false
     }
-    additionalRuntimeClasspath('org.hsqldb:hsqldb:2.7.4') { transitive = false }
     def nettyCodecHttp = implementation('io.netty:netty-codec-http:4.1.97.Final') {
         transitive = false
     }
