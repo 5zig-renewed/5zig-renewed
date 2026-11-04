@@ -125,12 +125,21 @@ public final class PluginMessages {
 					buffer.writeBytes(payload.data());
 				}
 			};
-			registrar.playBidirectional(type, codec, PluginMessages::handle);
+			// NeoForge 21.8/21.11 split the handler per direction: the single-handler
+			// playBidirectional(type, codec, handler) overload now registers only the
+			// serverbound handler and expects the clientbound one from
+			// RegisterClientPayloadHandlersEvent. Leaving it null makes ClientNetworkRegistry
+			// .setup() abort with "Some clientbound payloads are missing client-side handlers".
+			// Passing the handler twice registers both directions in this one call (21.1.x's
+			// single-handler overload did exactly that internally).
+			registrar.playBidirectional(type, codec, PluginMessages::handle, PluginMessages::handle);
 		}
 	}
 
 	private static void handle(RawPayload payload, IPayloadContext context) {
-		// Payload handlers run on the network thread; the core expects the client thread.
+		// The registrar's default HandlerThread.MAIN already wraps handlers in
+		// MainThreadPayloadHandler, so this normally runs on the main thread; enqueueWork is a
+		// no-op hop there and keeps delivery correct if the thread policy ever changes.
 		context.enqueueWork(() -> deliver(payload.type().id().toString(), payload.data()));
 	}
 

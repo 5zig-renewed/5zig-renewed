@@ -82,6 +82,7 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.20.6 Fabric** | green, self-contained | **HUD** |
 | **1.20.3 Fabric** | green, self-contained | **HUD** |
 | **1.21.2 Fabric** | green, self-contained | **HUD** |
+| **1.21 NeoForge** | green, ModDevGradle | **HUD** |
 | **1.21.4 NeoForge** | green, ModDevGradle | **HUD** |
 
 | **26.1.2 NeoForge** | green, 26.x toolchain | **HUD** |
