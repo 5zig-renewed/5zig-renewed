@@ -65,3 +65,16 @@ bug is in dispatch (see the skill's keybind pitfall), not registration.
 
 Results per target go in `docs/deep-test-results.md`: target, date, each section T0–T6 with pass/fail and
 the screenshot/log evidence path. Defects found get fixed and the target re-tested from T0.
+
+## Test fixtures
+
+World data upgrades **one way**, so each family's fixture is created on the *oldest* version in the family
+and copied forward — never the other way round (that only yields "Downgrading a world is not supported").
+
+| fixture | created on | copied to |
+|---|---|---|
+| `~/work/test-worlds/26x-creative` | Fabric 26.1 | all 26.x Fabric + NeoForge run dirs |
+| `~/work/test-worlds/121x-creative` | Fabric 1.21 | all 1.21.x Fabric + NeoForge run dirs (24) |
+
+Both are **Creative**, because a survival fixture kills the player mid-battery and the death screen then
+swallows every key press — which reads exactly like "the hotkey is dead".
