@@ -8,6 +8,7 @@
     "MixinAbstractClientPlayer",
     "MixinChatComponent",
     "MixinChatScreen",
+    "MixinClientCommonPacketListener",
     "MixinClientPacketListener",
     "MixinConnection",
     "MixinDeathScreen",

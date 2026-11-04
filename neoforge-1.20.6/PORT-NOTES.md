@@ -61,9 +61,40 @@ so MDG 2.0.148 consumes it natively.
   `[20.6,20.7)` / `[1.20.6,1.20.7)`.
 - Manifest carries `Minecraft-Version: 1.20.6`; class files are version 65; zero `net.fabricmc`
   references.
-- 36/36 named mixin method targets in the 14 platform mixins resolve against MDG's patched
+- 36/36 named (name-only — see the payload section) mixin method targets in the 14 platform mixins resolve against MDG's patched
   NeoForge 20.6.144 jar.
 - Payload registration replayed against the real `NetworkRegistry` from that jar
   (`RegisterPayloadHandlersEvent` → `PayloadRegistrar` → `NetworkRegistry.register`): all three
   `the5zigmod:*` ids land in the `PLAY` registry. So 20.6 never had the 20.4 namespace bug — its
   registrar argument is a version, not a namespace.
+
+## Custom-payload dispatch is NeoForge's, not vanilla's (fixed after the first live run)
+
+The first connection crashed with `InvalidInjectionException: @Inject annotation on
+the5zig$handleCustomPayload could not find any targets matching
+handleCustomPayload(Lnet/minecraft/network/protocol/common/custom/CustomPacketPayload;)V`.
+
+`javap` of the **patched** client (`build/moddev/artifacts/neoforge-20.6.144.jar`) shows what the compile-time check could not:
+
+| Class | NeoForge signature |
+|---|---|
+| `ClientPacketListener` | `handleCustomPayload(Lnet/minecraft/network/protocol/common/custom/CustomPacketPayload;)V)` |
+| `ClientCommonPacketListenerImpl` | `handleCustomPayload(Lnet/minecraft/network/protocol/common/ClientboundCustomPayloadPacket;)V` — the real entry point; it handles `BrandPayload` itself (sets `serverBrand`) and returns **before** delegating to the subclass |
+
+Unlike 20.2/20.4 the parameter list is unchanged, so the old injection would have applied without
+an error — and done nothing. NeoForge routes every custom payload through the common listener
+first, which swallows `BrandPayload` before `ClientPacketListener` (and therefore the platform
+mixin) ever sees it.
+
+Both the crash class and this silent no-op are fixed by hooking `MixinClientCommonPacketListener`
+at the method that actually owns the brand branch, play-phase-guarded with
+`this instanceof ClientPacketListener`.
+
+The platform `MixinClientPacketListener` is excluded from this project's source set; this build has
+its own copy (`loader/neoforge-1.20.6/java/eu/the5zig/mod/mixin/MixinClientPacketListener.java`) with
+the five remaining play-connection injections, so the Fabric builds keep their verified target.
+
+**Why the 36/36 check passed:** it matched target *names*. `handleCustomPayload` does exist in the
+patched jar — under a different descriptor (and, on 1.20.6, a different class owning the brand
+branch). A target is only valid when `name + descriptor` matches; the re-check used here compares
+`javap -p -s` descriptors and resolves 18/18 loader-local targets per version.
