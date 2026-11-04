@@ -536,3 +536,21 @@ All four carry D9 + D10 and pass with no crash report. Toolchain for this era is
 | Fabric 1.21.1 | ok 33.6% | ok 32.4% | 0 |
 
 No crash reports. D9 + D10 both hold; these are the versions where D10 was an outright crash before the fix.
+
+---
+
+## 30–33. 1.21 and 1.20.6 — both loaders (pass)
+
+| target | menu | coords | crashes |
+|---|---|---|---|
+| NeoForge 1.21 | ok 33.6% | ok 32.2% | 0 |
+| Fabric 1.21 | ok 33.6% | ok 32.3% | 0 |
+| NeoForge 1.20.6 | ok 30.9% | ok 28.1% · X=177/Z=312 | 0 |
+| Fabric 1.20.6 | ok 31.0% | ok 28.4% | 0 |
+
+1.20.6's frame diffs are lower than the 1.21 numbers (its dialog covers less of the frame), which is exactly
+why the dialog threshold is 6% and not 10% — a threshold calibrated on 1.21 would have false-failed this.
+
+**Fixture gap:** the 1.21 Creative fixture was copied to 1.21.x and 26.x run dirs only, so these 1.20.x runs
+used their older **survival** worlds and only passed because the player happened not to die. A death screen
+silently swallows every key press. Copy the fixture down before the rest of the 1.20.x sweep.

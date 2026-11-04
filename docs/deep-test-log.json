@@ -180,5 +180,61 @@
   "coords": "ok",
   "battery_said": [],
   "verdict": "PASS"
+ },
+ {
+  "target": "nf121",
+  "project": "neoforge-1.21",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3361,
+  "menu": "ok",
+  "coords_diff": 0.3219,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "f121",
+  "project": "1.21-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3361,
+  "menu": "ok",
+  "coords_diff": 0.3228,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "nf1206",
+  "project": "neoforge-1.20.6",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3091,
+  "menu": "ok",
+  "coords_diff": 0.281,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "f1206",
+  "project": "1.20.6-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3104,
+  "menu": "ok",
+  "coords_diff": 0.2835,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
  }
 ]
