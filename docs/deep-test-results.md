@@ -396,3 +396,46 @@ local jar byte-for-byte by size:
 | `v4.0.0-alpha.1-nf1219` | 21,721,594 |
 | `v4.0.0-alpha.1-nf12110` | 20,330,156 |
 | `v4.0.0-alpha.1-nf12111` | 21,726,159 |
+
+---
+
+## 14. NeoForge 1.21.8 — pass (after D9)
+
+Date: 2026-11-04 · logs `/tmp/dt-nf1218.log` (crash), `/tmp/dt-nf1218b.log` (fixed)
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined, no crash report after the fix, log clean | log |
+| T1 HUD | ✅ | — |
+| T2 settings GUI | ✅ 34.3% of frame changed | `/tmp/dt-nf1218b-menu.png` |
+| T3 ESC | ✅ | — |
+| T4 SPACE | ✅ X=364, Z=-253 | `/tmp/nf1218b-coords-c.png` |
+| T5 DELETE | ✅ | `/tmp/dt-nf1218b-deleted.png` |
+
+### Defect D9 — the blur crash is not a 26.x/1.21.9 quirk, it spans 1.20.2+
+
+First run of this target crashed exactly like D7:
+
+```
+Description: Rendering screen
+java.lang.IllegalStateException: Can only blur once per frame
+```
+
+Ground truth from the decompiled `Screen`:
+
+| version | `Screen#render` renders the background? |
+|---|---|
+| 1.20.1 | **no** (the call lives in each screen) |
+| 1.20.2 | **yes** — first statement of `render` |
+| 1.21.1 | yes |
+| 1.21.8 | yes (crashes: the background is blurred by then) |
+
+So the platform's own `renderBackground(...)` is correct only up to **1.20.1**. From 1.20.2 it draws the
+background a second time (cosmetic double dim), and once the background became blurred it throws. Fixed
+the same way as 26.x on **14 platforms**: 1.20.2, 1.20.3, 1.20.4, 1.20.5, 1.20.6, 1.21, 1.21.1, 1.21.2,
+1.21.3, 1.21.4, 1.21.5, 1.21.6, 1.21.7, 1.21.8 — `super.render(...)` first, then the 5zig screen. All 14
+Fabric projects compile clean; NeoForge 1.21.8 verified in-client (menu 34.3%, coords 33.5%, SPACE
+`X=364 / Z=-253`, no crash report).
+
+**1.16–1.20.1 are deliberately unchanged** — there `Screen#render` does not render the background, so
+removing the call would leave the mod's screens undimmed.

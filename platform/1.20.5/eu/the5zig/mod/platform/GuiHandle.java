@@ -71,12 +71,12 @@ public class GuiHandle extends Screen implements IGuiHandle {
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		RenderContext.set(graphics);
 		try {
-			// 1.15's Screen#render drew the default background itself; since 1.20.2 screens do it
-			// explicitly and the hook carries the mouse position.
-			this.renderBackground(graphics, mouseX, mouseY, partialTick);
-			child.drawScreen0(mouseX, mouseY, partialTick);
-			// Screen#render renders the screen's own widgets, which is a no-op for this wrapper.
+			// Screen#render renders the background itself from 1.20.2 on, and from 1.21.2 that background
+			// is blurred and may only be blurred once per frame - drawing it here as well throws
+			// "Can only blur once per frame" as soon as any 5zig screen opens. Let super own the
+			// background, then draw the 5zig screen over it.
 			super.render(graphics, mouseX, mouseY, partialTick);
+			child.drawScreen0(mouseX, mouseY, partialTick);
 		} finally {
 			RenderContext.clear();
 		}
