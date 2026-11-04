@@ -1,0 +1,76 @@
+[
+ {
+  "target": "f1217",
+  "project": "1.21.7-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3466,
+  "menu": "ok",
+  "coords_diff": 0.3371,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "nf1216",
+  "project": "neoforge-1.21.6",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3414,
+  "menu": "ok",
+  "coords_diff": 0.3355,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "f1216",
+  "project": "1.21.6-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3416,
+  "menu": "ok",
+  "coords_diff": 0.3346,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "nf1215",
+  "project": "neoforge-1.21.5",
+  "build": 0,
+  "battery": 1,
+  "joined": 1,
+  "crashes": 1,
+  "menu_diff": 0.3954,
+  "menu": "ok",
+  "coords_diff": 0.0,
+  "coords": "FAIL",
+  "battery_said": [
+   "FAIL  coordinates GUI opened: only 0.0% changed (needed 6%) - the screen did not open"
+  ],
+  "verdict": "CHECK"
+ },
+ {
+  "target": "f1215",
+  "project": "1.21.5-fabric",
+  "build": 0,
+  "battery": 1,
+  "joined": 1,
+  "crashes": 1,
+  "menu_diff": 0.3954,
+  "menu": "ok",
+  "coords_diff": 0.0,
+  "coords": "FAIL",
+  "battery_said": [
+   "FAIL  coordinates GUI opened: only 0.0% changed (needed 6%) - the screen did not open"
+  ],
+  "verdict": "CHECK"
+ }
+]
