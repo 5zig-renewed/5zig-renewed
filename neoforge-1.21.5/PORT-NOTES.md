@@ -5,7 +5,7 @@
 | Gradle | 8.14.3 (`~/work/tools/gradle-8.14.3`, `--no-daemon`, `-Dorg.gradle.jvmargs=-Xmx1200m`) |
 | JDK | 21 (`/usr/lib/jvm/java-21-openjdk`), target class file 65 |
 | Plugin | ModDevGradle `net.neoforged.moddev` **2.0.148** |
-| NeoForge | **21.5.101** (FancyModLoader 4.x, Mixin 0.8.7) |
+| NeoForge | **21.5.101** (FancyModLoader 7.x, Mixin 0.8.7) |
 | Minecraft | 1.21.5, Mojang official mappings |
 
 Build:

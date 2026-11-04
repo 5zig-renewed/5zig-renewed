@@ -124,7 +124,7 @@ sourceSets {
             ]
             exclude 'eu/the5zig/mod/installer/**'
             // authlib 6 (1.21.x) removed the legacy Yggdrasil user authentication these two core
-            // classes are written against; the platform provides 1.21.4 copies instead of editing core.
+            // classes are written against; the platform provides 1.21 copies instead of editing core.
             exclude 'eu/the5zig/mod/account/AccountManager.java'
             exclude 'eu/the5zig/mod/chat/network/packets/PacketEncryption.java'
             // The platform's payload bridge is written against the Fabric API. This build replaces

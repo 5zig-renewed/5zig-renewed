@@ -1,7 +1,9 @@
 plugins {
-    // NeoForge 20.2 predates the ModDevGradle bundle: 20.2.93 ships only a Forge-format
-    // -userdev jar (no moddev-config.json), which MDG 1.x and 2.x both refuse. NeoGradle
-    // (net.neoforged.gradle.userdev) is the toolchain that consumes it.
+    // NeoForge 20.2 predates the ModDevGradle "bundle": 20.2.93 is published only as a
+    // Forge-format -userdev jar (no moddev-config.json), which MDG 1.x and 2.x both refuse
+    // ("Unable to find a variant with the requested capability: neoforge-moddev-bundle").
+    // NeoGradle (net.neoforged.gradle.userdev) is the toolchain that consumes that artefact;
+    // it is the plugin NeoForge shipped for the 20.2/20.4 line before MDG existed.
     id 'net.neoforged.gradle.userdev' version '7.1.39'
 }
 
@@ -9,16 +11,182 @@ version = '4.0.0-alpha.1'
 group = 'eu.the5zig.renewed'
 base { archivesName = '5zig-renewed-1.20.2-neoforge' }
 
+// The build lives in neoforge-1.20.2/ but the sources live at the repository root.
+def repoRoot = file("${projectDir}/..")
+
 java {
-    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+    // Minecraft 1.20.2 is a Java 17 title, but NeoGradle's own tooling (JST, the source
+    // transformer) is a Java 21 artifact on this plugin line: running it on a 17 toolchain dies
+    // with UnsupportedClassVersionError (class file 65). So the toolchain is 21 and the mod is
+    // compiled down to 17 bytecode with --release.
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://jitpack.io' }
 }
 
 dependencies {
+    // NeoForge 20.2.93 is the final 20.2 release; it is a real net.neoforged.* loader built on
+    // Mojang official mappings (no reobfuscation step on this line).
     implementation 'net.neoforged:neoforge:20.2.93'
+
+    // 5zig's own libraries. NeoGradle's userdev dev-runtime is a flat legacy classpath, so
+    // `implementation` is enough there; `jarJar` nests the same artifacts into the shipped jar
+    // (META-INF/jarjar/ + metadata.json) exactly like the 1.20.1 and 1.21.1 builds.
+    implementation('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') {
+        exclude group: 'com.google.code.gson'
+    }
+    implementation 'net.sf.jacob-project:jacob:1.14.3'
+    implementation 'org.json:json:20231013'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    // junixsocket-core is the full bundle; only common/native-common are nested (nesting the
+    // bundle as well would ship the same classes twice).
+    implementation 'com.kohlschutter.junixsocket:junixsocket-core:2.5.1'
+    implementation 'com.kohlschutter.junixsocket:junixsocket-common:2.5.1'
+    implementation 'com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1'
+    implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+    implementation 'io.netty:netty-codec-http:4.1.97.Final'
+
+    jarJar('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') {
+        jarJar.ranged(it, '[master-SNAPSHOT,)')
+    }
+    jarJar('net.sf.jacob-project:jacob:1.14.3') {
+        jarJar.pin(it, '1.14.3')
+    }
+    jarJar('org.json:json:20231013') {
+        jarJar.pin(it, '20231013')
+    }
+    jarJar('org.xerial:sqlite-jdbc:3.45.3.0') {
+        jarJar.pin(it, '3.45.3.0')
+    }
+    jarJar('io.netty:netty-codec-http:4.1.97.Final') {
+        jarJar.pin(it, '4.1.97.Final')
+    }
+    jarJar('com.googlecode.json-simple:json-simple:1.1.1') {
+        jarJar.pin(it, '1.1.1')
+    }
+    jarJar('com.kohlschutter.junixsocket:junixsocket-common:2.5.1') {
+        jarJar.pin(it, '2.5.1')
+    }
+    jarJar('com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1') {
+        jarJar.pin(it, '2.5.1')
+    }
 }
 
 runs {
     client {
         modSource sourceSets.main
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+                    new File(repoRoot, 'core').path,
+                    new File(repoRoot, 'common').path,
+                    new File(repoRoot, 'api').path,
+                    new File(repoRoot, 'platform/1.20.2/eu').path,
+                    new File(repoRoot, 'loader/neoforge-1.20.2/java').path
+            ]
+            exclude 'eu/the5zig/mod/installer/**'
+            exclude 'eu/the5zig/mod/account/AccountManager.java'
+            exclude 'eu/the5zig/mod/chat/network/packets/PacketEncryption.java'
+            // The platform's payload bridge is written against the Fabric API; this build
+            // substitutes a NeoForge implementation of the same class. The platform source root
+            // sits at platform/1.20.2/eu, so excludes are relative to the package root.
+            exclude 'the5zig/mod/platform/PluginMessages.java'
+        }
+        resources {
+            srcDirs = [
+                    new File(projectDir, 'src/main/resources').path,
+                    new File(repoRoot, 'core/resources').path,
+                    new File(repoRoot, 'loader/resources').path
+            ]
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('META-INF/mods.toml') {
+        expand 'version': project.version
+    }
+}
+
+// eu.the5zig.mod.Version reads these three attributes from the first META-INF/MANIFEST.MF that
+// advertises "5zig-Version"; without them the HUD and the version string fall back to "bDEV".
+def jarManifestAttributes = [
+        '5zig-Version'         : project.version,
+        'Minecraft-Version'    : '1.20.2',
+        '5zig-Build'           : 'alpha',
+        // The mixin config is declared as [[mixins]] in META-INF/mods.toml; listing it here as
+        // well would register the same config on two paths.
+        'Specification-Title'  : 'the5zigmod',
+        'Specification-Version': project.version,
+]
+
+tasks.withType(Jar).configureEach {
+    manifest { attributes(jarManifestAttributes) }
+}
+
+// NeoGradle names the jar-in-jar artefact `<name>-all.jar` and leaves the plain jar as
+// `<name>.jar`. Every other build in this repo publishes the self-contained jar under the plain
+// name and the thin one as `-dev`, so mirror that: `build/libs/5zig-renewed-1.20.2-neoforge-*.jar`
+// is the shippable jar (eight libraries nested), the `-dev` jar is only good for a dev workspace.
+tasks.named('jar') {
+    archiveClassifier = 'dev'
+}
+
+tasks.named('jarJar') {
+    archiveClassifier = ''
+
+    // NeoGradle's jar-in-jar writer always records `[<resolved version>,)` as the dependency range,
+    // whichever form `jarJar.pin`/`jarJar.ranged` was given. The rest of this repo nests exact
+    // ranges (`[3.45.3.0]`, …) so a second mod bundling the same library cannot be served a
+    // different version; rewrite the metadata in place to match. DiscordIPC keeps its open range:
+    // it is a SNAPSHOT and no release version exists to pin to.
+    doLast {
+        def jarFile = archiveFile.get().asFile
+        def rewritten = new File(jarFile.parentFile, jarFile.name + '.tmp')
+        def zip = new java.util.zip.ZipFile(jarFile)
+        try {
+            def out = new java.util.zip.ZipOutputStream(new java.io.FileOutputStream(rewritten))
+            try {
+                zip.entries().each { entry ->
+                    def bytes
+                    if (entry.name == 'META-INF/jarjar/metadata.json') {
+                        def text = zip.getInputStream(entry).getText('UTF-8')
+                        text = text.replaceAll(/"range": "\[([^,\]]+),\)"/) { all, version ->
+                            version.contains('SNAPSHOT') ? all : "\"range\": \"[${version}]\"".toString()
+                        }
+                        bytes = text.getBytes('UTF-8')
+                    } else {
+                        bytes = zip.getInputStream(entry).bytes
+                    }
+                    def copy = new java.util.zip.ZipEntry(entry.name)
+                    copy.time = entry.time
+                    out.putNextEntry(copy)
+                    out.write(bytes)
+                    out.closeEntry()
+                }
+            } finally {
+                out.close()
+            }
+        } finally {
+            zip.close()
+        }
+        if (!jarFile.delete() || !rewritten.renameTo(jarFile)) {
+            throw new GradleException("Could not rewrite the jar-in-jar metadata in ${jarFile}")
+        }
     }
 }

@@ -1,6 +1,6 @@
 plugins {
     // ModDevGradle (MDG) is NeoForge's official Gradle plugin. Same 2.0.148 the verified 1.21.1 /
-    // 1.21.4 builds use; it resolves the 21.8.x line (Minecraft 1.21.8, FML 8) from NeoForged's
+    // 1.21.4 builds use; it resolves the 21.8.x line (Minecraft 1.21.8, FML 9) from NeoForged's
     // maven and produces the patched game jar through NeoForm Runtime without recompilation.
     id 'net.neoforged.moddev' version '2.0.148'
 }

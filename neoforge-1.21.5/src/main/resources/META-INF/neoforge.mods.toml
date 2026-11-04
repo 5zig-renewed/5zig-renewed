@@ -1,6 +1,6 @@
 modLoader="javafml"
-# NeoForge 21.5.x ships FancyModLoader 4.x.
-loaderVersion="[4,)"
+# NeoForge 21.5.x ships FancyModLoader 7.x.
+loaderVersion="[7,)"
 license="GPL-3.0"
 
 [[mods]]

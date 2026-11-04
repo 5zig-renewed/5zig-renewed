@@ -111,8 +111,8 @@ sourceSets {
 // ---------------------------------------------------------------------------------------------
 def coreOverlay = [
         // 26.3: SearchEntry compared the key event against GLFW.GLFW_KEY_ENTER, i.e. it imported
-        // org.lwjgl.glfw - a package a 26.3 install does not contain. The compile-only GLFW
-        // dependency that used to hide this is gone; core/ stays untouched and the 26.3 copy in
+        // org.lwjgl.glfw - a package a 26.3 install does not contain. The lwjgl-glfw dependency
+        // that used to hide this is gone; core/ stays untouched and the 26.3 copy in
         // compat-src/ uses InputConstants.KEY_RETURN.
         'eu/the5zig/mod/manager/SearchEntry.java',
         'eu/the5zig/mod/account/AccountManager.java',

@@ -1,67 +1,84 @@
-# 1.21.4 NeoForge port notes
+# 1.21.8 NeoForge port notes
 
 | Piece | Version |
 |---|---|
 | Gradle | 8.14.3 (`~/work/tools/gradle-8.14.3`, `--no-daemon`, `-Dorg.gradle.jvmargs=-Xmx1200m`) |
 | JDK | 21 (`/usr/lib/jvm/java-21-openjdk`), target class file 65 |
 | Plugin | ModDevGradle `net.neoforged.moddev` **2.0.148** |
-| NeoForge | **21.4.161** (FancyModLoader 4.x, Mixin 0.8.7) |
-| Minecraft | 1.21.4, Mojang official mappings |
+| NeoForge | **21.8.57** (FancyModLoader 9.0.18, Mixin 0.8.7) |
+| Minecraft | 1.21.8, Mojang official mappings |
 
 Build:
 
 ```bash
-cd neoforge-1.21.4
+cd neoforge-1.21.8
 JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
   ~/work/tools/gradle-8.14.3/bin/gradle --no-daemon -Dorg.gradle.jvmargs=-Xmx1200m build
 ```
 
-Jar: `neoforge-1.21.4/build/libs/5zig-renewed-1.21.4-neoforge-4.0.0-alpha.1.jar`
-(18.8 MB, self-contained: eight libraries nested under `META-INF/jarjar/`).
+Jar: `neoforge-1.21.8/build/libs/5zig-renewed-1.21.8-neoforge-4.0.0-alpha.1.jar`
+(20.2 MB, self-contained: twelve libraries nested under `META-INF/jarjar/`).
 
-## What is different from the verified 1.21.1 project
+## What is different from the verified 1.21.4 project
 
-Nothing structural. The project is the 1.21.1 one with the version constants moved:
+The project is the 1.21.4 one with the version constants moved, plus two code-level changes:
 
-| Item | 1.21.1 | 1.21.4 |
+| Item | 1.21.4 | 1.21.8 |
 |---|---|---|
-| NeoForge | 21.1.265 | 21.4.161 |
-| neoForge dependency range | `[21.1,22)` | `[21.4,22)` |
-| Minecraft dependency range | `[1.21.1,1.21.2)` | `[1.21.4,1.21.5)` |
-| Platform sources | `platform/1.21.1/eu` | `platform/1.21.4/eu` |
-| Loader glue | `loader/neoforge-1.21.1/java` | `loader/neoforge-1.21.4/java` |
-| Manifest `Minecraft-Version` | 1.21.1 | 1.21.4 |
+| NeoForge | 21.4.161 (FML 6) | 21.8.57 (FML 9) |
+| `loaderVersion` | `[4,)` | `[9,)` |
+| neoForge dependency range | `[21.4,22)` | `[21.8,22)` |
+| Minecraft dependency range | `[1.21.4,1.21.5)` | `[1.21.8,1.21.9)` |
+| Platform sources | `platform/1.21.4/eu` | `platform/1.21.8/eu` |
+| Loader glue | `loader/neoforge-1.21.4/java` | `loader/neoforge-1.21.8/java` |
+| Manifest `Minecraft-Version` | 1.21.4 | 1.21.8 |
 
-The glue files (`FiveZigNeoForge`, `PluginMessages`) are the 1.21.1 ones verbatim; the platform
-APIs they touch (`Keybinds`, `CoreState`, `PluginMessages`) are byte-identical between
-`platform/1.21.1` and `platform/1.21.4`, so no code change was needed.
+### Code changes forced by the version bump
 
-* `@Mod(value = "the5zigmod", dist = Dist.CLIENT)`, explicit `modEventBus`/`NeoForge.EVENT_BUS`
-  listener registration, `ClientTickEvent.Post` for the per-tick driver, `RegisterKeyMappingsEvent`
-  for the bindings — unchanged from 1.21.1.
-* `PluginMessages` still registers the three 5zig channels (`the5zigmod:5zig`, `…:5zig_reg`,
-  `…:5zig_set`) as `optional()` bidirectional typed payloads through
-  `RegisterPayloadHandlersEvent`, and `send()` still gates on
-  `NetworkRegistry.hasChannel(connection, ConnectionProtocol.PLAY, id)`.
-* The HUD hook is still the platform's own `@Mixin(Gui)` on
-  `render(GuiGraphics, DeltaTracker)` / `renderItemHotbar(GuiGraphics, DeltaTracker)`, delegating to
-  `HudFrame`; NeoForge 21.4 installs a `GuiLayerManager` but keeps both methods, so no loader mixin
-  is needed (unlike 26.x).
+* **Core overlay.** `platform/1.21.8` has no `AccountManager`/`PacketEncryption`; 1.21.8 ships
+  authlib 6 (`GameProfile` is a record, the legacy Yggdrasil client is gone). The build excludes
+  those two files from the copied core and compiles `versions/1.21.8-fabric/compat-src` instead,
+  exactly like the verified 1.21.8 Fabric build. That compat tree has no Fabric imports.
+* **`PacketDistributor.sendToServer` is gone.** In this line only the server-bound senders remain on
+  `net.neoforged.neoforge.network.PacketDistributor`; the client sender lives in
+  `net.neoforged.neoforge.client.network.ClientPacketDistributor`. `PluginMessages.send()` now calls
+  that one (a one-line change, otherwise the file is the 1.21.4 implementation).
+* **Apache HttpClient is nested.** 1.21.5+ no longer ships it (authlib dropped it) and the core's
+  Spotify/"open URL" code imports `org.apache.http.*` directly. `httpclient 4.5.14`,
+  `httpcore 4.4.16`, `commons-codec 1.17.1` and `commons-logging 1.3.4` are `implementation` +
+  `additionalRuntimeClasspath` + `jarJar`'d, taking the nested set from 8 to 12 jars.
 
-Runtime libraries are declared twice (`implementation` + `additionalRuntimeClasspath`) and nested
-with `jarJar`, exactly as on 1.21.1: eight artifacts, `version { strictly '[x]' }` for every one
-except `DiscordIPC:master-SNAPSHOT`, which has no fixed version and keeps its `[master-SNAPSHOT,)`
-metadata (verified to parse with FML's JarJarMetadata).
+`additionalRuntimeClasspath` still exists on FML 9 and is still needed: the mod's
+TransformingClassLoader cannot see the game classpath in dev.
+
+### Mixin targets
+
+No loader copy of any mixin was needed. All 33 `@Inject`/`@ModifyVariable`/`@Shadow` targets named
+by `platform/1.21.8` resolve with the exact JVM descriptor against
+`build/moddev/artifacts/neoforge-21.8.57.jar`. In particular `Gui#render(GuiGraphics, DeltaTracker)`,
+`Gui#renderItemHotbar(GuiGraphics, DeltaTracker)` (called from `renderHotbar`), `Gui#tick(Z)V` and
+`Gui#setOverlayMessage(Component, Z)` all survive NeoForge 21.8's Gui patches — unlike 26.x, which
+renames `extractHotbarAndDecorations` → `extractHotbar`.
 
 ## Verification performed
 
 No client was launched (task rule). Static checks:
 
-* `gradle build` → `BUILD SUCCESSFUL`; compile against the real NeoForge 21.4.161 patched jar.
-* Mixin targets: 36/36 `@Inject`/`@Shadow` targets named by `platform/1.21.4` resolve with the exact
-  JVM descriptor in `build/moddev/artifacts/neoforge-21.4.161.jar`.
-* Manifest, `META-INF/neoforge.mods.toml` (TOML-parsed, version expanded, ranges checked) and
-  `mixins.the5zigmod.json` (`JAVA_21`, 13 classes, all present) inside the jar.
-* Eight nested jars, each a valid zip; `META-INF/jarjar/metadata.json` lists exactly those eight
-  paths; no duplicate jar entries; single manifest.
-* All classes are class file 65; zero `net/fabricmc` references in the artifact.
+* `gradle build` → `BUILD SUCCESSFUL` against NeoForge 21.8.57's patched jar.
+* 33/33 mixin targets resolve by name + descriptor (checker also validated in reverse: the 1.21.11
+  platform against this jar reports the three 1.21.9+ chat/input renames as misses, so it is not
+  vacuously green).
+* `META-INF/neoforge.mods.toml` TOML-parses, `${version}` is expanded, `[[mixins]]` names
+  `mixins.the5zigmod.json`, dependency ranges are `[21.8,22)` / `[1.21.8,1.21.9)`.
+* `mixins.the5zigmod.json` in the jar: `JAVA_21`, 13 classes, every class file present.
+* 12 nested jars, each a valid zip; `META-INF/jarjar/metadata.json` lists exactly those 12 paths;
+  no duplicate zip entries; class file version 65 throughout; zero `net/fabricmc` references.
+
+## Not verified without a client
+
+* That the HUD frame actually brackets the frame (`Gui#render` HEAD/RETURN) and that the action-bar
+  hook suppresses the vanilla overlay — no `@At` were dead-code-checked beyond call-site presence.
+* Keybinding registration (`RegisterKeyMappingsEvent` + `Options` freeze timing).
+* The three payload channels handshaking as `optional()` against a vanilla server, and the
+  `NetworkRegistry.hasChannel` gate.
+* Discord RPC (DiscordIPC + junixsocket) and sqlite initialisation from the nested jars.
