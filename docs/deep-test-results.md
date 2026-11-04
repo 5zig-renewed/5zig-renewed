@@ -364,3 +364,35 @@ Date: 2026-11-04 · log `/tmp/dt-nf1219.log`
 | T5 DELETE | ✅ | `/tmp/dt-nf1219-deleted.png` |
 
 No new defects — the D7 (blur) and D8 (`ResourceLocation` final) fixes hold on this patch.
+
+---
+
+## 13. Fabric 1.21.9 — pass
+
+Date: 2026-11-04 · log `/tmp/dt-f1219.log`
+
+| Section | Result | Evidence |
+|---|---|---|
+| T0 boot | ✅ joined, no crash report, log clean | log |
+| T1 HUD | ✅ | — |
+| T2 settings GUI | ✅ 34.6% of frame changed | `/tmp/f1219-menu-c.png` |
+| T3 ESC | ✅ | — |
+| T4 SPACE | ✅ X=364, Z=-253 | `/tmp/f1219-coords-c.png` |
+| T5 DELETE | ✅ | `/tmp/dt-f1219-deleted.png` |
+
+No new defects.
+
+### Release repair
+
+The six 1.21.9 / 1.21.10 / 1.21.11 releases were published **before** D7 and D8, so their assets were the
+crashing builds. Rebuilt from the fixed tree and re-uploaded with `--clobber`; every asset now matches the
+local jar byte-for-byte by size:
+
+| tag | size |
+|---|---|
+| `v4.0.0-alpha.1-1219` | 21,758,848 |
+| `v4.0.0-alpha.1-12110` | 21,758,852 |
+| `v4.0.0-alpha.1-12111` | 21,757,843 |
+| `v4.0.0-alpha.1-nf1219` | 21,721,594 |
+| `v4.0.0-alpha.1-nf12110` | 20,330,156 |
+| `v4.0.0-alpha.1-nf12111` | 21,726,159 |
