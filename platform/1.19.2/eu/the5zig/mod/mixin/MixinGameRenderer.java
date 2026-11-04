@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Records the distance from the camera to the block or entity under the crosshair.
  * <p>
  * 1.15 injected at the {@code Minecraft.pointedEntity} field write inside {@code getMouseOver} and
- * read {@code Minecraft.objectMouseOver.getHitVec()}; 1.20.1 renames the method to {@code pick}
+ * read {@code Minecraft.objectMouseOver.getHitVec()}; 1.19.2 renames the method to {@code pick}
  * and the field to {@code hitResult}, and a RETURN hook is far less brittle than pinning an
  * instruction inside the picking code.
  */

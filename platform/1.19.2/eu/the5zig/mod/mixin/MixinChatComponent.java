@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Port of 1.15's {@code MixinGuiChatNew}.
  * <p>
- * 1.20.1 funnels every displayed chat line (system chat, player chat, the local echo and messages
+ * 1.19.2 funnels every displayed chat line (system chat, player chat, the local echo and messages
  * added by the mod itself) through {@code ChatComponent#addMessage(Component, MessageSignature,
  * GuiMessageTag)}, which replaces 1.15's {@code setChatLine} plus the chat-type handling in
  * {@code ClientPlayNetHandler#handleChat}. The re-entrancy flag stops a message that the chat

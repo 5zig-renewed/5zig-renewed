@@ -2,7 +2,7 @@
 # Fast javac loop against the Loom compile classpath (no mixin AP, no remap).
 # Usage: ./fastc.sh [extra javac args]
 set -uo pipefail
-ROOT=""
+ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 OUT="$HOME/.port/cache/scratch/out-1.19.2"
 CP="$(cat "$ROOT/versions/1.19.2-fabric/compile-classpath.txt")"
 rm -rf "$OUT"; mkdir -p "$OUT"

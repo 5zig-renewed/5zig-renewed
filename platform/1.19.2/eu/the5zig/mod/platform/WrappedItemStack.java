@@ -47,7 +47,7 @@ import java.util.UUID;
  * Wraps a {@link net.minecraft.world.item.ItemStack} for the mod's own {@link ItemStack} abstraction
  * (the two types are unrelated: the core's one lives in {@code eu.the5zig.mod.gui.ingame}).
  * <p>
- * 1.15 rendered through {@code Variables#renderItem}; 1.20.1 items are rendered with
+ * 1.15 rendered through {@code Variables#renderItem}; 1.19.2 items are rendered with
  * {@link GuiContext#renderItem} against the frame's graphics, which is why the attribute overlay is
  * drawn here with an explicit {@link PoseStack} instead of the old GL matrix stack.
  */

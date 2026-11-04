@@ -26,7 +26,7 @@ import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.client.multiplayer.PlayerInfo;
 
 /**
- * Wraps a 1.20.1 {@link PlayerInfo} (1.15's {@code NetworkPlayerInfo}) for the mod's player list.
+ * Wraps a 1.19.2 {@link PlayerInfo} (1.15's {@code NetworkPlayerInfo}) for the mod's player list.
  */
 public class WrappedNetworkPlayerInfo implements NetworkPlayerInfo {
 

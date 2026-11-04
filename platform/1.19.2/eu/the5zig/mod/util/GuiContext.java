@@ -169,7 +169,7 @@ public final class GuiContext {
 			int tileWidth = Math.min(uWidth, width - doneX);
 			for (int doneY = 0; doneY < height; doneY += vHeight) {
 				int tileHeight = Math.min(vHeight, height - doneY);
-				GuiComponent.blit(poseStack, x + doneX, y + doneY, 0, (float) u, (float) v, tileWidth, tileHeight, uWidth, vHeight);
+				GuiComponent.blit(poseStack, x + doneX, y + doneY, 0, (float) u, (float) v, tileWidth, tileHeight, DEFAULT_TEXTURE_SIZE, DEFAULT_TEXTURE_SIZE);
 			}
 		}
 	}
@@ -177,6 +177,10 @@ public final class GuiContext {
 	/**
 	 * Nine-slice blit (1.20's {@code blitNineSliced}) used by the button and slider backgrounds.
 	 * Corners are drawn natively, edges and the centre are stretched.
+	 * <p>
+	 * Like vanilla, the sub-blits are addressed in the 256x256 GUI texture space; {@code textureWidth}
+	 * / {@code textureHeight} describe the sprite region and are only used for the equal-size fast
+	 * path and the edge extents.
 	 */
 	public void blitNineSliced(ResourceLocation texture, int x, int y, int width, int height, int slice, int pad,
 			int textureWidth, int textureHeight, int u, int v) {
@@ -185,39 +189,52 @@ public final class GuiContext {
 		int top = Math.min(slice, height / 2);
 		int bottom = Math.min(slice, height / 2);
 
-		bind(texture);
 		if (width == textureWidth && height == textureHeight) {
 			blit(texture, x, y, u, v, width, height);
 			return;
 		}
 		if (height == textureHeight) {
-			blit(texture, x, y, u, v, left, height);
-			blit(texture, x + left, y, width - right - left, height, u + left, v, textureWidth - right - left, textureHeight, textureWidth, textureHeight);
-			blit(texture, x + width - right, y, u + textureWidth - right, v, right, height);
+			blitRegion(texture, x, y, left, height, u, v, left, height);
+			blitRegion(texture, x + left, y, width - right - left, height, u + left, v, textureWidth - right - left, height);
+			blitRegion(texture, x + width - right, y, right, height, u + textureWidth - right, v, right, height);
 			return;
 		}
 		if (width == textureWidth) {
-			blit(texture, x, y, u, v, width, top);
-			blit(texture, x, y + top, width, height - bottom - top, u, v + top, textureWidth, textureHeight - bottom - top, textureWidth, textureHeight);
-			blit(texture, x, y + height - bottom, u, v + textureHeight - bottom, width, bottom);
+			blitRegion(texture, x, y, width, top, u, v, width, top);
+			blitRegion(texture, x, y + top, width, height - bottom - top, u, v + top, width, textureHeight - bottom - top);
+			blitRegion(texture, x, y + height - bottom, width, bottom, u, v + textureHeight - bottom, width, bottom);
 			return;
 		}
 
-		blit(texture, x, y, u, v, left, top);
-		blit(texture, x + left, y, width - right - left, top, u + left, v, textureWidth - right - left, top, textureWidth, textureHeight);
-		blit(texture, x + width - right, y, u + textureWidth - right, v, right, top);
-		blit(texture, x, y + top, left, height - bottom - top, u, v + top, left, textureHeight - bottom - top, textureWidth, textureHeight);
-		blit(texture, x + left, y + top, width - right - left, height - bottom - top, u + left, v + top,
-				textureWidth - right - left, textureHeight - bottom - top, textureWidth, textureHeight);
-		blit(texture, x + width - right, y + top, right, height - bottom - top, u + textureWidth - right, v + top,
-				right, textureHeight - bottom - top, textureWidth, textureHeight);
-		blit(texture, x, y + height - bottom, u, v + textureHeight - bottom, left, bottom);
-		blit(texture, x + left, y + height - bottom, width - right - left, bottom, u + left, v + textureHeight - bottom,
-				textureWidth - right - left, bottom, textureWidth, textureHeight);
-		blit(texture, x + width - right, y + height - bottom, u + textureWidth - right, v + textureHeight - bottom, right, bottom);
+		blitRegion(texture, x, y, left, top, u, v, left, top);
+		blitRegion(texture, x + left, y, width - right - left, top, u + left, v, textureWidth - right - left, top);
+		blitRegion(texture, x + width - right, y, right, top, u + textureWidth - right, v, right, top);
+		blitRegion(texture, x, y + top, left, height - bottom - top, u, v + top, left, textureHeight - bottom - top);
+		blitRegion(texture, x + left, y + top, width - right - left, height - bottom - top, u + left, v + top,
+				textureWidth - right - left, textureHeight - bottom - top);
+		blitRegion(texture, x + width - right, y + top, right, height - bottom - top, u + textureWidth - right, v + top,
+				right, textureHeight - bottom - top);
+		blitRegion(texture, x, y + height - bottom, left, bottom, u, v + textureHeight - bottom, left, bottom);
+		blitRegion(texture, x + left, y + height - bottom, width - right - left, bottom, u + left, v + textureHeight - bottom,
+				textureWidth - right - left, bottom);
+		blitRegion(texture, x + width - right, y + height - bottom, right, bottom, u + textureWidth - right, v + textureHeight - bottom, right, bottom);
+	}
+
+	/**
+	 * Stretched blit addressed in 256x256 GUI texture pixels, matching the widget textures.
+	 */
+	private void blitRegion(ResourceLocation texture, int x, int y, int width, int height, int u, int v, int uWidth, int vHeight) {
+		bind(texture);
+		GuiComponent.blit(poseStack, x, y, width, height, u / 256.0F, v / 256.0F, uWidth, vHeight, 256, 256);
 	}
 
 	private static void bind(ResourceLocation texture) {
+		// 1.19.2's GuiComponent helpers assume the caller enabled texturing/blending (1.20's
+		// GuiGraphics did this per RenderType), and GuiComponent#fill leaves both in whatever state
+		// it used. Re-assert them so a fill followed by a blit always draws textured pixels.
+		RenderSystem.enableTexture();
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShaderTexture(0, texture);
 	}
 

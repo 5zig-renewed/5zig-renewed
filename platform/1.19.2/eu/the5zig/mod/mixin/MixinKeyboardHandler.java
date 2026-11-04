@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Keyboard hook for 1.20.1.
+ * Keyboard hook for 1.19.2.
  * <p>
  * 1.15 drove every hotkey of the mod from {@code Minecraft#dispatchKeypresses()}, which drained the
  * LWJGL2 keyboard queue once per tick and fired a {@link eu.the5zig.mod.event.KeyPressEvent} for
@@ -38,14 +38,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * never ran and every binding in its {@code globalKeybindings} map (toggle chat, TeamSpeak, name
  * history, ...) was dead.
  * <p>
- * 1.20.1 has no pollable queue - {@code KeyboardHandler} receives the GLFW event directly - so the
+ * 1.19.2 has no pollable queue - {@code KeyboardHandler} receives the GLFW event directly - so the
  * presses are queued here and drained from the tick ({@link KeyDispatch#dispatch()}). Repeats are
  * dropped: the core treats a press as an edge, and 1.15 only delivered key-down events.
  */
 @Mixin(KeyboardHandler.class)
 public abstract class MixinKeyboardHandler {
 
-	@Inject(method = "keyPress", at = @At("HEAD"))
+	@Inject(method = "keyPress(JIIII)V", at = @At("HEAD"))
 	private void the5zig$onKeyPress(long window, int key, int scanCode, int action, int modifiers, CallbackInfo callbackInfo) {
 		if (action != GLFW.GLFW_PRESS || !CoreState.isReady()) {
 			return;

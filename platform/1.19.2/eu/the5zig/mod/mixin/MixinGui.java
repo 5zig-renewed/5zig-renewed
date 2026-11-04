@@ -72,7 +72,7 @@ public abstract class MixinGui {
 	}
 
 	/**
-	 * 1.15 hooked {@code IngameGui#addChatMessage} for chat type 2; 1.20.1 routes the action bar
+	 * 1.15 hooked {@code IngameGui#addChatMessage} for chat type 2; 1.19.2 routes the action bar
 	 * through {@code Gui#setOverlayMessage}.
 	 */
 	@Inject(method = "setOverlayMessage(Lnet/minecraft/network/chat/Component;Z)V", at = @At("HEAD"), cancellable = true)

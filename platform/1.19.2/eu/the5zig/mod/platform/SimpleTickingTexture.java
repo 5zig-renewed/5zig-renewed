@@ -34,7 +34,7 @@ import java.util.List;
  * registered with the vanilla {@link TextureManager} as its own texture and swapped once per client tick.
  * <p>
  * 1.15 extended {@code SimpleTexture} and registered the frames through {@code func_229263_a_}; the
- * 1.20.1 equivalent is {@link TextureManager#register} / {@link TextureManager#getTexture}. Registering
+ * 1.19.2 equivalent is {@link TextureManager#register} / {@link TextureManager#getTexture}. Registering
  * a {@link Tickable} with the texture manager is what drives {@link #tick()}.
  */
 public class SimpleTickingTexture extends SimpleTexture implements Tickable {

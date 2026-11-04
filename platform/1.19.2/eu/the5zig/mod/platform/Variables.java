@@ -130,9 +130,9 @@ import java.util.Locale;
 import java.util.Optional;
 
 /**
- * 1.20.1 (Mojang mappings, Fabric) implementation of {@link IVariables}.
+ * 1.19.2 (Mojang mappings, Fabric) implementation of {@link IVariables}.
  * <p>
- * Ported from the 1.15.1 implementation. The parts that no longer exist on 1.20.1 (global texture
+ * Ported from the 1.15.1 implementation. The parts that no longer exist on 1.19.2 (global texture
  * binding, the LWJGL2 keyboard event queue, {@code ScaledResolution}, OptiFine style option objects)
  * are replaced by their modern equivalents; everything that cannot exist at all throws
  * {@link UnsupportedOperationException} with an explanation instead of pretending to work.
@@ -140,7 +140,7 @@ import java.util.Optional;
 public class Variables implements IVariables {
 
 	/**
-	 * Maximum size of a plugin channel payload accepted by a 1.20.1 server; larger packets are
+	 * Maximum size of a plugin channel payload accepted by a 1.19.2 server; larger packets are
 	 * rejected by the vanilla encoder with a disconnect.
 	 */
 	private static final int MAX_PAYLOAD_SIZE = 32767;
@@ -175,7 +175,7 @@ public class Variables implements IVariables {
 
 			@Override
 			public void enableRepeatEvents(boolean repeat) {
-				// 1.20.1 has no global GLFW repeat toggle any more; repeat behaviour is decided per
+				// 1.19.2 has no global GLFW repeat toggle any more; repeat behaviour is decided per
 				// screen by the keyboard handler. Nothing to configure here.
 			}
 		});
@@ -480,7 +480,7 @@ public class Variables implements IVariables {
 		if (!(screen instanceof ChatScreen)) {
 			return null;
 		}
-		// ChatScreen#input is protected; 1.20.1 focuses it on init, so the public focus API is used
+		// ChatScreen#input is protected; 1.19.2 focuses it on init, so the public focus API is used
 		// instead of an access widener or reflection.
 		return screen.getFocused() instanceof EditBox ? (EditBox) screen.getFocused() : null;
 	}
@@ -506,7 +506,7 @@ public class Variables implements IVariables {
 		for (IKeybinding keybinding : keybindings) {
 			if (keybinding instanceof KeyMapping) {
 				// Fallback for mappings that were not created through FiveZigKeybinds. Fabric's
-				// registry appends them to Options#keyMappings (the array itself is final on 1.20.1,
+				// registry appends them to Options#keyMappings (the array itself is final on 1.19.2,
 				// so the old "rewrite the array" approach is impossible).
 				Keybinds.registerFallback((KeyMapping) keybinding);
 				changed = true;
@@ -555,7 +555,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public void resetServer() {
-		// 1.20.1 keeps the server data on the active ClientPacketListener; getServer() always reads
+		// 1.19.2 keeps the server data on the active ClientPacketListener; getServer() always reads
 		// the live value, so this implementation has no cached state that could go stale.
 	}
 
@@ -585,7 +585,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public void setFOV(float fov) {
-		// OptionInstance clamps to the vanilla slider range (30..110 on 1.20.1).
+		// OptionInstance clamps to the vanilla slider range (30..110 on 1.19.2).
 		getGameSettings().fov().set((int) fov);
 	}
 
@@ -1095,7 +1095,7 @@ public class Variables implements IVariables {
 		}
 		for (MobEffectInstance effect : player.getActiveEffects()) {
 			if (effect.showIcon()) {
-				// The vanilla 1.20.1 HUD draws one row of 24x24 icons at the top right corner.
+				// The vanilla 1.19.2 HUD draws one row of 24x24 icons at the top right corner.
 				return 26;
 			}
 		}
@@ -1240,7 +1240,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public void updateScaledResolution() {
-		// 1.20.1 has no ScaledResolution object any more: the Window always carries the current
+		// 1.19.2 has no ScaledResolution object any more: the Window always carries the current
 		// GUI scale, so the values below are read live and there is no cached state to refresh.
 	}
 
@@ -1376,7 +1376,7 @@ public class Variables implements IVariables {
 			return;
 		}
 		if (payload.readableBytes() > MAX_PAYLOAD_SIZE) {
-			The5zigMod.logger.warn("Refusing to send {} bytes on plugin channel {}: 1.20.1 servers reject payloads larger than {} bytes",
+			The5zigMod.logger.warn("Refusing to send {} bytes on plugin channel {}: 1.19.2 servers reject payloads larger than {} bytes",
 					payload.readableBytes(), channel, MAX_PAYLOAD_SIZE);
 			return;
 		}
@@ -1596,7 +1596,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public InputStream getMinecraftIcon() throws Exception {
-		// 1.20.1 does not ship the window icons as a resource any more (they are compiled into the
+		// 1.19.2 does not ship the window icons as a resource any more (they are compiled into the
 		// client), so the vanilla pack icon is used, falling back to the mod's own icon.
 		InputStream icon = Variables.class.getResourceAsStream("/pack.png");
 		if (icon == null) {
@@ -1620,7 +1620,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public void dispatchKeypresses() {
-		// 1.15 drained the LWJGL2 keyboard queue here and fired a KeyPressEvent per press. 1.20.1
+		// 1.15 drained the LWJGL2 keyboard queue here and fired a KeyPressEvent per press. 1.19.2
 		// has no queue, so MixinKeyboardHandler records the presses and this per-tick entry point
 		// delivers them (and runs the state-based key handling, i.e. the menu key).
 		KeyDispatch.dispatch();
@@ -1655,7 +1655,7 @@ public class Variables implements IVariables {
 				}
 			}
 		}
-		throw new UnsupportedOperationException("Minecraft 1.20.1 exposes no user field that could be replaced");
+		throw new UnsupportedOperationException("Minecraft 1.19.2 exposes no user field that could be replaced");
 	}
 
 	@Override

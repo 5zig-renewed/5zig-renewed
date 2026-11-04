@@ -27,7 +27,7 @@ import java.util.List;
  * Reads the battery state of the machine through OSHI.
  * <p>
  * The 1.15 implementation bound {@code Kernel32.SYSTEM_POWER_STATUS} through JNA, which only worked
- * on Windows. OSHI is shipped with the 1.20.1 client anyway and reports the same information on
+ * on Windows. OSHI is shipped with the 1.19.2 client anyway and reports the same information on
  * every platform, so the battery HUD item works on Linux and macOS as well.
  * <p>
  * Returns {@code null} when the machine has no battery (or when the platform cannot be queried);

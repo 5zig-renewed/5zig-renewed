@@ -47,7 +47,7 @@ import java.util.List;
 public class GuiHandle extends Screen implements IGuiHandle {
 
 	/**
-	 * 1.15's {@code Screen#blit} drew from whatever texture had been bound last. 1.20.1 has no
+	 * 1.15's {@code Screen#blit} drew from whatever texture had been bound last. 1.19.2 has no
 	 * texture binding at all, so {@link BoundTexture} records it instead.
 	 */
 	private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation("minecraft", "textures/gui/widgets.png");
@@ -230,7 +230,7 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		int y1 = (int) Math.min(top, bottom);
 		int x2 = (int) Math.max(left, right);
 		int y2 = (int) Math.max(top, bottom);
-		// 1.15 fed the colours in by vertex order, 1.20.1's fillGradient is always top-to-bottom, so a
+		// 1.15 fed the colours in by vertex order, 1.19.2's fillGradient is always top-to-bottom, so a
 		// "vertical" gradient simply swaps the two colours.
 		graphics.fillGradient(x1, y1, x2, y2, vertical ? endColor : startColor, vertical ? startColor : endColor);
 	}

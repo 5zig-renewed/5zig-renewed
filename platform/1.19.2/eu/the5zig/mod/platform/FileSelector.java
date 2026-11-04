@@ -40,7 +40,7 @@ import java.util.List;
  * Created by 5zig.
  * All rights reserved © 2015
  * <p>
- * 1.20.1 port. The 1.15 implementation drew its background, selection and scrollbar through the
+ * 1.19.2 port. The 1.15 implementation drew its background, selection and scrollbar through the
  * global tessellator; everything here is {@link GuiContext#fill}/{@link GuiContext#blitRepeating}
  * on the frame's {@link RenderContext}. Input could use {@code org.lwjgl.input.Mouse} in 1.15; GLFW
  * has no global event queue any more, so the current state is polled from {@link net.minecraft.client.MouseHandler}
@@ -300,7 +300,7 @@ public class FileSelector implements IFileSelector {
 
 	/**
 	 * Feeds a scroll wheel delta (positive = wheel up) into the selector. The 1.15 implementation read
-	 * {@code Mouse.getEventDWheel()}; a 1.20.1 screen has to forward {@code mouseScrolled} here.
+	 * {@code Mouse.getEventDWheel()}; a 1.19.2 screen has to forward {@code mouseScrolled} here.
 	 */
 	public void mouseScrolled(double delta) {
 		this.pendingScroll -= delta;

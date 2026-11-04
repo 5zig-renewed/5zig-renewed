@@ -58,7 +58,7 @@ public abstract class MixinMinecraft {
 	/**
 	 * Left click: CPS counter and the range of the last attack.
 	 * <p>
-	 * 1.15 injected into {@code clickMouse}; the method is called {@code startAttack} in 1.20.1.
+	 * 1.15 injected into {@code clickMouse}; the method is called {@code startAttack} in 1.19.2.
 	 */
 	@Inject(method = "startAttack()Z", at = @At("HEAD"))
 	private void the5zig$startAttack(CallbackInfoReturnable<Boolean> callbackInfo) {
@@ -76,7 +76,7 @@ public abstract class MixinMinecraft {
 
 	/**
 	 * Right click: CPS counter. 1.15 hooked {@code processKeyBinds} right before
-	 * {@code rightClickMouse()}; 1.20.1 splits that into {@code startUseItem}.
+	 * {@code rightClickMouse()}; 1.19.2 splits that into {@code startUseItem}.
 	 */
 	@Inject(method = "startUseItem()V", at = @At("HEAD"))
 	private void the5zig$startUseItem(CallbackInfo callbackInfo) {

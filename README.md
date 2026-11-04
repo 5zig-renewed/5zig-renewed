@@ -52,14 +52,15 @@ Port conventions and verified 1.20.1 signatures: [`docs/port-spec.md`](docs/port
 | **1.21.10 Fabric** | green, refmap, every colour call opaque-guarded | **HUD** |
 | **26.2 Fabric** | green; `Hud` split handled by its own mixin | **HUD** |
 | **1.20.4 Fabric** | green, self-contained | **HUD** |
+| **1.19.2 Fabric** | green, self-contained (first pre-1.20 port) | **HUD** |
 | **1.21.7 Fabric** | green, self-contained | **HUD** |
 | **1.21.3 Fabric** | green, self-contained | **HUD** |
 | **1.21.6 Fabric** | green, self-contained | **HUD** |
 | **1.21.9 Fabric** | green, self-contained | **HUD** |
 | **1.21.1 NeoForge** | green, ModDevGradle 2.0.148 | **HUD** |
 | **26.1 Fabric** | green, self-contained | **HUD** |
-| **1.20.2 Fabric** | green, self-contained | built |
-| **1.21.2 Fabric** | green, self-contained | built |
+| **1.20.2 Fabric** | green, self-contained | **HUD** |
+| **1.21.2 Fabric** | green, self-contained | **HUD** |
 | **1.21.4 NeoForge** | green, ModDevGradle | **HUD** |
 
 Everything above was launched for real (Xvfb + llvmpipe, headless) — not inferred from compilation.

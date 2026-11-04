@@ -176,6 +176,12 @@ sourceSets {
             // The 26.1.2 platform has no PluginMessages at all: Variables#sendCustomPayload throws
             // UnsupportedOperationException because 26.x receivers only accept registered payload
             // types. Nothing to replace, unlike 1.21.4.
+            // NeoForge 26.1.2 renames Gui#extractHotbarAndDecorations to extractHotbar (its Gui
+            // patch installs a GuiLayerManager); the platform mixin targets the vanilla name and
+            // would fail require=1. loader/neoforge-26.1.2 provides the corrected copy of the same
+            // class. Note the pattern has no 'eu/' prefix: the platform source dir is rooted at
+            // 'eu', so this only matches the platform file and leaves the loader copy alone.
+            exclude 'the5zig/mod/mixin/MixinGui.java'
         }
         resources {
             srcDirs = [

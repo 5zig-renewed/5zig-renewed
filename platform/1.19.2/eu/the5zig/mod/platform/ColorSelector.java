@@ -29,7 +29,7 @@ import eu.the5zig.mod.util.GuiContext;
 /**
  * A button with a colour preview that opens the 16 vanilla chat colours on hover.
  * <p>
- * 1.20.1 port: the rectangles are drawn with {@link GuiContext#fill} from the frame's
+ * 1.19.2 port: the rectangles are drawn with {@link GuiContext#fill} from the frame's
  * {@link RenderContext}; the 1.15 version used {@code Gui.drawRect} on top of the immediate mode
  * tessellator. Everything else (hover / move-out tracking, palette position) is unchanged.
  */

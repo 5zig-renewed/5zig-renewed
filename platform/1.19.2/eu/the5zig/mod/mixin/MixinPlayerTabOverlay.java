@@ -59,7 +59,8 @@ public abstract class MixinPlayerTabOverlay {
 			var font = Minecraft.getInstance().font;
 			String text = display;
 			int textWidth = font.width(text);
-			font.drawShadow(poseStack, text, ((x + width - 11) + 5) * 2 - textWidth, (y + 4) * 2 - 4, color);
+			// drawCenteredString at half scale: left = 2 * iconCentre - textWidth / 2.
+			font.drawShadow(poseStack, text, ((x + width - 11) + 5) * 2 - textWidth / 2.0F, (y + 4) * 2 - 4, color);
 			poseStack.popPose();
 
 			callbackInfo.cancel();
