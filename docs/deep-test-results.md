@@ -1041,3 +1041,29 @@ already owned `INSERT`. Final state: **13 bindings per platform, zero duplicate 
 
 Compile-verified on four eras with their own toolchains (1.16.2 / JDK 17, 1.19.4 / JDK 17, 1.21.11 / JDK 21,
 26.3 / JDK 25): 0 errors each.
+
+---
+
+## D14 — RESOLVED: not a defect. The real bug was colliding default keys.
+
+**Proof that the whole pipeline works on 1.16.2:** pressing **F10** in-world opened *The 5zig Mod — Hypixel
+Stats* GUI (screenshot `/tmp/kbt-b.png`, 4.0% frame change, title "The 5zig Mod - Hypixel …", `Player:` field,
+`Search` button, "No API key has been found! Please connect once to mc.hypixel.net!"). F10 goes through exactly
+the path I had measured as dead: `KeyMapping.click` → `FiveZigKeybinding.consumeClick()` → the core's
+`KeybindingListener`. So clicks are queued, the poll runs, and the GUI opens.
+
+**What was actually wrong** — and is now fixed on all 40 platforms — was that five bindings shipped with
+`GLFW_KEY_UNKNOWN` (and 26.x placeholders) that collided with each other. `KeyMapping.MAP` is keyed by key and
+last-write-wins, so of each colliding pair only one could ever receive a click; the losers were dead bindings
+that no user could ever trigger. They are now `F6` / `F10` / `F11` / `F8` / `F7` (26.x: `END` / `HOME`), with
+zero duplicate keys across every platform, and F10's GUI opening is the end-to-end proof.
+
+**Why the settings screen still cannot be tested here:** `RIGHT_SHIFT` is a modifier, and `xdotool keydown
+Shift_R` under Xvfb does not deliver it to GLFW as a key press (`down=false`, `clickCount=0`, repeatedly,
+while ordinary keys sail through). That is a harness limitation, not a mod fault — the binding is registered
+and the mapping is correct.
+
+**Retired:** every earlier theory in this section (registration, dual v0/v1 modules, `consumeClick` dead,
+shadowed MAP entries killing all bindings, the Controls list proving non-registration). The measurements that
+produced them were real, but the conclusion drawn from each was wrong; F10 is the experiment that finally
+settled it.
