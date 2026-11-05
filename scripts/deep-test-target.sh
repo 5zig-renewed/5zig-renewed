@@ -101,7 +101,9 @@ sleep 45   # let the world load and the first frames settle
 # T2 settings GUI — assert the screen really opened, not just that a key was sent
 DISPLAY="$DISP" import -window root "${SHOT}-before.png" 2>/dev/null
 DISPLAY="$DISP" xdotool keydown Shift_R; sleep 0.4; DISPLAY="$DISP" xdotool keyup Shift_R
-sleep 5
+# Software-rendered 1.17/1.18 need well over the old 5 s: the GUI can appear after the screenshot,
+# which reads as "the screen did not open".
+sleep 12
 DISPLAY="$DISP" import -window root "${SHOT}-menu.png" 2>/dev/null
 say "captured ${SHOT}-menu.png"
 # The very first key press after joining is sometimes swallowed while chunks stream in (1.18.x:
@@ -122,8 +124,8 @@ DISPLAY="$DISP" import -window root "${SHOT}-back.png" 2>/dev/null
 # On 1.18.x the single Escape above closes the 5zig screen *and* leaves the vanilla pause menu open,
 # so F12 hits the menu instead of the game. Detect that case by a failed diff and retry once: one
 # more Escape closes the pause menu, then F12 has a game to open on.
-DISPLAY="$DISP" xdotool key --clearmodifiers F12; sleep 4
-DISPLAY="$DISP" xdotool key --clearmodifiers space; sleep 3
+DISPLAY="$DISP" xdotool key --clearmodifiers F12; sleep 10
+DISPLAY="$DISP" xdotool key --clearmodifiers space; sleep 4
 DISPLAY="$DISP" import -window root "${SHOT}-coords.png" 2>/dev/null
 say "captured ${SHOT}-coords.png"
 # the clipboard dialog covers less of the frame than the settings menu

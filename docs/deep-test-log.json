@@ -859,5 +859,59 @@
    "FAIL  coordinates GUI opened: only 0.0% changed (needed 6%) - the screen did not open"
   ],
   "verdict": "CHECK"
+ },
+ {
+  "target": "f1171",
+  "project": "1.17.1-fabric",
+  "build": 0,
+  "battery": 1,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.0039,
+  "menu": "FAIL",
+  "coords_diff": 0.2377,
+  "coords": "ok",
+  "battery_said": [
+   "FAIL  settings GUI opened: only 0.4% changed (needed 10%) - the screen did not open",
+   "FAIL  settings GUI opened: only 0.4% changed (needed 10%) - the screen did not open",
+   "FAIL  coordinates GUI opened: only 0.0% changed (needed 6%) - the screen did not open"
+  ],
+  "verdict": "CHECK"
+ },
+ {
+  "target": "f117",
+  "project": "1.17-fabric",
+  "build": 0,
+  "battery": 1,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.0039,
+  "menu": "FAIL",
+  "coords_diff": 0.238,
+  "coords": "ok",
+  "battery_said": [
+   "FAIL  settings GUI opened: only 0.4% changed (needed 10%) - the screen did not open",
+   "FAIL  settings GUI opened: only 0.4% changed (needed 10%) - the screen did not open",
+   "FAIL  coordinates GUI opened: only 0.0% changed (needed 6%) - the screen did not open"
+  ],
+  "verdict": "CHECK"
+ },
+ {
+  "target": "f1171h",
+  "project": "1.17.1-fabric",
+  "build": 0,
+  "battery": 1,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.0039,
+  "menu": "FAIL",
+  "coords_diff": 0.2381,
+  "coords": "ok",
+  "battery_said": [
+   "FAIL  settings GUI opened: only 0.4% changed (needed 10%) - the screen did not open",
+   "FAIL  settings GUI opened: only 0.4% changed (needed 10%) - the screen did not open",
+   "FAIL  coordinates GUI opened: only 0.0% changed (needed 6%) - the screen did not open"
+  ],
+  "verdict": "CHECK"
  }
 ]

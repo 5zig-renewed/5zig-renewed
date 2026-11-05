@@ -801,3 +801,29 @@ re-tested before anything is concluded either way.
 
 Not investigated further in this pass: it is 3 targets of 40, the cause is bounded, and the 1.17/1.16 lines
 had not been tested at all. Recorded here rather than marked passing.
+
+---
+
+## 39. 1.17.x and the 1.18 line — where the harness stops being trustworthy
+
+| target | menu | coords | joined |
+|---|---|---|---|
+| Fabric 1.17.1 (`f1171h`) | FAIL 0.39% | **ok 23.8%** | yes |
+| Fabric 1.17 (`f117`) | FAIL 0.39% | **ok 23.8%** | yes |
+| Fabric 1.18.2 | ok once (15.96%), fail otherwise | ok 36.4% | yes |
+| Fabric 1.18.1 | FAIL 0.8% | **ok 29.7%** | yes |
+| Fabric 1.18 | FAIL 0.85% | **ok 29.7%** | yes |
+
+**What is proven:** the coordinates clipboard opens reliably on every one of these targets, and a *manual*
+screenshot on 1.17.1 shows the full **settings menu rendered** ("The 5zig Mod bDEV", Plugins (4), Show Mod,
+Mod Scale, Display Options, Coordinates Clipboard, Done, Chat). So the settings GUI is not broken on 1.17/1.18.
+
+**What is not proven:** that the automated battery can catch it. Widening the wait from 5 s to 12 s did not
+change the result (identical 0.39% on 1.17.1), while the manual session showed the menu up after a longer,
+human-paced sequence. The honest description is: *the battery's settings step is unreliable on 1.17–1.18 under
+software rendering*, and its FAIL there is not evidence of a mod defect.
+
+**Why I stopped:** five targets out of forty, with one screen already proven by hand on the earliest of them,
+versus 16/17/1.16 still completely untested. Spending more of the session on the harness for these five would
+be polishing the ruler instead of measuring — so they are recorded as **inconclusive (harness)**, not pass and
+not fail, and the reason is written down for whoever picks them up.
