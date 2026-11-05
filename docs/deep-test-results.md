@@ -1016,3 +1016,28 @@ I deliberately did **not** implement that, for two concrete reasons:
 So D5 stays: **degrade with a one-time warning, never throw, never send something that can get the user
 kicked.** If a 5zig-capable server ever comes back, the change is small and the place to make it is the
 loader's payload registration — recorded here so the decision is not silently reversed later.
+
+---
+
+## Keybind defaults de-duplicated (all 40 platforms)
+
+Five bindings shipped with `GLFW_KEY_UNKNOWN` / placeholder codes that collided with each other (and on 26.x
+with the `-1` guards), so they shadowed one another in `KeyMapping.MAP` — which is keyed by key, last write
+wins. Only one of each colliding pair could ever fire, and the vanilla Controls list omitted the losers.
+
+New defaults (unique on every platform, verified programmatically across all 40):
+
+| binding | before | after |
+|---|---|---|
+| `raid_calculator` | `KEY_UNKNOWN` | `F6` |
+| `hypixel_stats` | `KEY_UNKNOWN` | `F10` |
+| `username_history` | `KEY_UNKNOWN` / `PAUSE` | `F11` (26.x: `END`) |
+| `toggle_chat_filter` | `KEY_UNKNOWN` / `SCROLLLOCK` | `F8` (26.x: `HOME`) |
+| `change_account` | `KEY_UNKNOWN` | `F7` |
+
+Two collisions had to be resolved during the change, both caught by checking rather than assuming: `F9` was
+already taken by `teamspeak` (so the first assignment was itself a regression), and on 26.x `change_account`
+already owned `INSERT`. Final state: **13 bindings per platform, zero duplicate keys, checked on all 40.**
+
+Compile-verified on four eras with their own toolchains (1.16.2 / JDK 17, 1.19.4 / JDK 17, 1.21.11 / JDK 21,
+26.3 / JDK 25): 0 errors each.

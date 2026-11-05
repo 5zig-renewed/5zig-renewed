@@ -100,15 +100,15 @@ public final class Keybinds {
 		bind("the5zigmod.key.settings", GLFW.GLFW_KEY_RIGHT_SHIFT);
 		bind("the5zigmod.key.toggle_chat", GLFW.GLFW_KEY_F4);
 		bind("the5zigmod.key.coordinates_clipboard", GLFW.GLFW_KEY_F12);
-		bind("the5zigmod.key.raid_calculator", GLFW.GLFW_KEY_UNKNOWN);
-		bind("the5zigmod.key.hypixel_stats", GLFW.GLFW_KEY_UNKNOWN);
+		bind("the5zigmod.key.raid_calculator", GLFW.GLFW_KEY_F6);
+		bind("the5zigmod.key.hypixel_stats", GLFW.GLFW_KEY_F10);
 		bind("the5zigmod.key.zoom", GLFW.GLFW_KEY_Z);
 		bind("the5zigmod.key.timer.start", GLFW.GLFW_KEY_KP_0);
 		bind("the5zigmod.key.timer.reset", GLFW.GLFW_KEY_KP_DECIMAL);
 		bind("the5zigmod.key.teamspeak", GLFW.GLFW_KEY_F9);
-		bind("the5zigmod.key.username_history", GLFW.GLFW_KEY_UNKNOWN);
-		bind("the5zigmod.key.toggle_chat_filter", GLFW.GLFW_KEY_UNKNOWN);
-		bind("the5zigmod.key.change_account", GLFW.GLFW_KEY_UNKNOWN);
+		bind("the5zigmod.key.username_history", GLFW.GLFW_KEY_F11);
+		bind("the5zigmod.key.toggle_chat_filter", GLFW.GLFW_KEY_F8);
+		bind("the5zigmod.key.change_account", GLFW.GLFW_KEY_F7);
 	}
 
 	/**

@@ -117,8 +117,8 @@ public final class Keybinds {
 		bind("the5zigmod.key.timer.start", InputConstants.KEY_NUMPAD0);
 		bind("the5zigmod.key.timer.reset", KEYPAD_PERIOD);
 		bind("the5zigmod.key.teamspeak", InputConstants.KEY_F9);
-		bind("the5zigmod.key.username_history", InputConstants.KEY_PAUSE);
-		bind("the5zigmod.key.toggle_chat_filter", InputConstants.KEY_SCROLLLOCK);
+		bind("the5zigmod.key.username_history", InputConstants.KEY_END);
+		bind("the5zigmod.key.toggle_chat_filter", InputConstants.KEY_HOME);
 		bind("the5zigmod.key.change_account", InputConstants.KEY_INSERT);
 	}
 
