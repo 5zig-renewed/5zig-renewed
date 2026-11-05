@@ -554,5 +554,93 @@
   "coords": "ok",
   "battery_said": [],
   "verdict": "PASS"
+ },
+ {
+  "target": "f1191c",
+  "project": "1.19.1-fabric",
+  "build": 0,
+  "battery": 3,
+  "joined": 0,
+  "crashes": 0,
+  "menu_diff": null,
+  "menu": "missing screenshot",
+  "coords_diff": null,
+  "coords": "missing screenshot",
+  "battery_said": [
+   "FAIL boot: no world within 480s (see /tmp/dt-f1191c.log)"
+  ],
+  "verdict": "CHECK"
+ },
+ {
+  "target": "f119c",
+  "project": "1.19-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3708,
+  "menu": "ok",
+  "coords_diff": 0.3734,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "f1192d",
+  "project": "1.19.2-fabric",
+  "build": 0,
+  "battery": 3,
+  "joined": 0,
+  "crashes": 0,
+  "menu_diff": null,
+  "menu": "missing screenshot",
+  "coords_diff": null,
+  "coords": "missing screenshot",
+  "battery_said": [
+   "FAIL boot: no world within 540s (see /tmp/dt-f1192d.log)"
+  ],
+  "verdict": "CHECK"
+ },
+ {
+  "target": "f1191d",
+  "project": "1.19.1-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3708,
+  "menu": "ok",
+  "coords_diff": 0.3734,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "f119d",
+  "project": "1.19-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3704,
+  "menu": "ok",
+  "coords_diff": 0.3734,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "f1192e",
+  "project": "1.19.2-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3706,
+  "menu": "ok",
+  "coords_diff": 0.3739,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
  }
 ]

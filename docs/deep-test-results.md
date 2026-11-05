@@ -677,6 +677,13 @@ list's search box) and `Enter`.
 |---|---|---|---|
 | Fabric 1.19.4 (`f1194c`) | ok 37.0% | ok · X=5/Z=10 | 0 |
 | Fabric 1.19.3 (`f1193d`) | ok 35.8% | ok · X=5/Z=10 | 0 |
+| Fabric 1.19.2 (`f1192e`) | ok 37.1% | ok 37.4% | 0 |
+| Fabric 1.19.1 (`f1191d`) | ok 37.1% | ok | 0 |
+| Fabric 1.19 (`f119d`) | ok 37.0% | ok | 0 |
+
+`Tab`+`Enter` in the world list is **not** reliable: on 1.19.2 it leaves focus in the search box and never
+starts the world (four attempts, no join). The reliable step is a **click on "Play Selected World"** — the
+bottom row, ~31% across and ~82% down the window. The failover now clicks that as well as sending the keys.
 
 The first failover attempt was a **race**: `Completely ignored arguments` is logged while parsing argv, long
 before the title screen exists, so a single click 25 s later was a no-op on the slower builds (1.19.3 needed

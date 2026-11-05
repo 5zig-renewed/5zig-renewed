@@ -62,6 +62,11 @@ for _ in $(seq 1 $((TIMEOUT / 5))); do
             : "${WX:=213}"; : "${WY:=160}"; : "${WW:=854}"; : "${WH:=480}"
             CX=$((WX + WW / 2)); CY=$((WY + WH * 49 / 100))
             DISPLAY="$DISP" xdotool mousemove "$CX" "$CY" click 1; sleep 7
+            # Prefer clicking "Play Selected World" over Tab+Enter: on 1.19.2 the keyboard route
+            # leaves focus in the search box and never starts the world. It sits in the bottom
+            # row, left of centre (~31% across, ~82% down).
+            DISPLAY="$DISP" xdotool mousemove $((WX + WW * 31 / 100)) $((WY + WH * 82 / 100)) click 1
+            sleep 3
             DISPLAY="$DISP" xdotool key --clearmodifiers Tab; sleep 1
             DISPLAY="$DISP" xdotool key --clearmodifiers Return
             say "drive attempt $_try sent"
