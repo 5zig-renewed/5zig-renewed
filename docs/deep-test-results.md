@@ -1102,6 +1102,14 @@ code: 1.16.2's `ControlList` clones and sorts `minecraft.options.keyMappings`, a
 showed our mappings present in that exact array. Both halves are measured; they cannot both be true, and
 resolving it needs stepping through Fabric's v0 mixin with a debugger rather than more remote probing.
 
-Left in place because it matches the module's documented contract and fails safe (verified: no warnings, no
-crashes, bindings still fire — F10 opens the Hypixel GUI). Recorded here as an **open, investigated** item, not
-as fixed.
+**The decisive comparison: 1.19.4 — where everything works — also does not list a 5zig category** in
+Options → Controls → Key Binds (checked: the list opens at "Movement", no 5zig header). So the listing gap is
+**universal and version-independent**, not a v0-vs-v1 problem, and my v0 refactor was chasing the wrong thing.
+It has been **reverted** (the tree is back to the simple v1 registrar, which demonstrably works: F10 opens the
+Hypixel GUI on 1.16.2 and all 1.19–26.x targets pass).
+
+Correct finding, kept so it is not re-investigated: the bindings are **functional everywhere** and simply never
+appear in vanilla's Key Binds list on any version. That is cosmetic — a player can use every hotkey, and cannot
+remap them from vanilla settings. If it is ever worth fixing, the starting point is why
+`Options.keyMappings` (which a probe showed contains our entries) is not what the screen renders — not the
+Fabric API version.
