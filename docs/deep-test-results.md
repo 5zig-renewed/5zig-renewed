@@ -859,22 +859,35 @@ overwritten in the same tick. Next step is a targeted instrumentation run on 1.1
 
 Affects: 1.16.2–1.16.5, 1.17, 1.17.1, 1.18, 1.18.1 (1.18.2 partial). Not counted as passing.
 
-### D14 instrumentation result (1.16.2)
+### D14 — corrected root-cause direction (my first instrumentation read the wrong object)
 
-A probe was added to the platform's `Keybinding#callIsPressed()` (temporary, since reverted) printing the
-description, code and `isDown()` for the settings (344) and toggle (77) bindings. Result: **zero calls** over
-a whole session, including while holding Right Shift for ~12 ticks in-world.
+I first added a probe to `platform/1.16.2/.../platform/Keybinding.java` and, seeing zero calls, wrote that the
+core never polls these bindings. **That was wrong.** `Variables.createKeybinding` delegates to
+`Keybinds.wrap(...)`, which returns a private `FiveZigKeybinding` (a different class), so the probe was
+attached to an object the core never touches. The "never invoked" claim is withdrawn.
 
-So the platform's poll method is *never invoked* on 1.16.2, which explains the asymmetry exactly:
-- `M` still toggles the HUD, so the mod is initialised and something is driving it;
-- the settings/coordinates bindings live in the code path that is not running.
+Reading the real implementation:
 
-`KeybindingListener.onTick` is an `@EventHandler` for `TickEvent`, and the shared Fabric loader calls
-`The5zigMod.getListener().onTick()` (`loader/fabric/.../FiveZigFabric.java:122`) for every Fabric target, so
-the break is between that call and the `callIsPressed()` polls — either the tick event is never dispatched on
-this era, or `getKeybindingManager()` hands back a manager whose binding objects are not the ones the
-platform constructed (the probe would then sit on an unused instance).
+```java
+private static final class FiveZigKeybinding implements IKeybinding {
+    private final KeyMapping mapping;
+    @Override public boolean callIsPressed() { return mapping.consumeClick(); }
+}
+```
 
-Next step for whoever picks this up: log inside `KeybindingListener.onTick` (core) and inside
-`The5zigMod.getKeybindingManager()`; that distinguishes "tick not firing" from "wrong binding instances" in
-one run. The probe recipe above is the cheap way to do it.
+`consumeClick()` is **one-shot and edge-triggered**: it returns true only if vanilla has queued a click for
+that `KeyMapping`. Vanilla queues clicks in `KeyboardHandler` for mappings it knows about — i.e. those in
+`Options.keyMappings`. That fits every observation:
+
+| observation | explained by |
+|---|---|
+| settings/coords never open on 1.16.2–1.18.1 | their mappings were never added to `Options.keyMappings`, so no click is ever queued |
+| `M` still toggles the HUD | that path runs through the raw key-dispatch hook, not `consumeClick()` |
+| 1.19.x works (~37%) | those platforms register correctly (or use a level-triggered poll) |
+| `f1181g`/`f118g` opened the clipboard at 29.7% | timing-dependent: a click can be queued and consumed within one tick on faster frames |
+
+**Next step (one client run, no new code):** open the vanilla *Options → Controls → Key Binds* screen on
+1.16.2 and look for the **"The 5zig Mod"** category. Absent = mappings never registered, which confirms the
+`consumeClick()` dead-end above and points the fix at `Keybinds`/registration timing rather than at
+`displayScreen`. If the category *is* present, the failure is in click-consuming order (four
+`consumeClick()` calls per tick can starve each other) and the fix is to poll level-triggered state instead.
