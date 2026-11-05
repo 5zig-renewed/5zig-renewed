@@ -896,6 +896,20 @@ The failure is therefore in `Keybinds` registration timing on 1.16–1.18 (the F
 **not** in `displayScreen`, not in the key press, and not in the GUI code. `M` works because that toggle is
 served by the raw key-dispatch hook, which does not need a registered mapping.
 
-Fix direction: register every binding through Fabric's `KeyBindingHelper.registerKeyBinding()` while the client
-is still initialising (before `Options` is loaded), as the 1.19+ platforms do; `Keybinds.bootstrap()` currently
-runs too early/late for this era and its fallback (appending to a final array) silently does nothing.
+**Sharper cause, from the 1.16.2 startup log:**
+
+```
+[5zig Renewed] Registered 13 key bindings          <- the registrar WAS called 13 times
+Reloading ResourceManager: ... (Fabric Key Binding API (v1), ...)
+   - fabric-keybindings-v0 0.2.2+3cc0f0907d         <- and v0 is ALSO on the classpath
+```
+
+So `Keybinds.bootstrap()` runs, `setRegistrar(KeyBindingHelper::registerKeyBinding)` is called, and the mod
+reports 13 registrations — but none of them reach `Options.keyMappings`. The likely reason is that **both
+keybindings modules are present**: v0 (`fabric-keybindings-v0`) and v1 (`Fabric Key Binding API (v1)`), so
+the helper the mod calls and the mixin that feeds `Options` belong to different modules, and the registrations
+land in a registry nothing reads.
+
+Fix direction: pin the era to **one** module — for 1.16–1.18 that is v0 — and call that module's
+`KeyBindingHelper` explicitly, rather than relying on whatever `KeyBindingHelper` resolves to when both are
+present.
