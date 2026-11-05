@@ -582,3 +582,14 @@ Two separate problems had to be fixed:
 
 This target had been listed as "build green" in earlier sweeps. It was not runnable — the same lesson as
 D7/D9/D10: a build proves nothing about whether the mod works once the world loads.
+
+**Current state: blocked in dev runs.** `localRuntime` *does* resolve the artifacts (verified with
+`gradle dependencies --configuration localRuntime`), but FML's `TransformingClassLoader` still does not see
+them, and NeoGradle 7 exposes no `minecraftLibrary`-style hook (probed every configuration: only
+`localRunRuntime`, `localRuntime`, `runtimeClasspath`, `runtimeOnly` exist). The HUD guard cannot help either:
+the error is raised while resolving `The5zigMod` itself, so it is thrown before the `try` body executes and
+re-thrown by the handler's own `The5zigMod.logger` access.
+
+The **shipped** jar nests these libraries via `jarJar`, so a real install should not hit this — but that is
+untested here, and "should" is not "verified". This target needs a packaged-jar install test rather than a dev
+run to be called working.
