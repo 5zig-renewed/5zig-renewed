@@ -238,23 +238,6 @@
   "verdict": "PASS"
  },
  {
-  "target": "nf1204",
-  "project": "neoforge-1.20.4",
-  "build": 0,
-  "battery": 1,
-  "joined": 1,
-  "crashes": 0,
-  "menu_diff": 0.0023,
-  "menu": "FAIL",
-  "coords_diff": 0.0026,
-  "coords": "FAIL",
-  "battery_said": [
-   "FAIL  settings GUI opened: only 0.2% changed (needed 10%) - the screen did not open",
-   "FAIL  coordinates GUI opened: only 0.3% changed (needed 6%) - the screen did not open"
-  ],
-  "verdict": "CHECK"
- },
- {
   "target": "f1205",
   "project": "1.20.5-fabric",
   "build": 0,
@@ -297,5 +280,47 @@
    "FAIL boot: no world within 420s (see /tmp/dt-nf1202.log)"
   ],
   "verdict": "CHECK"
+ },
+ {
+  "target": "nf1204",
+  "project": "neoforge-1.20.4",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3336,
+  "menu": "ok",
+  "coords_diff": 0.3249,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "f1203",
+  "project": "1.20.3-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3352,
+  "menu": "ok",
+  "coords_diff": 0.3256,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "f1202",
+  "project": "1.20.2-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3348,
+  "menu": "ok",
+  "coords_diff": 0.3241,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
  }
 ]

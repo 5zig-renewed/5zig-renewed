@@ -55,7 +55,18 @@ dependencies {
     implementation 'com.kohlschutter.junixsocket:junixsocket-common:2.5.1'
     implementation 'com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1'
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
-    implementation 'org.hsqldb:hsqldb:2.7.4'
+    implementation('org.hsqldb:hsqldb:2.7.4')
+
+    // NeoGradle 7's dev runtime reads libraries from `localRuntime`, not `implementation`; without these
+    // the mod's own classloader cannot resolve DiscordIPC and every HUD frame dies with
+    // NoClassDefFoundError: com/jagrosh/discordipc/... (a real crash, not a missing-feature warning).
+    localRuntime('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') { exclude group: 'com.google.code.gson' }
+    localRuntime 'net.sf.jacob-project:jacob:1.14.3'
+    localRuntime 'org.json:json:20231013'
+    localRuntime 'com.googlecode.json-simple:json-simple:1.1.1'
+    localRuntime 'com.kohlschutter.junixsocket:junixsocket-common:2.5.1'
+    localRuntime 'com.kohlschutter.junixsocket:junixsocket-native-common:2.5.1'
+    localRuntime 'org.xerial:sqlite-jdbc:3.45.3.0'
     implementation 'io.netty:netty-codec-http:4.1.97.Final'
 
     jarJar('com.github.5zig-reborn:DiscordIPC:master-SNAPSHOT') {

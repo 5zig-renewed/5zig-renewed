@@ -554,3 +554,31 @@ why the dialog threshold is 6% and not 10% — a threshold calibrated on 1.21 wo
 **Fixture gap:** the 1.21 Creative fixture was copied to 1.21.x and 26.x run dirs only, so these 1.20.x runs
 used their older **survival** worlds and only passed because the player happened not to die. A death screen
 silently swallows every key press. Copy the fixture down before the rest of the 1.20.x sweep.
+
+---
+
+## D11 — NeoForge 1.20.2 crashed on the first HUD frame (missing runtime classpath)
+
+First real client run of this target (earlier it was only "build green") died immediately in-world:
+
+```
+Description: Unexpected error
+java.lang.NoClassDefFoundError: com/jagrosh/discordipc/exceptions/NoDiscordClientException
+  at eu.the5zig.mod.platform.HudFrame.begin(HudFrame.java:51)
+  at net.minecraftforge.client.gui.overlay.ExtendedGui.render(...)
+```
+
+Two separate problems had to be fixed:
+
+1. **The dev runtime never had the libraries.** `build.gradle` declared DiscordIPC et al with
+   `implementation` plus `jarJar`, which is right for the *shipped* jar but invisible to NeoGradle 7's dev
+   runtime. NeoGradle 7 has **no** `additionalRuntimeClasspath` (that is a ModDevGradle configuration); it
+   exposes **`localRuntime`** / `localRunRuntime` instead. Adding the same library set to `localRuntime`
+   puts them where the mod's classloader can see them.
+2. **A missing optional library must not kill the game.** `HudFrame.begin` caught `Throwable` only around
+   `renderGameOverlay()`, but the failure was thrown while *initialising* the core class (before the draw),
+   and the catch handler's own `The5zigMod.logger` reference re-triggered the same class init — so the error
+   escaped. The guard now wraps the entire method body.
+
+This target had been listed as "build green" in earlier sweeps. It was not runnable — the same lesson as
+D7/D9/D10: a build proves nothing about whether the mod works once the world loads.

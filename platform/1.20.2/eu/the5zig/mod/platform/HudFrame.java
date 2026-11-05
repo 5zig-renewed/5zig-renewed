@@ -48,15 +48,19 @@ public final class HudFrame {
 		RenderContext.clear();
 		RenderContext.set(graphics);
 
-		if (!The5zigMod.hasBeenInitialized() || !CoreState.isReady()) {
-			return;
-		}
-		Minecraft minecraft = Minecraft.getInstance();
-		// F1 hides the vanilla HUD; the overlay follows it.
-		if (minecraft != null && minecraft.options != null && minecraft.options.hideGui) {
-			return;
-		}
 		try {
+			// The whole frame is guarded, not just the draw call: on NeoForge 1.20.2 the mod's optional
+			// integrations (Discord IPC) are absent from the dev runtime's module path, and merely asking
+			// `The5zigMod.hasBeenInitialized()` triggers class init that throws NoClassDefFoundError -
+			// an Error, so it escaped the draw-only catch and killed the client on the first frame.
+			if (!The5zigMod.hasBeenInitialized() || !CoreState.isReady()) {
+				return;
+			}
+			Minecraft minecraft = Minecraft.getInstance();
+			// F1 hides the vanilla HUD; the overlay follows it.
+			if (minecraft != null && minecraft.options != null && minecraft.options.hideGui) {
+				return;
+			}
 			The5zigMod.getGuiIngame().renderGameOverlay();
 		} catch (Throwable throwable) {
 			if (!failureLogged) {
