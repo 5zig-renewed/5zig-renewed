@@ -619,3 +619,28 @@ less blurred — another reminder that the threshold has to be per screen, not g
 First run showed the **death screen** (`You Died!`, X:-7.8 Y:68.9 Z:15.6) because `forge/run/saves` held an
 old survival world; every key press went to the death dialog. Re-run with the 1.20.1 Creative world copied in
 from the root project (same Minecraft version, so no conversion).
+
+---
+
+## D12 — 1.20.1 shipped without the HSQLDB driver (both loaders)
+
+The log gate flagged `ClassNotFoundException: org.hsqldb.jdbc.JDBCDriver` on **both** 1.20.1 targets. Cause:
+the earlier HSQLDB sweep added the driver to the `versions/*-fabric` projects and the NeoForge builds, but
+**not** to the 1.20.1 pair — the repo-root Fabric project and `forge/`:
+
+```
+build/libs/5zig-renewed-1.20.1-fabric-4.0.0-alpha.1.jar   hsqldb=0
+forge/build/libs/…-1.20.1-forge-4.0.0-alpha.1.jar         hsqldb=0
+```
+
+The core's conversation store is HSQLDB, so `Class.forName('org.hsqldb.jdbc.JDBCDriver')` threw and the chat
+stack ran against a null connection — a real functional failure that a HUD/GUI screenshot cannot show. Fixed:
+
+- root `build.gradle`: `implementation 'org.hsqldb:hsqldb:2.7.4'` + `include(…)` (Fabric nesting)
+- `forge/build.gradle`: `minecraftLibrary 'org.hsqldb:hsqldb:2.7.4'` + a `['org.hsqldb','hsqldb','2.7.4','[2.7.4]']`
+  entry in the `jarJarModules` list
+
+Both jars now report `hsqldb=1`. Re-verified in-client afterwards.
+
+**This is why the log gate is part of the battery and a green GUI is not the finish line:** D12 breaks a whole
+core subsystem while every screenshot looks perfect.

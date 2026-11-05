@@ -42,6 +42,10 @@ dependencies {
     include('org.json:json:20231013') { transitive = false }
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
     include('org.xerial:sqlite-jdbc:3.45.3.0') { transitive = false }
+    // The core's conversation store is HSQLDB; without the driver on the runtime classpath
+    // Class.forName('org.hsqldb.jdbc.JDBCDriver') throws and the chat stack runs on a null connection.
+    implementation 'org.hsqldb:hsqldb:2.7.4'
+    include('org.hsqldb:hsqldb:2.7.4') { transitive = false }
     implementation 'io.netty:netty-codec-http:4.1.97.Final'
     include('io.netty:netty-codec-http:4.1.97.Final') { transitive = false }
 }
