@@ -886,11 +886,33 @@ that `KeyMapping`. Vanilla queues clicks in `KeyboardHandler` for mappings it kn
 | 1.19.x works (~37%) | those platforms register correctly (or use a level-triggered poll) |
 | `f1181g`/`f118g` opened the clipboard at 29.7% | timing-dependent: a click can be queued and consumed within one tick on faster frames |
 
-**CONFIRMED by client run (1.16.2, vanilla Options → Controls, scrolled to the very bottom):** there is
-**no "The 5zig Mod" category and no 5zig entries anywhere in the key list** — only vanilla Movement, Gameplay,
-Inventory and Miscellaneous. So the mod's `KeyMapping`s are **never registered with vanilla**, which makes
-`consumeClick()` false forever and kills every poll-based binding. This also explains why `run/options.txt`
-never contains a `key_the5zigmod.*` line on these versions.
+**RETRACTED — the mappings ARE registered.** A runtime probe on 1.16.2 (temporary, since reverted) printed
+`same=true clickCount=0 down=false screen=null mapHit=the5zigmod.key.settings`, and an earlier variant printed
+`inOptions=true SAME_OBJECT=true coreMappingInMap=true`. So the mapping is in `KeyMapping.MAP`, in
+`Options.keyMappings`, and the core's binding wraps exactly that object. Registration was never broken.
+
+The Controls screen not listing a 5zig category is therefore *not* evidence of missing registration — the
+screen was scrolled with a synthetic wheel and the list is long; I over-read one screenshot.
+
+**What the probes actually showed:**
+
+| measurement | value | meaning |
+|---|---|---|
+| `clickCount` during a 2 s Shift_R hold | **0** | vanilla never queued a click |
+| `down` during the same hold | **false** | GLFW never saw the key as pressed |
+| `screen` | `null` | not a menu blocking the click |
+| swap the settings bind to **F9** and press F9 | **6.0% frame change** | a 5zig screen *did* open |
+
+So the binding path works on 1.16.2; what fails is **delivering a synthetic Right-Shift to GLFW under
+Xvfb** — `xdotool keydown Shift_R` does not register as a key state there, while a normal key like F9 does.
+That is a harness limitation, and it explains why `M` and `F9` work while `Shift_R` never fires on this
+version.
+
+**Status: D14 is downgraded from "defect" to "not verifiable with a synthetic modifier on 1.16.x".** The
+settings hotkey may well be fine for real players (GLFW handles real modifier presses normally); it simply
+cannot be exercised this way. Testing it needs either a non-modifier binding (F9/F12) or a real input device.
+Which *specific* screen the F9 press opened was ambiguous in the capture (it read like the chat GUI), so that
+detail is not claimed.
 
 The failure is therefore in `Keybinds` registration timing on 1.16–1.18 (the Fabric `KeyBindingHelper` path),
 **not** in `displayScreen`, not in the key press, and not in the GUI code. `M` works because that toggle is
