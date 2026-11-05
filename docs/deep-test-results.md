@@ -593,3 +593,29 @@ re-thrown by the handler's own `The5zigMod.logger` access.
 The **shipped** jar nests these libraries via `jarJar`, so a real install should not hit this — but that is
 untested here, and "should" is not "verified". This target needs a packaged-jar install test rather than a dev
 run to be called working.
+
+---
+
+## 34. Fabric 1.20.1 — pass (project root, not `versions/1.20.1-fabric`)
+
+`versions/1.20.1-fabric/` holds only a stale `runs/` directory — the actual 1.20.1 Fabric project is the
+**repository root** (`gradle.properties: minecraft_version=1.20.1`, Loom 1.7.4). Running the battery against
+`versions/1.20.1-fabric` fails instantly with *"Project directory … is not part of the build defined by
+settings file"*, which reads like a broken build but is a wrong working directory.
+
+| section | result |
+|---|---|
+| boot | ✅ joined, no crash report, log clean |
+| settings GUI | ✅ 23.7% of the frame changed |
+| ESC | ✅ |
+| coords GUI | ✅ 16.0% |
+| SPACE / DELETE | ✅ |
+
+Frame diffs are lower than the 26.x builds (23.7% / 16.0%) because the 1.20.1 GUI is smaller and
+less blurred — another reminder that the threshold has to be per screen, not global.
+
+## 35. Forge 1.20.1 — fixture, not a defect
+
+First run showed the **death screen** (`You Died!`, X:-7.8 Y:68.9 Z:15.6) because `forge/run/saves` held an
+old survival world; every key press went to the death dialog. Re-run with the 1.20.1 Creative world copied in
+from the root project (same Minecraft version, so no conversion).

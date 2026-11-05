@@ -322,5 +322,69 @@
   "coords": "ok",
   "battery_said": [],
   "verdict": "PASS"
+ },
+ {
+  "target": "f1201",
+  "project": "1.20.1-fabric",
+  "build": 1,
+  "battery": 3,
+  "joined": 0,
+  "crashes": 0,
+  "menu_diff": null,
+  "menu": "missing screenshot",
+  "coords_diff": null,
+  "coords": "missing screenshot",
+  "battery_said": [
+   "FAIL boot: no world within 420s (see /tmp/dt-f1201.log)"
+  ],
+  "verdict": "CHECK"
+ },
+ {
+  "target": "f201",
+  "project": "forge",
+  "build": 0,
+  "battery": 1,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.0051,
+  "menu": "FAIL",
+  "coords_diff": 0.0063,
+  "coords": "FAIL",
+  "battery_said": [
+   "FAIL  settings GUI opened: only 0.5% changed (needed 10%) - the screen did not open",
+   "FAIL  coordinates GUI opened: only 0.6% changed (needed 6%) - the screen did not open",
+   "FAIL  missing class                ClassNotFoundException: org.hsqldb.jdbc.JDBCDriver"
+  ],
+  "verdict": "CHECK"
+ },
+ {
+  "target": "f120",
+  "project": "1.20-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3572,
+  "menu": "ok",
+  "coords_diff": 0.3594,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "f1201root",
+  "project": ".",
+  "build": 0,
+  "battery": 1,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.237,
+  "menu": "ok",
+  "coords_diff": 0.1598,
+  "coords": "ok",
+  "battery_said": [
+   "FAIL  missing class                ClassNotFoundException: org.hsqldb.jdbc.JDBCDriver"
+  ],
+  "verdict": "PASS"
  }
 ]
