@@ -827,3 +827,34 @@ software rendering*, and its FAIL there is not evidence of a mod defect.
 versus 16/17/1.16 still completely untested. Spending more of the session on the harness for these five would
 be polishing the ruler instead of measuring — so they are recorded as **inconclusive (harness)**, not pass and
 not fail, and the reason is written down for whoever picks them up.
+
+---
+
+## D14 — pre-1.19: bindings that OPEN A GUI do not fire, bindings that TOGGLE state do (open)
+
+Reproduced by hand on **1.16.2** (live client, Creative world, HUD rendering at 28 FPS):
+
+| key | binding | effect | frame change |
+|---|---|---|---|
+| **M** | `toggle_mod` (no GUI, flips a boolean) | **works** — HUD hides/shows | **17.0%** |
+| **Shift_R** | `settings` (opens `GuiSettings`) | nothing | 1.3% (HUD only) |
+| **F12** | `coordinates_clipboard` (opens a GUI) | nothing | 0.0% |
+
+Same asymmetry on **1.17, 1.17.1, 1.18, 1.18.1** (settings never fires; the clipboard fires *sometimes*), and
+1.18.2 opened the settings menu **once** in a manual session. **1.19.x and newer are unaffected** — both screens
+open at ~37%.
+
+What this rules out:
+
+| ruled out | evidence |
+|---|---|
+| keybind registration | `M` fires, so the bindings and the poll path work |
+| a crash while opening | no exception and no crash report; the Netty/HSQLDB noise is unrelated (dead chat backend) |
+| `displayScreen` differing by version | the `displayScreen(Gui)`/`displayScreen(Object)` bodies are **identical** in 1.16.2, 1.18.2 and 1.19.4 |
+
+So the failure is inside the GUI-open path only — most likely `GuiSettings`' constructor or the screen
+wrapper failing silently on 1.16–1.18 (the listener catches and swallows), or the screen being set and then
+overwritten in the same tick. Next step is a targeted instrumentation run on 1.16.2 of
+`KeybindingListener` → `displayScreen` → `GuiHandle.<init>`, exactly as was done for D13 on 1.18.2.
+
+Affects: 1.16.2–1.16.5, 1.17, 1.17.1, 1.18, 1.18.1 (1.18.2 partial). Not counted as passing.
