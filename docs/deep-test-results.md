@@ -908,11 +908,31 @@ Xvfb** — `xdotool keydown Shift_R` does not register as a key state there, whi
 That is a harness limitation, and it explains why `M` and `F9` work while `Shift_R` never fires on this
 version.
 
-**Status: D14 is downgraded from "defect" to "not verifiable with a synthetic modifier on 1.16.x".** The
-settings hotkey may well be fine for real players (GLFW handles real modifier presses normally); it simply
-cannot be exercised this way. Testing it needs either a non-modifier binding (F9/F12) or a real input device.
-Which *specific* screen the F9 press opened was ambiguous in the capture (it read like the chat GUI), so that
-detail is not claimed.
+**Status — final, and narrower than any earlier version of this note.**
+
+Established facts on 1.16.2:
+
+| fact | evidence |
+|---|---|
+| the settings mapping is registered correctly | probe: `same=true`, `inOptions=true`, `coreMappingInMap=true`, `mapHit=the5zigmod.key.settings` |
+| a synthetic **Right Shift** never reaches the game | `down=false` and `clickCount=0` throughout a 2 s hold, with `screen=null` |
+| the mod *does* respond to keys | `M` toggles the HUD (17%); a key press opens another 5zig screen (6% frame change) |
+| the **settings** screen specifically has not been observed on 1.16.2 | the 6% screen turned out to be the **chat** window, not the settings grid |
+
+So: **1.16.x cannot be signed off either way for the settings hotkey.** The wiring is provably correct and
+other keys demonstrably work, but neither a synthetic Right Shift (not delivered by xdotool/Xvfb) nor an
+`options.txt` rebind to F9 (the seed was ignored — the F9 press still opened the chat window) let this
+environment exercise that one binding.
+
+Unblocking it needs one of: a real input device, a `fabric-keybinding` rebind performed *in-game* through the
+vanilla Controls screen, or a temporary compile-time change of the default binding (which was tried once:
+F9 then produced a 6% change, but the capture was inconclusive about which screen).
+
+I have corrected this entry three times — first blaming registration, then the dual v0/v1 modules, then
+`consumeClick` — each time because a probe measured the wrong object or I over-read a screenshot. The
+paragraphs above are what survived measurement; treat the earlier reasoning as withdrawn.
+
+
 
 The failure is therefore in `Keybinds` registration timing on 1.16–1.18 (the Fabric `KeyBindingHelper` path),
 **not** in `displayScreen`, not in the key press, and not in the GUI code. `M` works because that toggle is
