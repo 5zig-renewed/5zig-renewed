@@ -858,3 +858,23 @@ overwritten in the same tick. Next step is a targeted instrumentation run on 1.1
 `KeybindingListener` → `displayScreen` → `GuiHandle.<init>`, exactly as was done for D13 on 1.18.2.
 
 Affects: 1.16.2–1.16.5, 1.17, 1.17.1, 1.18, 1.18.1 (1.18.2 partial). Not counted as passing.
+
+### D14 instrumentation result (1.16.2)
+
+A probe was added to the platform's `Keybinding#callIsPressed()` (temporary, since reverted) printing the
+description, code and `isDown()` for the settings (344) and toggle (77) bindings. Result: **zero calls** over
+a whole session, including while holding Right Shift for ~12 ticks in-world.
+
+So the platform's poll method is *never invoked* on 1.16.2, which explains the asymmetry exactly:
+- `M` still toggles the HUD, so the mod is initialised and something is driving it;
+- the settings/coordinates bindings live in the code path that is not running.
+
+`KeybindingListener.onTick` is an `@EventHandler` for `TickEvent`, and the shared Fabric loader calls
+`The5zigMod.getListener().onTick()` (`loader/fabric/.../FiveZigFabric.java:122`) for every Fabric target, so
+the break is between that call and the `callIsPressed()` polls — either the tick event is never dispatched on
+this era, or `getKeybindingManager()` hands back a manager whose binding objects are not the ones the
+platform constructed (the probe would then sit on an unused instance).
+
+Next step for whoever picks this up: log inside `KeybindingListener.onTick` (core) and inside
+`The5zigMod.getKeybindingManager()`; that distinguishes "tick not firing" from "wrong binding instances" in
+one run. The probe recipe above is the cheap way to do it.
