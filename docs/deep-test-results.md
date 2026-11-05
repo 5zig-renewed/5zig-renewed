@@ -1067,3 +1067,19 @@ and the mapping is correct.
 shadowed MAP entries killing all bindings, the Controls list proving non-registration). The measurements that
 produced them were real, but the conclusion drawn from each was wrong; F10 is the experiment that finally
 settled it.
+
+### One residual limitation on 1.16.x: the bindings work but are not listed in Controls
+
+After the de-duplication fix the hotkeys function (F10 opens the Hypixel Stats GUI), yet the vanilla
+**Options → Controls** list still shows **no "The 5zig Mod" category** — checked at the **bottom** *and* at the
+**top** of the list (categories sort by registration order, so the top was the obvious place to look second).
+Every visible entry is vanilla: Movement, Gameplay, Inventory, Creative Mode.
+
+So on 1.16.x the mod's 13 bindings are live but **invisible to the vanilla rebinding UI**: a player can press
+them, but cannot remap them through Controls. That is a real, if minor, UX gap on this era — and it is the
+honest limit of what this pass establishes. It does not affect the 1.19+ or 26.x targets, where the settings
+menu and both GUIs are verified.
+
+Recorded rather than resolved: closing it needs knowledge of how Fabric's `KeyBindingHelper` feeds
+`Options.keyMappings` on 1.16 vs the list the Controls screen iterates, which is a deeper loader-specific
+question than the remaining session time justified.
