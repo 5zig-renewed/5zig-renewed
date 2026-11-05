@@ -402,5 +402,33 @@
    "FAIL  missing class                ClassNotFoundException: org.hsqldb.jdbc.JDBCDriver"
   ],
   "verdict": "PASS"
+ },
+ {
+  "target": "f201c",
+  "project": "forge",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.2363,
+  "menu": "ok",
+  "coords_diff": 0.1597,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
+ },
+ {
+  "target": "f1201c",
+  "project": ".",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.2329,
+  "menu": "ok",
+  "coords_diff": 0.1575,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
  }
 ]

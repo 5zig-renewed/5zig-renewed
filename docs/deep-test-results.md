@@ -640,7 +640,21 @@ stack ran against a null connection — a real functional failure that a HUD/GUI
 - `forge/build.gradle`: `minecraftLibrary 'org.hsqldb:hsqldb:2.7.4'` + a `['org.hsqldb','hsqldb','2.7.4','[2.7.4]']`
   entry in the `jarJarModules` list
 
-Both jars now report `hsqldb=1`. Re-verified in-client afterwards.
+Both jars now report `hsqldb=1`. Re-verified in-client: `f201c` and `f1201c` both PASS with an **empty**
+log-gate report (no missing class, no silent-failure signature), menu 23.6% / 23.3%.
 
 **This is why the log gate is part of the battery and a green GUI is not the finish line:** D12 breaks a whole
 core subsystem while every screenshot looks perfect.
+
+---
+
+## 36. 1.20.1 — Fabric and Forge both pass (after D12)
+
+| target | menu | coords | crashes | log gate |
+|---|---|---|---|---|
+| Fabric 1.20.1 (`f1201c`) | ok 23.3% | ok | 0 | clean (was `ClassNotFoundException: hsqldb`) |
+| Forge 1.20.1 (`f201c`) | ok 23.6% | ok | 0 | clean (was `ClassNotFoundException: hsqldb`) |
+
+Both loaders reach the settings GUI and the coordinates dialog, no crash reports, and the log gate is
+silent. 1.20.1 is the first version line in this sweep that is **fully** verified rather than "GUI works but
+the driver is missing".
