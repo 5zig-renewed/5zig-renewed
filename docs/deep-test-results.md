@@ -785,14 +785,19 @@ counted as a pass or blamed on the port.
 | Fabric 1.18.1 (`f1181g`) | FAIL 0.8% | **ok 29.7%** | yes | 0 |
 | Fabric 1.18 (`f118g`) | FAIL 0.9% | **ok 29.7%** | yes | 0 |
 
-Same signature on both: the clipboard GUI opens every time, the settings GUI never changes the frame — even
-with the retry. On 1.18.2 the settings GUI *did* render (15.96%, plus a manual screenshot showing every
-button), so this is a **1.18.0/1.18.1-specific rendering gap in the settings screen**, not a keybind problem
-in general (F12 proves the key path).
+Same signature on both: the clipboard GUI opens every time, the settings GUI never changes the frame.
 
-Suspicion worth testing next: `GuiSettings` draws heavily through textures (`Base64Renderer` for the player
-skin, `SimpleTexture` buttons). 1.18.0/1.18.1 sit on either side of a texture/`ResourceLocation` change that
-1.18.2 does not — the same class of bug as D8/D10, which also only surfaced when a GUI actually drew.
+**Correction — this is not a 1.18.0/1.18.1 rendering gap.** I first suspected one, then compared the three
+platform trees properly: `platform/1.18`, `1.18.1` and `1.18.2` are **identical apart from javadoc comments**
+(checked with a per-file md5 pass, then a `difflib` diff of the files that differed — the only changed lines
+are the version number in prose). Identical code cannot produce a version-specific rendering bug on its own,
+and 1.18.2 itself *failed the same assertion on another run* (`f1182g`, 0.0001).
+
+So the honest reading is: **the settings-menu step is flaky on all three 1.18 targets**, while the
+coordinates step is reliable (15.96% / 29.7% / 29.7% across runs). Most likely the first hotkey after joining
+is still being dropped — the retry helps on 1.18.2 but not always on the others. That is a harness
+limitation, recorded as such; it is not evidence of a port defect, and these three targets should be
+re-tested before anything is concluded either way.
 
 Not investigated further in this pass: it is 3 targets of 40, the cause is bounded, and the 1.17/1.16 lines
 had not been tested at all. Recorded here rather than marked passing.
