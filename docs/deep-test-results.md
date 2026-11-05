@@ -954,6 +954,18 @@ shadow each other. The next concrete step is to give every 5zig binding a **dist
 key** (no two bindings on `KEY_UNKNOWN`) and re-test — that is a small, well-defined change rather than more
 probing.
 
+**Fifth measurement — the poll runs, the clicks never arrive.** A probe on the real binding class printed
+`[D14] POLL the5zigmod.key.settings pressed=false` (and the same for toggle_mod, coordinates_clipboard,
+raid_calculator …), 40 times: the core's tick listener **is** running and polling. In-world, no binding ever
+reports a click — not M, not F4, not F12, not Shift_R — while `M` still toggles the HUD through the raw
+dispatch path. So `KeyMapping.click()` is never filling `clickCount` for these mappings on 1.16.2, even though
+they are in `Options.keyMappings` and in `KeyMapping.MAP`.
+
+That is now a three-way contradiction I cannot resolve from here: registration correct, poll running, clicks
+not queued. The remaining candidates are all things this environment cannot distinguish (synthetic key
+scancode vs keycode in `InputConstants.getKey`, an overlay intercepting input, or the dev-launch input path).
+A real input device or a launcher-managed install would settle it in minutes.
+
 I corrected this entry four times (registration → dual v0/v1 modules → `consumeClick` → shadowed `MAP`
 entries). Everything above is what survived measurement; the earlier reasoning is withdrawn.
 
