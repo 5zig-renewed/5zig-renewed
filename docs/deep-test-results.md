@@ -886,8 +886,16 @@ that `KeyMapping`. Vanilla queues clicks in `KeyboardHandler` for mappings it kn
 | 1.19.x works (~37%) | those platforms register correctly (or use a level-triggered poll) |
 | `f1181g`/`f118g` opened the clipboard at 29.7% | timing-dependent: a click can be queued and consumed within one tick on faster frames |
 
-**Next step (one client run, no new code):** open the vanilla *Options → Controls → Key Binds* screen on
-1.16.2 and look for the **"The 5zig Mod"** category. Absent = mappings never registered, which confirms the
-`consumeClick()` dead-end above and points the fix at `Keybinds`/registration timing rather than at
-`displayScreen`. If the category *is* present, the failure is in click-consuming order (four
-`consumeClick()` calls per tick can starve each other) and the fix is to poll level-triggered state instead.
+**CONFIRMED by client run (1.16.2, vanilla Options → Controls, scrolled to the very bottom):** there is
+**no "The 5zig Mod" category and no 5zig entries anywhere in the key list** — only vanilla Movement, Gameplay,
+Inventory and Miscellaneous. So the mod's `KeyMapping`s are **never registered with vanilla**, which makes
+`consumeClick()` false forever and kills every poll-based binding. This also explains why `run/options.txt`
+never contains a `key_the5zigmod.*` line on these versions.
+
+The failure is therefore in `Keybinds` registration timing on 1.16–1.18 (the Fabric `KeyBindingHelper` path),
+**not** in `displayScreen`, not in the key press, and not in the GUI code. `M` works because that toggle is
+served by the raw key-dispatch hook, which does not need a registered mapping.
+
+Fix direction: register every binding through Fabric's `KeyBindingHelper.registerKeyBinding()` while the client
+is still initialising (before `Options` is loaded), as the 1.19+ platforms do; `Keybinds.bootstrap()` currently
+runs too early/late for this era and its fallback (appending to a final array) silently does nothing.
