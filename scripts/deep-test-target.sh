@@ -66,9 +66,12 @@ for _i in $(seq 1 $((TIMEOUT / 5))); do
             : "${WX:=213}"; : "${WY:=160}"; : "${WW:=854}"; : "${WH:=480}"
             CX=$((WX + WW / 2)); CY=$((WY + WH * 49 / 100))
             DISPLAY="$DISP" xdotool mousemove "$CX" "$CY" click 1; sleep 7
-            # Prefer clicking "Play Selected World" over Tab+Enter: on 1.19.2 the keyboard route
-            # leaves focus in the search box and never starts the world. It sits in the bottom
-            # row, left of centre (~31% across, ~82% down).
+            # The world list does not auto-select an entry on every version: with nothing selected
+            # "Play Selected World" is greyed out and clicking it does precisely nothing (1.18.2).
+            # Click the list, press Down to select the first world, then click Play (~31% across,
+            # ~82% down). Skip the Play click if it is still disabled - a disabled button is silent.
+            DISPLAY="$DISP" xdotool mousemove $((WX + WW / 2)) $((WY + WH * 50 / 100)) click 1; sleep 2
+            DISPLAY="$DISP" xdotool key --clearmodifiers Down; sleep 2
             DISPLAY="$DISP" xdotool mousemove $((WX + WW * 31 / 100)) $((WY + WH * 82 / 100)) click 1
             sleep 3
             DISPLAY="$DISP" xdotool key --clearmodifiers Tab; sleep 1

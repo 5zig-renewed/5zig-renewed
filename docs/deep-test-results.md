@@ -695,7 +695,7 @@ a 1.21 world cannot be used here, world data only upgrades.
 
 ---
 
-## D13 — 1.18.x renders the HUD but no keybind fires (open)
+## D13 — FALSE ALARM: 1.18.x keybinds work; the battery never got in-world
 
 Fabric 1.18.2 joins a world and draws the full HUD (`The 5zig Mod vDEV`, `FPS: 54`, `X/Y/Z`, facing), yet
 **Right Shift opens nothing and F12 opens nothing** — frame diff before/after the key press is **0.01%**,
@@ -720,3 +720,29 @@ Also seen in these logs (separate, known-vestigial): `SQLSyntaxErrorException: �
 NETWORK_STATS` — the HSQLDB schema was never created; the friends/party backend is dead upstream.
 
 Investigation delegated with client access (deleg_e97650e1).
+
+**Verdict: not a defect.** With a hand-driven debug session on 1.18.2 the binding works exactly as designed.
+The instrumentation (temporary mixin logging, since reverted) printed:
+
+```
+[D13] key=344 action=1 screen=null arrayLen=47 settingsInArray=true
+      settings=the5zigmod.key.settings clicks=1 down=true save=key.keyboard.right.shift
+      mapHit=the5zigmod.key.settings mapSize=41
+[D13] key=344 action=0 screen=eu.the5zig.mod.platform.GuiHandle@17307576 clicks=0 down=false
+```
+
+The mapping is in `Options#keyMappings`, the GLFW→`KeyMapping` map hits it, `clickCount` increments, and the
+screen that opens is the 5zig `GuiHandle`. A screenshot confirms the **full settings menu renders** — Plugins,
+Show Mod, Mod Scale, Display Options, Coordinates Clipboard, Done, Chat.
+
+**The real cause of the 0.0% frame diff:** the world list does **not auto-select** a world on 1.18.2, so
+"Play Selected World" is **greyed out and silently does nothing**. The battery clicked it, the client sat on
+the world list, and every later key press went nowhere. 1.18.2 was never in-world — `joined the game` in the
+log came from a *previous* run's tail in the same file, which is why the record said `joined=1`.
+
+The drive sequence now clicks the list, presses **Down** to select the first world, then clicks Play.
+
+**Lessons worth keeping:** (a) `joined the game` must be counted only in the current run's log — truncate it
+first; (b) a disabled Minecraft button does nothing at all and looks identical to a broken hotkey; (c) two
+identical screenshots do not mean "frozen" — the Select World screen is static by design, and the thread dump
+showed a normal GLFW wait.
