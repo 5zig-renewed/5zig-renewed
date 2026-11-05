@@ -823,5 +823,41 @@
    "FAIL boot: no world within 600s (see /tmp/dt-f1182g.log)"
   ],
   "verdict": "CHECK"
+ },
+ {
+  "target": "f1181g",
+  "project": "1.18.1-fabric",
+  "build": 0,
+  "battery": 1,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.0079,
+  "menu": "FAIL",
+  "coords_diff": 0.297,
+  "coords": "ok",
+  "battery_said": [
+   "FAIL  settings GUI opened: only 0.6% changed (needed 10%) - the screen did not open",
+   "FAIL  settings GUI opened: only 0.8% changed (needed 10%) - the screen did not open",
+   "FAIL  coordinates GUI opened: only 0.0% changed (needed 6%) - the screen did not open"
+  ],
+  "verdict": "CHECK"
+ },
+ {
+  "target": "f118g",
+  "project": "1.18-fabric",
+  "build": 0,
+  "battery": 1,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.0085,
+  "menu": "FAIL",
+  "coords_diff": 0.2966,
+  "coords": "ok",
+  "battery_said": [
+   "FAIL  settings GUI opened: only 0.6% changed (needed 10%) - the screen did not open",
+   "FAIL  settings GUI opened: only 0.8% changed (needed 10%) - the screen did not open",
+   "FAIL  coordinates GUI opened: only 0.0% changed (needed 6%) - the screen did not open"
+  ],
+  "verdict": "CHECK"
  }
 ]

@@ -777,3 +777,22 @@ for three distinct reasons, all now fixed in the script:
 Residual flakiness: the drive still occasionally fails to reach a world at all (`f1182g`, four attempts).
 That is a harness reliability issue on 1.18.x, not a mod defect, and it is recorded as such rather than
 counted as a pass or blamed on the port.
+
+### 1.18.1 / 1.18 — coordinates GUI works, settings menu does not render
+
+| target | menu | coords | joined | crashes |
+|---|---|---|---|---|
+| Fabric 1.18.1 (`f1181g`) | FAIL 0.8% | **ok 29.7%** | yes | 0 |
+| Fabric 1.18 (`f118g`) | FAIL 0.9% | **ok 29.7%** | yes | 0 |
+
+Same signature on both: the clipboard GUI opens every time, the settings GUI never changes the frame — even
+with the retry. On 1.18.2 the settings GUI *did* render (15.96%, plus a manual screenshot showing every
+button), so this is a **1.18.0/1.18.1-specific rendering gap in the settings screen**, not a keybind problem
+in general (F12 proves the key path).
+
+Suspicion worth testing next: `GuiSettings` draws heavily through textures (`Base64Renderer` for the player
+skin, `SimpleTexture` buttons). 1.18.0/1.18.1 sit on either side of a texture/`ResourceLocation` change that
+1.18.2 does not — the same class of bug as D8/D10, which also only surfaced when a GUI actually drew.
+
+Not investigated further in this pass: it is 3 targets of 40, the cause is bounded, and the 1.17/1.16 lines
+had not been tested at all. Recorded here rather than marked passing.
