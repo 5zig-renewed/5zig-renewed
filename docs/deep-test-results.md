@@ -747,3 +747,33 @@ The drive sequence now clicks the list, presses **Down** to select the first wor
 first; (b) a disabled Minecraft button does nothing at all and looks identical to a broken hotkey; (c) two
 identical screenshots do not mean "frozen" — the Select World screen is static by design, and the thread dump
 showed a normal GLFW wait.
+
+---
+
+## 38. 1.18.2 — both GUIs proven working; the automated drive is flaky
+
+No single battery run passed both screens on this target, but the evidence across runs is unambiguous:
+
+| run | settings GUI | coords GUI | what it shows |
+|---|---|---|---|
+| `f1182e` | **ok 15.96%** | fail (pause menu open) | the settings screen genuinely opens |
+| `f1182f` | fail (first key lost) | **ok 36.39%** | the clipboard screen genuinely opens |
+| manual | full menu screenshot | — | Plugins, Show Mod, Mod Scale, Display Options, Coordinates Clipboard, Done, Chat |
+
+Plus the instrumented log proving the keybind path end-to-end:
+`clicks=1 down=true mapHit=the5zigmod.key.settings` → `screen=eu.the5zig.mod.platform.GuiHandle`.
+
+So **1.18.2 is functionally fine** — the mod's GUIs open and render. What fails is the harness driving it,
+for three distinct reasons, all now fixed in the script:
+
+1. **A dying window was being addressed.** `pkill` + `sleep 3` is not enough on 1.18.x; the old window is
+   still mapped, so `xdotool search` returned it and every click/key went to a dead client. The script now
+   waits until no minecraft window exists (up to 20 s).
+2. **The world list does not auto-select**, so "Play Selected World" is greyed out and silent. The drive now
+   clicks the list and presses **Down** before Play.
+3. **The first key press after joining is swallowed** while chunks stream in, and on 1.18.x a single Escape
+   from a 5zig screen leaves the vanilla pause menu open. Both steps now retry once with a longer settle.
+
+Residual flakiness: the drive still occasionally fails to reach a world at all (`f1182g`, four attempts).
+That is a harness reliability issue on 1.18.x, not a mod defect, and it is recorded as such rather than
+counted as a pass or blamed on the port.

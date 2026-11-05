@@ -26,7 +26,14 @@ DISPLAY="$DISP" xdotool getdisplaygeometry >/dev/null 2>&1 || { echo "display $D
 
 pkill -f 'Knot[C]lient' 2>/dev/null
 pkill -f 'net.minecraftforge.*launc[h]' 2>/dev/null
-sleep 3
+# Wait for the old client's window to actually disappear. A fixed `sleep 3` is not enough on the
+# slow 1.18.x startups: the window is still mapped while the JVM exits, so `xdotool search` returns
+# the DYING window and every later click/keypress is delivered to a dead client - which looks exactly
+# like "the mod's hotkeys do nothing" (measured as a 0.0% frame diff on 1.18.2 three times).
+for _w in $(seq 1 20); do
+    [ -z "$(DISPLAY="$DISP" xdotool search --class minecraft 2>/dev/null)" ] && break
+    sleep 1
+done
 rm -f "$GDIR"/saves/*/session.lock 2>/dev/null
 rm -f "$GDIR"/crash-reports/*.txt 2>/dev/null
 
@@ -86,7 +93,10 @@ if [ "$joined" -ne 1 ]; then
     kill "$RUNNER" 2>/dev/null; pkill -f 'Knot[C]lient' 2>/dev/null
     exit 3
 fi
-sleep 12   # let the first frames settle
+# Wait for the world to finish loading, not just for the join line: the client prints
+# "joined the game" while the terrain screen is still up, and a hotkey pressed then is dropped
+# (1.18.x reproduced this twice; the same key works once the world is fully in).
+sleep 45   # let the world load and the first frames settle
 
 # T2 settings GUI — assert the screen really opened, not just that a key was sent
 DISPLAY="$DISP" import -window root "${SHOT}-before.png" 2>/dev/null
@@ -94,19 +104,38 @@ DISPLAY="$DISP" xdotool keydown Shift_R; sleep 0.4; DISPLAY="$DISP" xdotool keyu
 sleep 5
 DISPLAY="$DISP" import -window root "${SHOT}-menu.png" 2>/dev/null
 say "captured ${SHOT}-menu.png"
-python3 "$(dirname "$0")/shot-diff.py" "${SHOT}-before.png" "${SHOT}-menu.png" 0.10 "settings GUI opened" || fail=1
+# The very first key press after joining is sometimes swallowed while chunks stream in (1.18.x:
+# Shift_R lost, F12 straight after it worked). Retry the press once before declaring the screen dead.
+if ! python3 "$(dirname "$0")/shot-diff.py" "${SHOT}-before.png" "${SHOT}-menu.png" 0.10 "settings GUI opened"; then
+    say "retrying the settings hotkey"
+    DISPLAY="$DISP" xdotool keydown Shift_R; sleep 0.6; DISPLAY="$DISP" xdotool keyup Shift_R
+    sleep 6
+    DISPLAY="$DISP" import -window root "${SHOT}-menu.png" 2>/dev/null
+    python3 "$(dirname "$0")/shot-diff.py" "${SHOT}-before.png" "${SHOT}-menu.png" 0.10 "settings GUI opened" || fail=1
+fi
 
 # T3 ESC back to game
 DISPLAY="$DISP" xdotool key --clearmodifiers Escape; sleep 3
 DISPLAY="$DISP" import -window root "${SHOT}-back.png" 2>/dev/null
 
 # T4 coordinates clipboard + SPACE
+# On 1.18.x the single Escape above closes the 5zig screen *and* leaves the vanilla pause menu open,
+# so F12 hits the menu instead of the game. Detect that case by a failed diff and retry once: one
+# more Escape closes the pause menu, then F12 has a game to open on.
 DISPLAY="$DISP" xdotool key --clearmodifiers F12; sleep 4
 DISPLAY="$DISP" xdotool key --clearmodifiers space; sleep 3
 DISPLAY="$DISP" import -window root "${SHOT}-coords.png" 2>/dev/null
 say "captured ${SHOT}-coords.png"
 # the clipboard dialog covers less of the frame than the settings menu
-python3 "$(dirname "$0")/shot-diff.py" "${SHOT}-back.png" "${SHOT}-coords.png" 0.06 "coordinates GUI opened" || fail=1
+if ! python3 "$(dirname "$0")/shot-diff.py" "${SHOT}-back.png" "${SHOT}-coords.png" 0.06 "coordinates GUI opened"; then
+    say "retrying: closing a leftover pause menu first"
+    DISPLAY="$DISP" xdotool key --clearmodifiers Escape; sleep 3
+    DISPLAY="$DISP" import -window root "${SHOT}-back.png" 2>/dev/null
+    DISPLAY="$DISP" xdotool key --clearmodifiers F12; sleep 4
+    DISPLAY="$DISP" xdotool key --clearmodifiers space; sleep 3
+    DISPLAY="$DISP" import -window root "${SHOT}-coords.png" 2>/dev/null
+    python3 "$(dirname "$0")/shot-diff.py" "${SHOT}-back.png" "${SHOT}-coords.png" 0.06 "coordinates GUI opened" || fail=1
+fi
 
 # T5 DELETE
 DISPLAY="$DISP" xdotool key --clearmodifiers Delete; sleep 2
