@@ -1080,6 +1080,28 @@ them, but cannot remap them through Controls. That is a real, if minor, UX gap o
 honest limit of what this pass establishes. It does not affect the 1.19+ or 26.x targets, where the settings
 menu and both GUIs are verified.
 
-Recorded rather than resolved: closing it needs knowledge of how Fabric's `KeyBindingHelper` feeds
-`Options.keyMappings` on 1.16 vs the list the Controls screen iterates, which is a deeper loader-specific
-question than the remaining session time justified.
+### Investigated against Fabric's own API (and still open)
+
+Reading the actual module instead of guessing: **1.16 loads `fabric-keybindings-v0`** (the log line is
+`Fabric Key Bindings (v0)`), and v0's contract is *not* `KeyBindingHelper.registerKeyBinding(...)` — it is
+
+```java
+KeyBindingRegistry.INSTANCE.addCategory(String);
+KeyBindingRegistry.INSTANCE.register(FabricKeyBinding);   // only accepts ITS OWN type
+FabricKeyBinding.Builder.create(ResourceLocation id, InputUtil.Type type, int code, String category).build();
+```
+
+The loader was calling the **v1** helper, which is why a v0-era install never saw the registrations. I
+implemented the documented v0 path (mappings built as `FabricKeyBinding` via reflection, registered through
+the registry, with a v1 fallback and a one-time warning on failure, and no self-recursive fallback — the first
+version had exactly that bug and silently degraded).
+
+**Result: registrations now succeed through v0 (`Registered 13 key bindings`, zero fallback warnings), and the
+vanilla Controls screen still does not list them.** That is now a straight contradiction with the decompiled
+code: 1.16.2's `ControlList` clones and sorts `minecraft.options.keyMappings`, and a runtime probe already
+showed our mappings present in that exact array. Both halves are measured; they cannot both be true, and
+resolving it needs stepping through Fabric's v0 mixin with a debugger rather than more remote probing.
+
+Left in place because it matches the module's documented contract and fails safe (verified: no warnings, no
+crashes, bindings still fire — F10 opens the Hypixel GUI). Recorded here as an **open, investigated** item, not
+as fixed.

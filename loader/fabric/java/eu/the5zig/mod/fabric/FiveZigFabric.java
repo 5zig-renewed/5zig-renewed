@@ -66,7 +66,25 @@ public class FiveZigFabric implements ClientModInitializer {
 		Transformer.FORGE = false;
 
 		// Must run before Minecraft constructs its Options instance.
-		Keybinds.setRegistrar(KeyBindingHelper::registerKeyBinding);
+		// 1.16-1.18 ship Fabric's key-binding **v0** module, whose registry only accepts its own
+		// FabricKeyBinding type; v1 (`KeyBindingHelper`) exists from 1.19 on. Calling v1 on a v0 era
+		// registers into a list the live module never reads, so the bindings work through the key
+		// dispatch path but stay invisible to Options and to the vanilla controls screen.
+		if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("fabric-keybindings-v0")) {
+			// Reflective so this shared loader still compiles against platforms that have no v0 path.
+			Keybinds.setRegistrar(mapping -> {
+				try {
+					Keybinds.class.getMethod("registerV0", net.minecraft.client.KeyMapping.class)
+							.invoke(null, mapping);
+				} catch (Throwable throwable) {
+					LOGGER.warn("[5zig Renewed] v0 key-binding registration failed for {}; using v1",
+							mapping.getName(), throwable.getCause() == null ? throwable : throwable.getCause());
+					KeyBindingHelper.registerKeyBinding(mapping);
+				}
+			});
+		} else {
+			Keybinds.setRegistrar(KeyBindingHelper::registerKeyBinding);
+		}
 		Keybinds.bootstrap();
 		Keybinds.closeRegistrationWindow();
 		LOGGER.info("[5zig Renewed] Registered {} key bindings", Keybinds.count());

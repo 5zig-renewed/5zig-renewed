@@ -179,11 +179,46 @@ public final class Keybinds {
 
 	private static FiveZigKeybinding bind(String description, int keyCode, String category) {
 		int code = keyCode == 0 ? GLFW.GLFW_KEY_UNKNOWN : keyCode;
-		KeyMapping mapping = new KeyMapping(description, code, category);
+		KeyMapping mapping = createMapping(description, code, category);
 		register(mapping);
 		FiveZigKeybinding binding = new FiveZigKeybinding(mapping);
 		BINDINGS.put(description, binding);
 		return binding;
+	}
+
+	/**
+	 * Builds the mapping through Fabric's key-binding v0 module when it is present (1.16-1.18).
+	 * <p>
+	 * v0 only accepts its own {@code FabricKeyBinding} type, created with
+	 * {@code FabricKeyBinding.Builder#create(id, type, code, category)}; a plain {@code KeyMapping}
+	 * passed to v0's registry is silently ignored, which is why the bindings worked through the
+	 * dispatch path yet never appeared in the vanilla controls screen. Reflection keeps this shared
+	 * platform source compiling on eras where the v0 classes do not exist.
+	 */
+	private static KeyMapping createMapping(String description, int code, String category) {
+		try {
+			Class<?> builder = Class.forName("net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding$Builder");
+			Object b = builder.getMethod("create", net.minecraft.resources.ResourceLocation.class,
+							com.mojang.blaze3d.platform.InputConstants.Type.class, int.class, String.class)
+					.invoke(null, new net.minecraft.resources.ResourceLocation("the5zigmod", description.replace("the5zigmod.key.", "")),
+							com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM, code, category);
+			return (KeyMapping) builder.getMethod("build").invoke(b);
+		} catch (Throwable throwable) {
+			return new KeyMapping(description, code, category);
+		}
+	}
+
+	/**
+	 * Registers through Fabric's v0 key-binding module, which is what 1.16-1.18 actually load.
+	 */
+	public static void registerV0(KeyMapping mapping) throws Exception {
+		// Deliberately throws instead of falling back internally: the caller owns the fallback, and a
+		// self-referencing fallback here would re-enter the same registrar (infinite recursion).
+		Class<?> registryClass = Class.forName("net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry");
+		Object registry = registryClass.getField("INSTANCE").get(null);
+		registryClass.getMethod("addCategory", String.class).invoke(registry, mapping.getCategory());
+		registryClass.getMethod("register", Class.forName("net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding"))
+				.invoke(registry, mapping);
 	}
 
 	private static void register(KeyMapping mapping) {
