@@ -38,13 +38,17 @@ RUNNER=$!
 # wait for a world
 joined=0
 failover=0
-for _ in $(seq 1 $((TIMEOUT / 5))); do
+_i=0
+for _i in $(seq 1 $((TIMEOUT / 5))); do
     if grep -aq 'joined the game' "$LOG" 2>/dev/null; then joined=1; break; fi
     # Versions before 1.20 do not implement --quickPlaySingleplayer (they log
     # "Completely ignored arguments"), so the client parks on the title screen. Walk it in
     # by keyboard once, after it has had time to finish loading: Enter opens Singleplayer,
     # Tab moves focus from the search box to the world list, Enter plays the selected world.
-    if [ "$failover" -eq 0 ] && [ -n "$(grep -a 'Completely ignored arguments' "$LOG" 2>/dev/null)" ]; then
+    # Time-based trigger, not log-based: 1.20+ honours --quickPlaySingleplayer and joins on its own,
+    # while pre-1.20 versions either log "Completely ignored arguments" (1.19.x) or say nothing at all
+    # (1.18.2 simply parks on the title screen). After ~100 s with no join, assume the menu is up and drive it.
+    if [ "$failover" -eq 0 ] && [ "$_i" -ge 20 ]; then
         failover=1
         say "quickplay unsupported on this version - driving the title screen"
         # `Completely ignored arguments` is logged while parsing argv, long before the title screen

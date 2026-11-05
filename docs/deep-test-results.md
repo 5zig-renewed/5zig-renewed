@@ -692,3 +692,31 @@ up to four times, re-reading the window geometry each round and re-checking for 
 
 Fixture: Creative world created on **1.19** (the oldest of the family) and copied to all five 1.19.x projects —
 a 1.21 world cannot be used here, world data only upgrades.
+
+---
+
+## D13 — 1.18.x renders the HUD but no keybind fires (open)
+
+Fabric 1.18.2 joins a world and draws the full HUD (`The 5zig Mod vDEV`, `FPS: 54`, `X/Y/Z`, facing), yet
+**Right Shift opens nothing and F12 opens nothing** — frame diff before/after the key press is **0.01%**,
+against ~37% on 1.19.4 and ~23% on 1.20.1 where both screens open.
+
+Not the fixture, not the harness: the room is in-world, the HUD is live, and the same battery drives
+1.19.x correctly. So the keybind path is broken on 1.18.x specifically.
+
+What was ruled out:
+
+| hypothesis | evidence |
+|---|---|
+| world/fixture problem | HUD renders; the screen diff never changes at all |
+| options.txt shows no `the5zigmod.key.*` | the client is SIGTERM'd and never saves options — **1.19.4/1.19.2 also show zero and their bindings work** |
+| core never initialised | the HUD is drawn by the core, so it did |
+
+1.18.x is the **fabric-keybindings-v0** era (`fabric-keybindings-v0 0.2.10` on the classpath), which is the
+prime suspect: `Keybinds.bootstrap()` runs from the shared Fabric entrypoint on every target, so the
+difference must be in how 1.18.x's mappings reach the live `Options`.
+
+Also seen in these logs (separate, known-vestigial): `SQLSyntaxErrorException: … object not found: VERSION /
+NETWORK_STATS` — the HSQLDB schema was never created; the friends/party backend is dead upstream.
+
+Investigation delegated with client access (deleg_e97650e1).
