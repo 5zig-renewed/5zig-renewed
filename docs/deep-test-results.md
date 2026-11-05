@@ -922,29 +922,41 @@ Xvfb** — `xdotool keydown Shift_R` does not register as a key state there, whi
 That is a harness limitation, and it explains why `M` and `F9` work while `Shift_R` never fires on this
 version.
 
-**Status — final, and narrower than any earlier version of this note.**
+**Status — final for this pass.**
 
-Established facts on 1.16.2:
+Measured on 1.16.2 with a temporary probe (since reverted; tree clean):
 
-| fact | evidence |
+```
+[D14] same=true inOptions=true coreMappingInMap=true mapHit=the5zigmod.key.settings
+[D14] clickCount=0 down=false screen=null            (during a 2 s synthetic Right-Shift hold)
+optionsLen=46   mapSize=40                            <- six mappings are shadowed
+```
+
+So on this target:
+
+| fact | status |
 |---|---|
-| the settings mapping is registered correctly | probe: `same=true`, `inOptions=true`, `coreMappingInMap=true`, `mapHit=the5zigmod.key.settings` |
-| a synthetic **Right Shift** never reaches the game | `down=false` and `clickCount=0` throughout a 2 s hold, with `screen=null` |
-| the mod *does* respond to keys | `M` toggles the HUD (17%); a key press opens another 5zig screen (6% frame change) |
-| the **settings** screen specifically has not been observed on 1.16.2 | the 6% screen turned out to be the **chat** window, not the settings grid |
+| the settings mapping exists, wraps the same object the probe finds | **proven** |
+| it is inside `Options.keyMappings` | **proven** (`inOptions=true`) |
+| a synthetic Right Shift never reaches the engine | **proven** (`down=false`, `clickCount=0`) |
+| the vanilla Controls screen does not list a "The 5zig Mod" category | **observed twice**, contradicts `inOptions=true` |
+| `KeyMapping.MAP` holds 40 entries for 46 option slots | **measured** — six bindings are shadowed |
 
-So: **1.16.x cannot be signed off either way for the settings hotkey.** The wiring is provably correct and
-other keys demonstrably work, but neither a synthetic Right Shift (not delivered by xdotool/Xvfb) nor an
-`options.txt` rebind to F9 (the seed was ignored — the F9 press still opened the chat window) let this
-environment exercise that one binding.
+The last two rows are the remaining lead: duplicate default codes (`GLFW_KEY_UNKNOWN` on the raid tracker and
+hypixel-stats bindings, plus any collision with another mod) make several mappings share one `MAP` key, and
+`MAP` is keyed by key — so all but the last registered collide, and `KeyMapping.click()` routes a press to
+whichever mapping won. That is a plausible mechanism for "registered, in Options, but never receives a click",
+and it also explains why the Controls list (built from the same map) omits them.
 
-Unblocking it needs one of: a real input device, a `fabric-keybinding` rebind performed *in-game* through the
-vanilla Controls screen, or a temporary compile-time change of the default binding (which was tried once:
-F9 then produced a 6% change, but the capture was inconclusive about which screen).
+**Unresolved:** whether the settings hotkey works for a real player on 1.16–1.18. Two distinct obstacles stop
+this environment from answering: synthetic modifier presses are not delivered, and six colliding bindings
+shadow each other. The next concrete step is to give every 5zig binding a **distinct, non-colliding default
+key** (no two bindings on `KEY_UNKNOWN`) and re-test — that is a small, well-defined change rather than more
+probing.
 
-I have corrected this entry three times — first blaming registration, then the dual v0/v1 modules, then
-`consumeClick` — each time because a probe measured the wrong object or I over-read a screenshot. The
-paragraphs above are what survived measurement; treat the earlier reasoning as withdrawn.
+I corrected this entry four times (registration → dual v0/v1 modules → `consumeClick` → shadowed `MAP`
+entries). Everything above is what survived measurement; the earlier reasoning is withdrawn.
+
 
 
 
