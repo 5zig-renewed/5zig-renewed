@@ -37,8 +37,31 @@ RUNNER=$!
 
 # wait for a world
 joined=0
+failover=0
 for _ in $(seq 1 $((TIMEOUT / 5))); do
     if grep -aq 'joined the game' "$LOG" 2>/dev/null; then joined=1; break; fi
+    # Versions before 1.20 do not implement --quickPlaySingleplayer (they log
+    # "Completely ignored arguments"), so the client parks on the title screen. Walk it in
+    # by keyboard once, after it has had time to finish loading: Enter opens Singleplayer,
+    # Tab moves focus from the search box to the world list, Enter plays the selected world.
+    if [ "$failover" -eq 0 ] && [ -n "$(grep -a 'Completely ignored arguments' "$LOG" 2>/dev/null)" ]; then
+        failover=1
+        say "quickplay unsupported on this version - driving the title screen"
+        sleep 25
+        # nothing is focused on the title screen, so Enter alone is a no-op: click the first menu
+        # button (the window is centred; Singleplayer sits just above centre), then Tab off the
+        # search box in the world list and Enter to play the selected world.
+        GEO=$(DISPLAY="$DISP" xdotool getwindowgeometry "$(DISPLAY="$DISP" xdotool search --class minecraft | head -1)" 2>/dev/null)
+        WX=$(echo "$GEO" | sed -n 's/.*Position: \([0-9]*\),\([0-9]*\).*/\1/p')
+        WY=$(echo "$GEO" | sed -n 's/.*Position: \([0-9]*\),\([0-9]*\).*/\2/p')
+        WW=$(echo "$GEO" | sed -n 's/.*Geometry: \([0-9]*\)x.*/\1/p')
+        WH=$(echo "$GEO" | sed -n 's/.*Geometry: [0-9]*x\([0-9]*\).*/\1/p')
+        : "${WX:=213}"; : "${WY:=160}"; : "${WW:=854}"; : "${WH:=480}"
+        CX=$((WX + WW / 2)); CY=$((WY + WH * 49 / 100))
+        DISPLAY="$DISP" xdotool mousemove "$CX" "$CY" click 1; sleep 7
+        DISPLAY="$DISP" xdotool key --clearmodifiers Tab; sleep 1
+        DISPLAY="$DISP" xdotool key --clearmodifiers Return
+    fi
     sleep 5
 done
 if [ "$joined" -ne 1 ]; then

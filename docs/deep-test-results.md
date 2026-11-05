@@ -658,3 +658,24 @@ core subsystem while every screenshot looks perfect.
 Both loaders reach the settings GUI and the coordinates dialog, no crash reports, and the log gate is
 silent. 1.20.1 is the first version line in this sweep that is **fully** verified rather than "GUI works but
 the driver is missing".
+
+---
+
+## 37. 1.19.x — passes once the client is driven in
+
+`--quickPlaySingleplayer` **does not exist before 1.20**. On 1.19.x the client logs
+`Completely ignored arguments: [--quickPlaySingleplayer, New World]` and parks on the title screen, so the
+battery reported "no world within N seconds" for 1.19.4 / 1.19.3 / 1.19.2 — three failures that had nothing
+to do with the mod.
+
+`deep-test-target.sh` now detects that log line and walks the client in by itself. The first attempt (Enter,
+Tab, Enter) did nothing: **nothing is focused on the title screen, so Enter is a no-op.** The working sequence
+is: read the window geometry, click the first menu button just above centre, wait, then `Tab` (off the world
+list's search box) and `Enter`.
+
+| target | menu | coords | crashes |
+|---|---|---|---|
+| Fabric 1.19.4 (`f1194c`) | ok 37.0% | ok · X=5/Z=10 | 0 |
+
+Fixture: Creative world created on **1.19** (the oldest of the family) and copied to all five 1.19.x projects —
+a 1.21 world cannot be used here, world data only upgrades.
