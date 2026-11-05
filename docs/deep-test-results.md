@@ -955,3 +955,26 @@ land in a registry nothing reads.
 Fix direction: pin the era to **one** module — for 1.16–1.18 that is v0 — and call that module's
 `KeyBindingHelper` explicitly, rather than relying on whatever `KeyBindingHelper` resolves to when both are
 present.
+
+---
+
+## D5 — closed by design (sending would be worse than dropping)
+
+The 26.x platforms currently log once and **drop** raw plugin payloads instead of throwing
+(`IllegalStateException` before the mitigation). The "proper fix" would be to register a raw payload type
+per channel and `ClientPlayNetworking.send` it.
+
+I deliberately did **not** implement that, for two concrete reasons:
+
+1. **It removes a safety check, not a limitation.** 26.x replaced plugin channels with typed
+   `CustomPacketPayload`s: the receiver must have a codec for the type. A vanilla server does not, and modern
+   versions treat an unexpected client payload as a protocol error — the likely outcome is a **disconnect**,
+   not a delivered message. Dropping locally cannot hurt a player; sending can.
+2. **There is nothing on the other end.** `PayloadUtils.API_CHANNEL` (`the5zigmod:5zig`) and
+   `…:5zig_reg` are the only 5zig channels, and they existed to talk to the 5zig server-side plugin, which is
+   dead upstream (this is the same vestigial backend as the HSQLDB friend/party tables). Registering a codec
+   for a service nobody runs buys no functionality.
+
+So D5 stays: **degrade with a one-time warning, never throw, never send something that can get the user
+kicked.** If a 5zig-capable server ever comes back, the change is small and the place to make it is the
+loader's payload registration — recorded here so the decision is not silently reversed later.
