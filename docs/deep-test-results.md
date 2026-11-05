@@ -736,9 +736,10 @@ screen that opens is the 5zig `GuiHandle`. A screenshot confirms the **full sett
 Show Mod, Mod Scale, Display Options, Coordinates Clipboard, Done, Chat.
 
 **The real cause of the 0.0% frame diff:** the world list does **not auto-select** a world on 1.18.2, so
-"Play Selected World" is **greyed out and silently does nothing**. The battery clicked it, the client sat on
-the world list, and every later key press went nowhere. 1.18.2 was never in-world — `joined the game` in the
-log came from a *previous* run's tail in the same file, which is why the record said `joined=1`.
+"Play Selected World" is **greyed out and silently does nothing** — the battery clicked it and the client
+stayed on the world list. The run that recorded `joined=1` did reach a world, so its keys were pressed
+somewhere that swallowed them; the likeliest explanation is that the press landed during world load, but
+that specific run was not instrumented and **that part is not proven**.
 
 The drive sequence now clicks the list, presses **Down** to select the first world, then clicks Play.
 
