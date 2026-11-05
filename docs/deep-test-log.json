@@ -508,5 +508,51 @@
   "coords": "ok",
   "battery_said": [],
   "verdict": "PASS"
+ },
+ {
+  "target": "f1192b",
+  "project": "1.19.2-fabric",
+  "build": 0,
+  "battery": 3,
+  "joined": 0,
+  "crashes": 0,
+  "menu_diff": null,
+  "menu": "missing screenshot",
+  "coords_diff": null,
+  "coords": "missing screenshot",
+  "battery_said": [
+   "FAIL boot: no world within 480s (see /tmp/dt-f1192b.log)"
+  ],
+  "verdict": "CHECK"
+ },
+ {
+  "target": "f1193c",
+  "project": "1.19.3-fabric",
+  "build": 0,
+  "battery": 3,
+  "joined": 0,
+  "crashes": 0,
+  "menu_diff": null,
+  "menu": "missing screenshot",
+  "coords_diff": null,
+  "coords": "missing screenshot",
+  "battery_said": [
+   "FAIL boot: no world within 480s (see /tmp/dt-f1193c.log)"
+  ],
+  "verdict": "CHECK"
+ },
+ {
+  "target": "f1193d",
+  "project": "1.19.3-fabric",
+  "build": 0,
+  "battery": 0,
+  "joined": 1,
+  "crashes": 0,
+  "menu_diff": 0.3584,
+  "menu": "ok",
+  "coords_diff": 0.3667,
+  "coords": "ok",
+  "battery_said": [],
+  "verdict": "PASS"
  }
 ]

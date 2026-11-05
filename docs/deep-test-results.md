@@ -676,6 +676,12 @@ list's search box) and `Enter`.
 | target | menu | coords | crashes |
 |---|---|---|---|
 | Fabric 1.19.4 (`f1194c`) | ok 37.0% | ok · X=5/Z=10 | 0 |
+| Fabric 1.19.3 (`f1193d`) | ok 35.8% | ok · X=5/Z=10 | 0 |
+
+The first failover attempt was a **race**: `Completely ignored arguments` is logged while parsing argv, long
+before the title screen exists, so a single click 25 s later was a no-op on the slower builds (1.19.3 needed
+two attempts; its battery log shows `drive attempt 1 sent` / `drive attempt 2 sent`). The failover now retries
+up to four times, re-reading the window geometry each round and re-checking for a joined world.
 
 Fixture: Creative world created on **1.19** (the oldest of the family) and copied to all five 1.19.x projects —
 a 1.21 world cannot be used here, world data only upgrades.

@@ -47,20 +47,25 @@ for _ in $(seq 1 $((TIMEOUT / 5))); do
     if [ "$failover" -eq 0 ] && [ -n "$(grep -a 'Completely ignored arguments' "$LOG" 2>/dev/null)" ]; then
         failover=1
         say "quickplay unsupported on this version - driving the title screen"
-        sleep 25
-        # nothing is focused on the title screen, so Enter alone is a no-op: click the first menu
-        # button (the window is centred; Singleplayer sits just above centre), then Tab off the
-        # search box in the world list and Enter to play the selected world.
-        GEO=$(DISPLAY="$DISP" xdotool getwindowgeometry "$(DISPLAY="$DISP" xdotool search --class minecraft | head -1)" 2>/dev/null)
-        WX=$(echo "$GEO" | sed -n 's/.*Position: \([0-9]*\),\([0-9]*\).*/\1/p')
-        WY=$(echo "$GEO" | sed -n 's/.*Position: \([0-9]*\),\([0-9]*\).*/\2/p')
-        WW=$(echo "$GEO" | sed -n 's/.*Geometry: \([0-9]*\)x.*/\1/p')
-        WH=$(echo "$GEO" | sed -n 's/.*Geometry: [0-9]*x\([0-9]*\).*/\1/p')
-        : "${WX:=213}"; : "${WY:=160}"; : "${WW:=854}"; : "${WH:=480}"
-        CX=$((WX + WW / 2)); CY=$((WY + WH * 49 / 100))
-        DISPLAY="$DISP" xdotool mousemove "$CX" "$CY" click 1; sleep 7
-        DISPLAY="$DISP" xdotool key --clearmodifiers Tab; sleep 1
-        DISPLAY="$DISP" xdotool key --clearmodifiers Return
+        # `Completely ignored arguments` is logged while parsing argv, long before the title screen
+        # renders, so a single attempt is a race. Retry: the click is a no-op until the menu exists.
+        # Nothing is focused on the title screen, so Enter alone does nothing - click the first menu
+        # button just above centre, then Tab off the world list's search box and Enter to play.
+        for _try in 1 2 3 4; do
+            sleep 20
+            grep -aq 'joined the game' "$LOG" 2>/dev/null && { joined=1; break; }
+            GEO=$(DISPLAY="$DISP" xdotool getwindowgeometry "$(DISPLAY="$DISP" xdotool search --class minecraft | head -1)" 2>/dev/null)
+            WX=$(echo "$GEO" | sed -n 's/.*Position: \([0-9]*\),\([0-9]*\).*/\1/p')
+            WY=$(echo "$GEO" | sed -n 's/.*Position: \([0-9]*\),\([0-9]*\).*/\2/p')
+            WW=$(echo "$GEO" | sed -n 's/.*Geometry: \([0-9]*\)x.*/\1/p')
+            WH=$(echo "$GEO" | sed -n 's/.*Geometry: [0-9]*x\([0-9]*\).*/\1/p')
+            : "${WX:=213}"; : "${WY:=160}"; : "${WW:=854}"; : "${WH:=480}"
+            CX=$((WX + WW / 2)); CY=$((WY + WH * 49 / 100))
+            DISPLAY="$DISP" xdotool mousemove "$CX" "$CY" click 1; sleep 7
+            DISPLAY="$DISP" xdotool key --clearmodifiers Tab; sleep 1
+            DISPLAY="$DISP" xdotool key --clearmodifiers Return
+            say "drive attempt $_try sent"
+        done
     fi
     sleep 5
 done
