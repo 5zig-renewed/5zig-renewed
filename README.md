@@ -55,7 +55,7 @@ Every cell links to a jar. Pick the row for your Minecraft version and the colum
 | ✓ | client-verified: world loaded, HUD and menus exercised |
 | ◐ | builds and is packaged correctly, not boot-tested |
 | ✕ | cannot load, for a reason outside this project |
-| - | this loader does not target that version |
+| — | this loader does not target that version |
 
 **58 of 61 assets are client-verified**; the exceptions are listed under [Compatibility](#compatibility).
 
