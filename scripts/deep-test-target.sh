@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # deep-test-target.sh <project-dir> <display> <gradle> <java-home> <mc-version> [timeout]
 #
-# Runs the T0-T5 battery against one target and leaves screenshots in /tmp/dt-<mc>-*.png:
+# Runs the T0-T5 battery against one target and leaves screenshots in <captures>/dt-<mc>-*.png:
 #   boot -> settings GUI (RSHIFT) -> ESC -> Coordinates Clipboard (F12) -> SPACE -> DELETE
 # Exits non-zero if a step failed. The caller owns the build; this only launches and drives.
 set -uo pipefail
@@ -11,8 +11,8 @@ GRADLE="${3:?gradle}"
 JAVA="${4:?java-home}"
 MC="${5:?mc version}"
 TIMEOUT="${6:-420}"
-LOG="/tmp/dt-${MC}.log"
-SHOT="/tmp/dt-${MC}"
+LOG="<captures>/dt-${MC}.log"
+SHOT="<captures>/dt-${MC}"
 
 say() { printf '  %s\n' "$*"; }
 fail=0

@@ -26,3 +26,12 @@ build/createSrgToMcp/
 
 # decompiled reference trees are not part of the repo
 mc-src/
+
+# local run/agent artefact dirs (never commit these)
+.natives/
+**/compile-classpath.txt
+runs/
+**/run/
+**/runs/
+**/.gradle/
+**/build/

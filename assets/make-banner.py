@@ -35,7 +35,7 @@ def text(xy, s, size, weight, color):
     return b
 
 
-logo = Image.open("/assets/logo-512.png").convert("RGBA")
+logo = Image.open("assets/logo-512.png").convert("RGBA")
 logo = logo.resize((344, 344), Image.Resampling.LANCZOS)
 img.paste(logo, (96, 148), logo)
 
@@ -48,5 +48,5 @@ text((x, 406), "Minecraft 1.16 – 26.3", 31, "Medium", (176, 185, 197))
 d.line([(x, 468), (x + 660, 468)], fill=(255, 255, 255, 26), width=2)
 text((x, 492), "GPL-3.0  ·  continuation of 5zig Reborn", 26, "Medium", (148, 157, 170))
 
-img.save("/assets/banner-1280x640.png")
+img.save("assets/banner-1280x640.png")
 print("saved, all text within margins")

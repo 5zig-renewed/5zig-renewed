@@ -7,7 +7,7 @@ target method's descriptor, so a typo here is a crash on startup rather than a c
 import os, re, subprocess
 
 JAR = os.path.expanduser("~/.gradle/caches/fabric-loom/26.1/minecraft-merged.jar")
-MIXIN_DIR = "/platform/26.1/eu/the5zig/mod/mixin"
+MIXIN_DIR = "platform/26.1/eu/the5zig/mod/mixin"
 
 PRIM = {"int": "I", "boolean": "Z", "float": "F", "double": "D", "long": "J", "byte": "B",
         "short": "S", "char": "C", "void": "V"}

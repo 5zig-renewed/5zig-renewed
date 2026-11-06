@@ -101,5 +101,5 @@ ResourceLocation: new ResourceLocation("the5zigmod", "textures/items.png") is PU
 ```bash
 cd <project>
 JAVA_HOME=/usr/lib/jvm/java-21-openjdk /usr/lib/jvm/java-21-openjdk/bin/javac \
-  -nowarn -d /tmp/out -cp "$(cat compile-classpath.txt)" $(find core common api platform loader -name '*.java')
+  -nowarn -d <out-dir> -cp "$(cat compile-classpath.txt)" $(find core common api platform loader -name '*.java')
 ```

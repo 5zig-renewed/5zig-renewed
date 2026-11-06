@@ -8,15 +8,15 @@
 set -u
 PROJ="$1"; LABEL="$2"; DISP="$3"; GRADLE="$4"; JAVA="$5"; TMO="${6:-420}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-LOG="/tmp/dt-${LABEL}.log"
-OUT="/tmp/dt-${LABEL}-battery.txt"
+LOG="<captures>/dt-${LABEL}.log"
+OUT="<captures>/dt-${LABEL}-battery.txt"
 
 if [ -d "$PROJ/run" ]; then GDIR="$PROJ/run"; else GDIR="$PROJ/runs/client"; fi
 mkdir -p "$GDIR"
 printf 'onboardAccessibility:false\nguiScale:2\n' > "$GDIR/options.txt"
 rm -f "$GDIR"/crash-reports/*.txt 2>/dev/null
 
-( cd "$PROJ" && JAVA_HOME="$JAVA" "$GRADLE" build --no-daemon -x test ) > "/tmp/b-${LABEL}.log" 2>&1
+( cd "$PROJ" && JAVA_HOME="$JAVA" "$GRADLE" build --no-daemon -x test ) > "<captures>/b-${LABEL}.log" 2>&1
 BUILD=$?
 
 "$ROOT/scripts/deep-test-target.sh" "$PROJ" "$DISP" "$GRADLE" "$JAVA" "$LABEL" "$TMO" > "$OUT" 2>&1
@@ -25,7 +25,7 @@ BATTRY=$?
 python3 - "$ROOT" "$PROJ" "$LABEL" "$BUILD" "$BATTRY" "$LOG" "$OUT" <<'PY'
 import json, os, sys
 root, proj, label, build, battry, log, out = sys.argv[1:8]
-shot = f"/tmp/dt-{label}"
+shot = f"<captures>/dt-{label}"
 def diff(a, b, thresh):
     pa, pb = f"{shot}-{a}.png", f"{shot}-{b}.png"
     if not (os.path.exists(pa) and os.path.exists(pb)):

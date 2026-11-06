@@ -42,7 +42,7 @@ fi
 cd "$PORT_REPO"
 git init -q 2>/dev/null || true
 git add -A
-git -c user.email=noreply@example.com -c user.name=maintainer commit -qm "Initial import: 5zig core + 1.20.1 Fabric port skeleton" 2>/dev/null || true
+git -c user.email="$(git config --get user.email)" -c user.name="$(git config --get user.name)" commit -qm "Initial import: 5zig core + 1.20.1 Fabric port skeleton" 2>/dev/null || true
 git remote remove origin 2>/dev/null || true
 git remote add origin "https://github.com/$ORG/5zig-renewed.git"
 git branch -M main

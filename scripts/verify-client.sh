@@ -16,10 +16,10 @@ SHOT="${SHOT:-${LOG%.log}.png}"
 say() { printf '== %s\n' "$*"; }
 
 # --- display -----------------------------------------------------------------
-if ! [ -S "/tmp/.X11-unix/X${DISPLAY_NUM#:}" ]; then
-    sudo -n rm -f "/tmp/.X${DISPLAY_NUM#:}-lock" 2>/dev/null
+if ! [ -S "<captures>/.X11-unix/X${DISPLAY_NUM#:}" ]; then
+    sudo -n rm -f "<captures>/.X${DISPLAY_NUM#:}-lock" 2>/dev/null
     nohup Xvfb "$DISPLAY_NUM" -screen 0 1280x800x24 +extension GLX +render -noreset \
-        > "/tmp/xvfb${DISPLAY_NUM#:}.log" 2>&1 &
+        > "<captures>/xvfb${DISPLAY_NUM#:}.log" 2>&1 &
     sleep 3
 fi
 

@@ -2,9 +2,9 @@
 """Static check that every mixin target method descriptor exists in the 1.21.5 jar."""
 import re, subprocess, sys, os, glob, json
 
-MIXIN_DIR = '/platform/1.21.5/eu/the5zig/mod/mixin'
+MIXIN_DIR = 'platform/1.21.5/eu/the5zig/mod/mixin'
 SRC_ROOT = 'mc-src/1.21.5/out'
-JAR = '~//.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/minecraft-merged/1.21.5-loom.mappings.1_21_5.layered+hash.2198-v2/minecraft-merged-1.21.5-loom.mappings.1_21_5.layered+hash.2198-v2.jar'
+JAR = '~/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/minecraft-merged/1.21.5-loom.mappings.1_21_5.layered+hash.2198-v2/minecraft-merged-1.21.5-loom.mappings.1_21_5.layered+hash.2198-v2.jar'
 JAVAP = '/usr/lib/jvm/java-21-openjdk/bin/javap'
 
 def target_of(path):

@@ -3,7 +3,7 @@
 import os, re, subprocess, sys
 
 ROOT = ''
-MCJAR = ('/versions/1.20-fabric/.gradle/loom-cache/minecraftMaven/net/minecraft/'
+MCJAR = ('versions/1.20-fabric/.gradle/loom-cache/minecraftMaven/net/minecraft/'
          'minecraft-merged-a55b08f8f9/1.20-loom.mappings.1_20.layered+hash.2198-v2/'
          'minecraft-merged-a55b08f8f9-1.20-loom.mappings.1_20.layered+hash.2198-v2.jar')
 

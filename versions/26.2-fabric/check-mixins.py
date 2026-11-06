@@ -3,7 +3,7 @@
 import os, re, subprocess, sys
 
 JAR = os.path.expanduser("~/.gradle/caches/fabric-loom/26.2/minecraft-merged.jar")
-MIXIN_DIR = "/platform/26.2/eu/the5zig/mod/mixin"
+MIXIN_DIR = "platform/26.2/eu/the5zig/mod/mixin"
 
 # cache of javap descriptor sets per class
 _cache = {}

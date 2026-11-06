@@ -277,7 +277,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 420s (see /tmp/dt-nf1202.log)"
+   "FAIL boot: no world within 420s (see <captures>/dt-nf1202.log)"
   ],
   "verdict": "CHECK"
  },
@@ -335,7 +335,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 420s (see /tmp/dt-f1201.log)"
+   "FAIL boot: no world within 420s (see <captures>/dt-f1201.log)"
   ],
   "verdict": "CHECK"
  },
@@ -443,7 +443,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 420s (see /tmp/dt-f1194.log)"
+   "FAIL boot: no world within 420s (see <captures>/dt-f1194.log)"
   ],
   "verdict": "CHECK"
  },
@@ -459,7 +459,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 420s (see /tmp/dt-f1193.log)"
+   "FAIL boot: no world within 420s (see <captures>/dt-f1193.log)"
   ],
   "verdict": "CHECK"
  },
@@ -475,7 +475,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 420s (see /tmp/dt-f1192.log)"
+   "FAIL boot: no world within 420s (see <captures>/dt-f1192.log)"
   ],
   "verdict": "CHECK"
  },
@@ -491,7 +491,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 480s (see /tmp/dt-f1194b.log)"
+   "FAIL boot: no world within 480s (see <captures>/dt-f1194b.log)"
   ],
   "verdict": "CHECK"
  },
@@ -521,7 +521,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 480s (see /tmp/dt-f1192b.log)"
+   "FAIL boot: no world within 480s (see <captures>/dt-f1192b.log)"
   ],
   "verdict": "CHECK"
  },
@@ -537,7 +537,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 480s (see /tmp/dt-f1193c.log)"
+   "FAIL boot: no world within 480s (see <captures>/dt-f1193c.log)"
   ],
   "verdict": "CHECK"
  },
@@ -567,7 +567,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 480s (see /tmp/dt-f1191c.log)"
+   "FAIL boot: no world within 480s (see <captures>/dt-f1191c.log)"
   ],
   "verdict": "CHECK"
  },
@@ -597,7 +597,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 540s (see /tmp/dt-f1192d.log)"
+   "FAIL boot: no world within 540s (see <captures>/dt-f1192d.log)"
   ],
   "verdict": "CHECK"
  },
@@ -655,7 +655,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 540s (see /tmp/dt-f1182.log)"
+   "FAIL boot: no world within 540s (see <captures>/dt-f1182.log)"
   ],
   "verdict": "CHECK"
  },
@@ -688,7 +688,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 540s (see /tmp/dt-f118.log)"
+   "FAIL boot: no world within 540s (see <captures>/dt-f118.log)"
   ],
   "verdict": "CHECK"
  },
@@ -704,7 +704,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 600s (see /tmp/dt-f1181b.log)"
+   "FAIL boot: no world within 600s (see <captures>/dt-f1181b.log)"
   ],
   "verdict": "CHECK"
  },
@@ -804,7 +804,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 600s (see /tmp/dt-f118f.log)"
+   "FAIL boot: no world within 600s (see <captures>/dt-f118f.log)"
   ],
   "verdict": "CHECK"
  },
@@ -820,7 +820,7 @@
   "coords_diff": null,
   "coords": "missing screenshot",
   "battery_said": [
-   "FAIL boot: no world within 600s (see /tmp/dt-f1182g.log)"
+   "FAIL boot: no world within 600s (see <captures>/dt-f1182g.log)"
   ],
   "verdict": "CHECK"
  },

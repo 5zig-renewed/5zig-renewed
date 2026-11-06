@@ -6,19 +6,19 @@ Order per `docs/deep-test.md`: Fabric 26.3 → NeoForge 26.2 → Fabric 26.2 →
 
 ## 1. Fabric 26.3 — in progress
 
-Date: 2026-11-04 · log `/tmp/dt2-f263.log` · screenshots `/tmp/dt2-*.png`
+Date: 2026-11-04 · log `<captures>/dt2-f263.log` · screenshots `<captures>/dt2-*.png`
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ world loaded, core init 1551 ms, log clean | `joined:1`, `Core initialised` |
-| T1 HUD | ✅ renders (mod label, AFK, FPS, X/Y/Z, facing) | `/tmp/dt-f263-hud2crop.png` |
+| T1 HUD | ✅ renders (mod label, AFK, FPS, X/Y/Z, facing) | `<captures>/dt-f263-hud2crop.png` |
 | T1b HUD toggle | ✅ `M` toggles `showMod` in `config.json` | config flips true/false |
 | T2 settings GUI | 🔧 **fixed** — Right Shift opens it; all labels render | defects D1, D4 |
-| T2b other GUIs | ✅ Coordinates Clipboard opens (`F12`) | `/tmp/dt2-f12c.png` |
+| T2b other GUIs | ✅ Coordinates Clipboard opens (`F12`) | `<captures>/dt2-f12c.png` |
 | T3 GUI crash | 🔧 **fixed** — opening any 5zig screen crashed the client | defect D2 |
 | T2c mouse input | ✅ clicking a button toggles its value and persists to `config.json` | `showMod` False→True→False |
 | T3 GUI keyboard | 🔧 partial — 40 platforms now deliver key codes; **26.x still swallows characters** (see D3b) | — |
-| T2d sub-screens | ✅ "Customize Display" opens: module list (stats…timer), Add/Remove, Settings, Disable, Move Up/Down, live HUD preview (AFK/FPS/X/Y/Z/facing/IP) | `/tmp/dt5-customize-c.png` |
+| T2d sub-screens | ✅ "Customize Display" opens: module list (stats…timer), Add/Remove, Settings, Disable, Move Up/Down, live HUD preview (AFK/FPS/X/Y/Z/facing/IP) | `<captures>/dt5-customize-c.png` |
 | T2e closing a GUI | ⚠️ only via the `Done` button; `Escape` is inert until D3 lands | — |
 | T4 chat (`F4`) | ⏸ blocked — F4 is swallowed while a GUI is open (vanilla blocks hotkeys in menus); retest after D3 | — |
 | T5 core services | ✅ HSQLDB driver present, no `sql is null`; conversation schema still logs `object not found` (documented gap) | log |
@@ -79,15 +79,15 @@ channel so the API actually works on 26.x — is queued.
 
 ## 2. NeoForge 26.2 — in progress
 
-Date: 2026-11-04 · log `/tmp/dt-lock-nf262.log`, `/tmp/dt-nf262.log`
+Date: 2026-11-04 · log `<captures>/dt-lock-nf262.log`, `<captures>/dt-nf262.log`
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ world loaded, core init | `joined:1` |
-| T1 HUD | ✅ renders in the corner after Escape | `/tmp/nf262-esc-s.png` |
-| T2 settings GUI | ✅ Right Shift opens it, **all labels render** (Plugins (0), Show Mod: On, Mod Scale, Display Options…, Cape Settings…, Language…, Done, Chat…) | `/tmp/dt-nf262-menu-c.png` |
-| T3 ESC | ✅ closes back to live gameplay | `/tmp/nf262-esc-s.png` |
-| T4 character input | ✅ SPACE filled X=233 / Z=21 in the Coordinates Clipboard | `/tmp/nf262-coords-c.png` |
+| T1 HUD | ✅ renders in the corner after Escape | `<captures>/nf262-esc-s.png` |
+| T2 settings GUI | ✅ Right Shift opens it, **all labels render** (Plugins (0), Show Mod: On, Mod Scale, Display Options…, Cape Settings…, Language…, Done, Chat…) | `<captures>/dt-nf262-menu-c.png` |
+| T3 ESC | ✅ closes back to live gameplay | `<captures>/nf262-esc-s.png` |
+| T4 character input | ✅ SPACE filled X=233 / Z=21 in the Coordinates Clipboard | `<captures>/nf262-coords-c.png` |
 | T5 core services | 🔧 **fixed** stale-lock recovery (D6) | `Clearing a stale lock and retrying`, no NPE |
 
 ### Defects found on this target
@@ -105,16 +105,16 @@ lock and retrying"*, the retry succeeds and `check-client-log.sh` is clean.
 
 ## 3. Fabric 26.2 — pass
 
-Date: 2026-11-04 · log `/tmp/dt-f262.log`
+Date: 2026-11-04 · log `<captures>/dt-f262.log`
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined, `check-client-log.sh` clean | log |
 | T1 HUD | ✅ renders | menu screenshots |
-| T2 settings GUI | ✅ Right Shift, all labels (Plugins (0) … Chat…) | `/tmp/f262-menu-c.png` |
+| T2 settings GUI | ✅ Right Shift, all labels (Plugins (0) … Chat…) | `<captures>/f262-menu-c.png` |
 | T3 ESC | ✅ closes to gameplay | — |
-| T4 SPACE | ✅ X=233, Z=21 | `/tmp/f262-coords-c.png` |
-| T5 DELETE | ✅ clears both fields | `/tmp/f262-del-c.png` |
+| T4 SPACE | ✅ X=233, Z=21 | `<captures>/f262-coords-c.png` |
+| T5 DELETE | ✅ clears both fields | `<captures>/f262-del-c.png` |
 
 No new defects: the 26.x fixes (blur, labels, key codes, textfield alpha, stale-lock recovery) hold on Fabric
 as well as NeoForge.
@@ -131,15 +131,15 @@ as well as NeoForge.
 
 ## 4. NeoForge 26.1.2 — pass
 
-Date: 2026-11-04 · log `/tmp/dt-nf2612.log`
+Date: 2026-11-04 · log `<captures>/dt-nf2612.log`
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined, log clean | log |
-| T1 HUD | ✅ renders (also visible on the death screen) | `/tmp/nf2612-menu-c.png` |
-| T2 settings GUI | ✅ Right Shift, all labels | `/tmp/nf2612-menu3-c.png` |
+| T1 HUD | ✅ renders (also visible on the death screen) | `<captures>/nf2612-menu-c.png` |
+| T2 settings GUI | ✅ Right Shift, all labels | `<captures>/nf2612-menu3-c.png` |
 | T3 ESC | ✅ closes | — |
-| T4 SPACE | ✅ X=26, Z=6 | `/tmp/nf2612-coords-c.png` |
+| T4 SPACE | ✅ X=26, Z=6 | `<captures>/nf2612-coords-c.png` |
 
 No new defects.
 
@@ -161,17 +161,17 @@ one-way upgraded, so a 26.x world cannot be opened by them.
 
 ## 5. Fabric 26.1.2 — pass (on the new fixture)
 
-Date: 2026-11-04 · log `/tmp/mkworld.log`
+Date: 2026-11-04 · log `<captures>/mkworld.log`
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined the Creative/Peaceful world | log |
-| T1 HUD | ✅ label, FPS, X/Y/Z, facing | `/tmp/mk-7c.png` |
-| T2 settings GUI | ✅ Right Shift | `/tmp/t5-menu-c.png` |
+| T1 HUD | ✅ label, FPS, X/Y/Z, facing | `<captures>/mk-7c.png` |
+| T2 settings GUI | ✅ Right Shift | `<captures>/t5-menu-c.png` |
 | T3 ESC | ✅ closes | — |
-| T4 SPACE | ✅ X=-553, Z=697 | `/tmp/t5-coords-c.png` |
-| T5 DELETE | ✅ clears both | `/tmp/t5-del-c.png` |
-| T6 commands | ✅ `/time set day` → *Set minecraft:overworld to time marker minecraft:day* | `/tmp/t5-cmd2-c.png` |
+| T4 SPACE | ✅ X=-553, Z=697 | `<captures>/t5-coords-c.png` |
+| T5 DELETE | ✅ clears both | `<captures>/t5-del-c.png` |
+| T6 commands | ✅ `/time set day` → *Set minecraft:overworld to time marker minecraft:day* | `<captures>/t5-cmd2-c.png` |
 
 No new defects.
 
@@ -179,16 +179,16 @@ No new defects.
 
 ## 6. NeoForge 26.1.1 — pass
 
-Date: 2026-11-04 · log `/tmp/dt-nf2611b.log`
+Date: 2026-11-04 · log `<captures>/dt-nf2611b.log`
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined, `check-client-log.sh` clean | log |
 | T1 HUD | ✅ | — |
-| T2 settings GUI | ✅ Right Shift, all labels | `/tmp/nf2611-m-c.png` |
+| T2 settings GUI | ✅ Right Shift, all labels | `<captures>/nf2611-m-c.png` |
 | T3 ESC | ✅ | — |
-| T4 SPACE | ✅ X=-71, Z=-7 | `/tmp/nf2611-c-c.png` |
-| T5 DELETE | ✅ | `/tmp/nf2611-d-c.png` |
+| T4 SPACE | ✅ X=-71, Z=-7 | `<captures>/nf2611-c-c.png` |
+| T5 DELETE | ✅ | `<captures>/nf2611-d-c.png` |
 
 No new defects.
 
@@ -204,16 +204,16 @@ dialog. The manual route used for the first fixture also works but needs the All
 
 ## 7. Fabric 26.1 — pass
 
-Date: 2026-11-04 · log `/tmp/mk261.log` · fixture rebuilt on this version
+Date: 2026-11-04 · log `<captures>/mk261.log` · fixture rebuilt on this version
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined, `check-client-log.sh` clean | log |
 | T1 HUD | ✅ | — |
-| T2 settings GUI | ✅ Right Shift, all labels | `/tmp/f261-m-c.png` |
+| T2 settings GUI | ✅ Right Shift, all labels | `<captures>/f261-m-c.png` |
 | T3 ESC | ✅ | — |
-| T4 SPACE | ✅ X=8, Z=-10 | `/tmp/f261-c-c.png` |
-| T5 DELETE | ✅ | `/tmp/f261-d-c.png` |
+| T4 SPACE | ✅ X=8, Z=-10 | `<captures>/f261-c-c.png` |
+| T5 DELETE | ✅ | `<captures>/f261-d-c.png` |
 
 No new defects.
 
@@ -228,16 +228,16 @@ not clickable there, which does not matter for the GUI battery — Creative is i
 
 ## 8. NeoForge 1.21.11 — pass
 
-Date: 2026-11-04 · logs `/tmp/mk12111.log`, `/tmp/dt-nf12111b.log`
+Date: 2026-11-04 · logs `<captures>/mk12111.log`, `<captures>/dt-nf12111b.log`
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined on a fresh Creative world, `check-client-log.sh` clean | log |
-| T1 HUD | ✅ renders, plus the "no longer AFK" toast | `/tmp/n12111-ing-c.png` |
-| T2 settings GUI | ✅ full menu, every label (after D8) | `/tmp/d8-menu-c.png` |
+| T1 HUD | ✅ renders, plus the "no longer AFK" toast | `<captures>/n12111-ing-c.png` |
+| T2 settings GUI | ✅ full menu, every label (after D8) | `<captures>/d8-menu-c.png` |
 | T3 ESC | ✅ opens the vanilla pause menu as expected | — |
-| T4 SPACE | ✅ X=1, Z=-6 | `/tmp/d8-coords-c.png` |
-| T5 DELETE | ✅ both fields empty (cursor only) | `/tmp/d8-del-c.png` |
+| T4 SPACE | ✅ X=1, Z=-6 | `<captures>/d8-coords-c.png` |
+| T5 DELETE | ✅ both fields empty (cursor only) | `<captures>/d8-del-c.png` |
 
 ### Defects
 
@@ -287,16 +287,16 @@ frame before each hotkey and uses `scripts/shot-diff.py` to require that ≥10% 
 
 ## 9. Fabric 1.21.11 — pass
 
-Date: 2026-11-04 · log `/tmp/dt-f12111b.log` · Creative fixture copied from the NeoForge 1.21.11 run dir
+Date: 2026-11-04 · log `<captures>/dt-f12111b.log` · Creative fixture copied from the NeoForge 1.21.11 run dir
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined, no crash report, log clean | log |
-| T1 HUD | ✅ FPS / X / Y / Z / facing | `/tmp/f12111b-back-c.png` |
-| T2 settings GUI | ✅ opened (18.2% of frame changed) | `/tmp/dt-f12111b-menu.png` |
-| T3 ESC | ✅ back to gameplay with HUD | `/tmp/f12111b-back-c.png` |
-| T4 SPACE | ✅ X=1, Z=-6 | `/tmp/f12111b-coords-c.png` |
-| T5 DELETE | ✅ | `/tmp/dt-f12111b-deleted.png` |
+| T1 HUD | ✅ FPS / X / Y / Z / facing | `<captures>/f12111b-back-c.png` |
+| T2 settings GUI | ✅ opened (18.2% of frame changed) | `<captures>/dt-f12111b-menu.png` |
+| T3 ESC | ✅ back to gameplay with HUD | `<captures>/f12111b-back-c.png` |
+| T4 SPACE | ✅ X=1, Z=-6 | `<captures>/f12111b-coords-c.png` |
+| T5 DELETE | ✅ | `<captures>/dt-f12111b-deleted.png` |
 
 No defects specific to this target — D7 (blur) and D8 (`ResourceLocation` final / label alpha) were the
 1.21.9+ family defects and this build carries those fixes.
@@ -318,16 +318,16 @@ Read the HUD's own coordinates in the same run and compare: HUD `X:1.5 / Z:-5.5`
 
 ## 10. NeoForge 1.21.10 — pass
 
-Date: 2026-11-04 · log `/tmp/dt-nf12110.log` · 1.21 Creative fixture
+Date: 2026-11-04 · log `<captures>/dt-nf12110.log` · 1.21 Creative fixture
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined, no crash report, log clean | log |
 | T1 HUD | ✅ | — |
-| T2 settings GUI | ✅ 34.5% of frame changed, all labels | `/tmp/nf12110-menu-c.png` |
+| T2 settings GUI | ✅ 34.5% of frame changed, all labels | `<captures>/nf12110-menu-c.png` |
 | T3 ESC | ✅ | — |
-| T4 SPACE | ✅ X=264, Z=-253 | `/tmp/nf12110-coords-c.png` |
-| T5 DELETE | ✅ | `/tmp/dt-nf12110-deleted.png` |
+| T4 SPACE | ✅ X=264, Z=-253 | `<captures>/nf12110-coords-c.png` |
+| T5 DELETE | ✅ | `<captures>/dt-nf12110-deleted.png` |
 
 No new defects. First target that ran clean on the corrected battery (frame assertion at 10% / 6%).
 
@@ -335,16 +335,16 @@ No new defects. First target that ran clean on the corrected battery (frame asse
 
 ## 11. Fabric 1.21.10 — pass
 
-Date: 2026-11-04 · log `/tmp/dt-f12110.log`
+Date: 2026-11-04 · log `<captures>/dt-f12110.log`
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined, no crash report, log clean | log |
 | T1 HUD | ✅ | — |
-| T2 settings GUI | ✅ 34.6% of frame changed | `/tmp/f12110-menu-c.png` |
+| T2 settings GUI | ✅ 34.6% of frame changed | `<captures>/f12110-menu-c.png` |
 | T3 ESC | ✅ | — |
-| T4 SPACE | ✅ X=264, Z=-253 | `/tmp/f12110-coords-c.png` |
-| T5 DELETE | ✅ | `/tmp/dt-f12110-deleted.png` |
+| T4 SPACE | ✅ X=264, Z=-253 | `<captures>/f12110-coords-c.png` |
+| T5 DELETE | ✅ | `<captures>/dt-f12110-deleted.png` |
 
 No new defects.
 
@@ -352,16 +352,16 @@ No new defects.
 
 ## 12. NeoForge 1.21.9 — pass
 
-Date: 2026-11-04 · log `/tmp/dt-nf1219.log`
+Date: 2026-11-04 · log `<captures>/dt-nf1219.log`
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined, no crash report, log clean | log |
 | T1 HUD | ✅ | — |
-| T2 settings GUI | ✅ 34.4% of frame changed | `/tmp/dt-nf1219-menu.png` |
+| T2 settings GUI | ✅ 34.4% of frame changed | `<captures>/dt-nf1219-menu.png` |
 | T3 ESC | ✅ | — |
-| T4 SPACE | ✅ X=264, Z=-253 | `/tmp/nf1219-coords-c.png` |
-| T5 DELETE | ✅ | `/tmp/dt-nf1219-deleted.png` |
+| T4 SPACE | ✅ X=264, Z=-253 | `<captures>/nf1219-coords-c.png` |
+| T5 DELETE | ✅ | `<captures>/dt-nf1219-deleted.png` |
 
 No new defects — the D7 (blur) and D8 (`ResourceLocation` final) fixes hold on this patch.
 
@@ -369,16 +369,16 @@ No new defects — the D7 (blur) and D8 (`ResourceLocation` final) fixes hold on
 
 ## 13. Fabric 1.21.9 — pass
 
-Date: 2026-11-04 · log `/tmp/dt-f1219.log`
+Date: 2026-11-04 · log `<captures>/dt-f1219.log`
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined, no crash report, log clean | log |
 | T1 HUD | ✅ | — |
-| T2 settings GUI | ✅ 34.6% of frame changed | `/tmp/f1219-menu-c.png` |
+| T2 settings GUI | ✅ 34.6% of frame changed | `<captures>/f1219-menu-c.png` |
 | T3 ESC | ✅ | — |
-| T4 SPACE | ✅ X=364, Z=-253 | `/tmp/f1219-coords-c.png` |
-| T5 DELETE | ✅ | `/tmp/dt-f1219-deleted.png` |
+| T4 SPACE | ✅ X=364, Z=-253 | `<captures>/f1219-coords-c.png` |
+| T5 DELETE | ✅ | `<captures>/dt-f1219-deleted.png` |
 
 No new defects.
 
@@ -401,16 +401,16 @@ local jar byte-for-byte by size:
 
 ## 14. NeoForge 1.21.8 — pass (after D9)
 
-Date: 2026-11-04 · logs `/tmp/dt-nf1218.log` (crash), `/tmp/dt-nf1218b.log` (fixed)
+Date: 2026-11-04 · logs `<captures>/dt-nf1218.log` (crash), `<captures>/dt-nf1218b.log` (fixed)
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined, no crash report after the fix, log clean | log |
 | T1 HUD | ✅ | — |
-| T2 settings GUI | ✅ 34.3% of frame changed | `/tmp/dt-nf1218b-menu.png` |
+| T2 settings GUI | ✅ 34.3% of frame changed | `<captures>/dt-nf1218b-menu.png` |
 | T3 ESC | ✅ | — |
-| T4 SPACE | ✅ X=364, Z=-253 | `/tmp/nf1218b-coords-c.png` |
-| T5 DELETE | ✅ | `/tmp/dt-nf1218b-deleted.png` |
+| T4 SPACE | ✅ X=364, Z=-253 | `<captures>/nf1218b-coords-c.png` |
+| T5 DELETE | ✅ | `<captures>/dt-nf1218b-deleted.png` |
 
 ### Defect D9 — the blur crash is not a 26.x/1.21.9 quirk, it spans 1.20.2+
 
@@ -444,16 +444,16 @@ removing the call would leave the mod's screens undimmed.
 
 ## 15. Fabric 1.21.8 — pass
 
-Date: 2026-11-04 · log `/tmp/dt-f1218.log`
+Date: 2026-11-04 · log `<captures>/dt-f1218.log`
 
 | Section | Result | Evidence |
 |---|---|---|
 | T0 boot | ✅ joined, no crash report, log clean | log |
 | T1 HUD | ✅ | — |
-| T2 settings GUI | ✅ 34.5% of frame changed | `/tmp/dt-f1218-menu.png` |
+| T2 settings GUI | ✅ 34.5% of frame changed | `<captures>/dt-f1218-menu.png` |
 | T3 ESC | ✅ | — |
-| T4 SPACE | ✅ X=364, Z=-253 | `/tmp/f1218-coords-c.png` |
-| T5 DELETE | ✅ | `/tmp/dt-f1218-deleted.png` |
+| T4 SPACE | ✅ X=364, Z=-253 | `<captures>/f1218-coords-c.png` |
+| T5 DELETE | ✅ | `<captures>/dt-f1218-deleted.png` |
 
 No new defects — carries the D9 background fix.
 
@@ -495,7 +495,7 @@ The platform's `ResourceLocation` **extends** the Minecraft class on 1.16–1.20
 there — those builds are fine and were left untouched) but is a **wrapper** from 1.21 on, where the cast can
 never succeed. Within the wrapper group 1.21.6–1.21.8 already unwrap with `ResourceLocation.toMinecraft(...)`
 and 1.21.9+ had their `getTexture` fixed with D8; the six platforms still casting are **1.21, 1.21.1, 1.21.2,
-1.21.3, 1.21.4, 1.21.5**. Fix in flight (deleg_2f1061f5).
+1.21.3, 1.21.4, 1.21.5**. Fix in flight (a background porting run).
 
 ---
 
@@ -733,7 +733,7 @@ difference must be in how 1.18.x's mappings reach the live `Options`.
 Also seen in these logs (separate, known-vestigial): `SQLSyntaxErrorException: … object not found: VERSION /
 NETWORK_STATS` — the HSQLDB schema was never created; the friends/party backend is dead upstream.
 
-Investigation delegated with client access (deleg_e97650e1).
+Investigation delegated with client access (a background porting run).
 
 **Verdict: not a defect.** With a hand-driven debug session on 1.18.2 the binding works exactly as designed.
 The instrumentation (temporary mixin logging, since reverted) printed:
@@ -1047,7 +1047,7 @@ Compile-verified on four eras with their own toolchains (1.16.2 / JDK 17, 1.19.4
 ## D14 — RESOLVED: not a defect. The real bug was colliding default keys.
 
 **Proof that the whole pipeline works on 1.16.2:** pressing **F10** in-world opened *The 5zig Mod — Hypixel
-Stats* GUI (screenshot `/tmp/kbt-b.png`, 4.0% frame change, title "The 5zig Mod - Hypixel …", `Player:` field,
+Stats* GUI (screenshot `<captures>/kbt-b.png`, 4.0% frame change, title "The 5zig Mod - Hypixel …", `Player:` field,
 `Search` button, "No API key has been found! Please connect once to mc.hypixel.net!"). F10 goes through exactly
 the path I had measured as dead: `KeyMapping.click` → `FiveZigKeybinding.consumeClick()` → the core's
 `KeybindingListener`. So clicks are queued, the poll runs, and the GUI opens.

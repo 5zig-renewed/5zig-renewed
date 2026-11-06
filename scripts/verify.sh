@@ -16,7 +16,7 @@ log=${2:?log path}
 secs=${3:-240}
 gradle=${4:-$HOME/work/tools/gradle-8.10.2/bin/gradle}
 jhome=${5:-/usr/lib/jvm/java-17-openjdk}
-shot=${SHOT:-/tmp/verify-$(basename "$proj").png}
+shot=${SHOT:-<captures>/verify-$(basename "$proj").png}
 # Each verification gets its own X display so a stray client from another run cannot
 # sit on top of the window we screenshot.
 VDISPLAY=${VDISPLAY:-:99}
@@ -29,8 +29,8 @@ sleep 3
 # 2. Xvfb must actually answer
 num=${VDISPLAY#:}
 if ! DISPLAY=$VDISPLAY xdotool getdisplaygeometry >/dev/null 2>&1; then
-    rm -f "/tmp/.X${num}-lock" "/tmp/.X11-unix/X${num}"
-    setsid Xvfb "$VDISPLAY" -screen 0 1280x800x24 +extension GLX </dev/null >"/tmp/xvfb${num}.log" 2>&1 &
+    rm -f "<captures>/.X${num}-lock" "<captures>/.X11-unix/X${num}"
+    setsid Xvfb "$VDISPLAY" -screen 0 1280x800x24 +extension GLX </dev/null >"<captures>/xvfb${num}.log" 2>&1 &
     for _ in $(seq 1 20); do
         DISPLAY=$VDISPLAY xdotool getdisplaygeometry >/dev/null 2>&1 && break
         sleep 1
